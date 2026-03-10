@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo } from "react";
@@ -173,21 +172,7 @@ export function CashFlowLedger() {
 
       {/* Tabela de Planejamento */}
       <Card className="overflow-hidden border-border/50 shadow-xl">
-        {/* ESPAÇO DE INSTRUÇÃO: Pista visual para deslizar com o dedo */}
-        <div className="bg-secondary/40 border-b border-border/50 py-4 px-6 flex items-center justify-center gap-3 group cursor-grab active:cursor-grabbing">
-          <div className="p-2 bg-primary/20 rounded-full animate-pulse">
-            <ArrowLeftRight className="w-5 h-5 text-primary" />
-          </div>
-          <div className="text-center">
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-foreground block">Deslize para o lado</span>
-            <span className="text-[10px] text-muted-foreground font-medium uppercase mt-0.5">Use o dedo para ver Receita, Custos e Lucro</span>
-          </div>
-          <div className="p-2 bg-primary/20 rounded-full animate-pulse">
-            <ArrowLeftRight className="w-5 h-5 text-primary" />
-          </div>
-        </div>
-
-        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between bg-card pb-4 gap-4 px-6 pt-6">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between bg-card pb-4 gap-4 px-6 pt-6 border-b">
           <div>
             <CardTitle className="text-lg flex items-center gap-2">
               <FileSpreadsheet className="w-5 h-5 text-primary" />
@@ -206,8 +191,20 @@ export function CashFlowLedger() {
           <div className="overflow-x-auto no-scrollbar pb-6">
             <Table className="min-w-[1100px] border-collapse">
               <TableHeader className="bg-secondary/30">
+                {/* LINHA DE INSTRUÇÃO: Dentro da planilha, acima das descrições */}
+                <TableRow className="hover:bg-transparent border-b bg-primary/10">
+                  <TableHead colSpan={8} className="h-12 py-0 text-center border-b border-primary/20">
+                    <div className="flex items-center justify-center gap-12 animate-pulse text-[10px] font-bold uppercase tracking-[0.4em] text-primary/80">
+                      <ArrowLeftRight className="w-4 h-4" />
+                      Área de Rolagem Lateral
+                      <ArrowLeftRight className="w-4 h-4" />
+                    </div>
+                  </TableHead>
+                </TableRow>
+                
+                {/* LINHA DE DESCRIÇÃO (Cabeçalho Real) */}
                 <TableRow className="hover:bg-transparent border-b">
-                  <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r bg-secondary/10">Status</TableHead>
+                  <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r bg-secondary/10">Ativar</TableHead>
                   <TableHead className="w-[90px] font-bold text-[10px] uppercase border-r text-center bg-secondary/10">Mês</TableHead>
                   <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-blue-500">Receita Mensal (R$)</TableHead>
                   <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-orange-500">Custos Operacionais (R$)</TableHead>
