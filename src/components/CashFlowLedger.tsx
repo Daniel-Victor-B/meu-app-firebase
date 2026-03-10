@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { formatCurrency } from "@/lib/formatters";
-import { FileSpreadsheet, TrendingUp, ShieldCheck, Info, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { FileSpreadsheet, ShieldCheck, Info, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 const MESES = [
@@ -60,11 +60,9 @@ export function CashFlowLedger() {
     return { rows, acumuladoReserva, acumuladoReceita };
   }, [data, globalParams]);
 
-  // Cálculo da Meta de Reserva (Ponto 8 do seu modelo)
-  const custoEmpresaMensal = data[0].custos + globalParams.das;
-  const metaEmpresa = custoEmpresaMensal * 6;
-  const metaPessoal = globalParams.prolabore * 6;
-  const metaTotal = metaEmpresa + metaPessoal;
+  // Cálculo da Meta de Reserva (6 meses de custos fixos + 6 meses de pró-labore)
+  const custoEmpresaMensal = (data.reduce((acc, curr) => acc + curr.custos, 0) / 12) + globalParams.das;
+  const metaTotal = (custoEmpresaMensal + globalParams.prolabore) * 6;
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
 
   return (
@@ -91,7 +89,7 @@ export function CashFlowLedger() {
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-[10px] font-bold">
-                <span>PROGRESSO</span>
+                <span>PROGRESSO DA RESERVA</span>
                 <span>{progressoMeta.toFixed(1)}%</span>
               </div>
               <Progress value={progressoMeta} className="h-2" />
@@ -103,7 +101,7 @@ export function CashFlowLedger() {
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Info className="w-5 h-5" />
-              <CardTitle className="text-sm font-bold uppercase tracking-wider">Parâmetros Fixos</CardTitle>
+              <CardTitle className="text-sm font-bold uppercase tracking-wider">Parâmetros de Cálculo</CardTitle>
             </div>
           </CardHeader>
           <CardContent>
@@ -111,7 +109,7 @@ export function CashFlowLedger() {
               <div>
                 <div className="text-[10px] text-muted-foreground font-bold mb-1 uppercase">Pró-labore</div>
                 <Input 
-                  className="h-8 text-xs font-bold" 
+                  className="h-8 text-xs font-bold bg-background/50" 
                   type="number" 
                   value={globalParams.prolabore}
                   onChange={(e) => setGlobalParams({...globalParams, prolabore: parseFloat(e.target.value) || 0})}
@@ -120,15 +118,15 @@ export function CashFlowLedger() {
               <div>
                 <div className="text-[10px] text-muted-foreground font-bold mb-1 uppercase">% Reserva</div>
                 <Input 
-                  className="h-8 text-xs font-bold" 
+                  className="h-8 text-xs font-bold bg-background/50" 
                   type="number" 
                   value={globalParams.reservaPct}
                   onChange={(e) => setGlobalParams({...globalParams, reservaPct: parseFloat(e.target.value) || 0})}
                 />
               </div>
               <div>
-                <div className="text-[10px] text-muted-foreground font-bold mb-1 uppercase">DAS</div>
-                <div className="h-8 flex items-center text-xs font-bold px-3 bg-secondary rounded-md border">{formatCurrency(globalParams.das)}</div>
+                <div className="text-[10px] text-muted-foreground font-bold mb-1 uppercase">DAS Fixo</div>
+                <div className="h-8 flex items-center text-xs font-bold px-3 bg-secondary/50 rounded-md border border-input/50">{formatCurrency(globalParams.das)}</div>
               </div>
             </div>
           </CardContent>
@@ -136,28 +134,28 @@ export function CashFlowLedger() {
       </div>
 
       {/* Planilha */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+      <Card className="overflow-hidden border-border/50">
+        <CardHeader className="flex flex-row items-center justify-between bg-secondary/10 pb-4">
           <div>
             <CardTitle className="text-lg flex items-center gap-2">
               <FileSpreadsheet className="w-5 h-5 text-primary" />
-              Controle Mensal
+              Planejamento Anual
             </CardTitle>
-            <CardDescription>Ajuste as receitas e custos para planejar seu ano</CardDescription>
+            <CardDescription>Ajuste os valores mensais para planejar seu fluxo de caixa</CardDescription>
           </div>
           <div className="text-right">
-            <div className="text-[10px] font-bold text-muted-foreground uppercase">Faturamento Anual</div>
+            <div className="text-[10px] font-bold text-muted-foreground uppercase">Faturamento Total</div>
             <div className="text-xl font-bold text-primary">{formatCurrency(totals.acumuladoReceita)}</div>
           </div>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
-              <TableHeader className="bg-secondary/50">
-                <TableRow>
+              <TableHeader className="bg-secondary/30">
+                <TableRow className="hover:bg-transparent">
                   <TableHead className="w-[80px] font-bold text-[10px] uppercase">Mês</TableHead>
-                  <TableHead className="w-[120px] font-bold text-[10px] uppercase">Receita</TableHead>
-                  <TableHead className="w-[120px] font-bold text-[10px] uppercase">Custos</TableHead>
+                  <TableHead className="min-w-[130px] font-bold text-[10px] uppercase">Receita (R$)</TableHead>
+                  <TableHead className="min-w-[130px] font-bold text-[10px] uppercase">Custos (R$)</TableHead>
                   <TableHead className="text-right font-bold text-[10px] uppercase">Sobra</TableHead>
                   <TableHead className="text-right font-bold text-[10px] uppercase text-purple-500">Reserva</TableHead>
                   <TableHead className="text-right font-bold text-[10px] uppercase text-primary">Lucro Disp.</TableHead>
@@ -166,30 +164,34 @@ export function CashFlowLedger() {
               <TableBody>
                 {totals.rows.map((row, i) => (
                   <TableRow key={MESES[i]} className="hover:bg-primary/5 transition-colors group">
-                    <TableCell className="font-bold text-xs">{MESES[i]}</TableCell>
-                    <TableCell>
-                      <Input 
-                        type="number" 
-                        value={row.receita} 
-                        onChange={(e) => updateMonth(i, 'receita', e.target.value)}
-                        className="h-8 text-xs bg-transparent border-none focus-visible:ring-1 focus-visible:ring-primary p-0 font-medium"
-                      />
+                    <TableCell className="font-bold text-xs py-3">{MESES[i]}</TableCell>
+                    <TableCell className="py-2">
+                      <div className="relative flex items-center">
+                        <Input 
+                          type="number" 
+                          value={row.receita} 
+                          onChange={(e) => updateMonth(i, 'receita', e.target.value)}
+                          className="h-9 text-xs bg-transparent border-transparent hover:border-input focus:border-primary focus-visible:ring-0 p-2 font-bold transition-all"
+                        />
+                      </div>
                     </TableCell>
-                    <TableCell>
-                      <Input 
-                        type="number" 
-                        value={row.custos} 
-                        onChange={(e) => updateMonth(i, 'custos', e.target.value)}
-                        className="h-8 text-xs bg-transparent border-none focus-visible:ring-1 focus-visible:ring-blue-500 p-0 font-medium"
-                      />
+                    <TableCell className="py-2">
+                      <div className="relative flex items-center">
+                        <Input 
+                          type="number" 
+                          value={row.custos} 
+                          onChange={(e) => updateMonth(i, 'custos', e.target.value)}
+                          className="h-9 text-xs bg-transparent border-transparent hover:border-input focus:border-blue-500 focus-visible:ring-0 p-2 font-bold transition-all"
+                        />
+                      </div>
                     </TableCell>
-                    <TableCell className="text-right text-xs font-medium">
+                    <TableCell className="text-right text-xs font-medium tabular-nums py-3">
                       {formatCurrency(row.sobra)}
                     </TableCell>
-                    <TableCell className="text-right text-xs font-bold text-purple-500 bg-purple-500/5">
+                    <TableCell className="text-right text-xs font-bold text-purple-500 bg-purple-500/5 tabular-nums py-3">
                       {formatCurrency(row.reserva)}
                     </TableCell>
-                    <TableCell className="text-right text-xs font-bold text-primary bg-primary/5">
+                    <TableCell className="text-right text-xs font-bold text-primary bg-primary/5 tabular-nums py-3">
                       {formatCurrency(row.lucro)}
                     </TableCell>
                   </TableRow>
@@ -202,24 +204,24 @@ export function CashFlowLedger() {
 
       {/* Dica de Rotina */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-4 rounded-xl border border-border bg-card">
+        <div className="p-4 rounded-xl border border-border bg-card/50">
           <h4 className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            Rotina Semanal (1 Minuto)
+            Rotina Semanal de Controle
           </h4>
           <ul className="space-y-2 text-xs text-muted-foreground">
-            <li className="flex gap-2"><span>1.</span> Recebeu faturamento? Atualiza a receita do mês.</li>
-            <li className="flex gap-2"><span>2.</span> Pagou custos? Atualiza os custos operacionais.</li>
-            <li className="flex gap-2"><span>3.</span> Sobrou? Transfere a Reserva e o Lucro.</li>
+            <li className="flex gap-2 items-start"><span className="text-primary font-bold">1.</span> <span>Sexta-feira à tarde: atualize a receita e os custos da semana.</span></li>
+            <li className="flex gap-2 items-start"><span className="text-primary font-bold">2.</span> <span>Confira se o acumulado da reserva está batendo com sua conta PJ Reserva.</span></li>
+            <li className="flex gap-2 items-start"><span className="text-primary font-bold">3.</span> <span>Se a meta de 6 meses estiver longe, tente reduzir os custos variáveis.</span></li>
           </ul>
         </div>
-        <div className="p-4 rounded-xl border border-border bg-card">
+        <div className="p-4 rounded-xl border border-border bg-card/50">
           <h4 className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2 text-amber-500">
             <AlertTriangle className="w-4 h-4" />
-            Alerta de Sustentabilidade
+            Análise de Sustentabilidade
           </h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Se a sua "Sobra" ficar negativa em algum mês, você está consumindo seu capital ou sua reserva. Use a planilha para simular cortes de custos antes que isso aconteça.
+            Se a "Sobra" mensal for menor que o valor do Pró-labore, você está retirando dinheiro do capital da empresa. Use esta planilha para simular cenários e garantir que o lucro real seja sempre positivo após todas as retiradas.
           </p>
         </div>
       </div>
