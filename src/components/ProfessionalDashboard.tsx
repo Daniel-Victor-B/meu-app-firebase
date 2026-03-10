@@ -264,10 +264,13 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
           
           <div className="mt-3 p-3 bg-secondary/20 rounded-lg border border-dashed flex gap-3 items-start">
             <Lightbulb className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-            <div className="space-y-1">
+            <div className="space-y-2">
               <p className="text-[10px] font-bold uppercase text-primary tracking-wider">Regra de Ouro: Lucro não é salário.</p>
               <p className="text-[9px] text-muted-foreground leading-tight">
-                O Lucro Livre é sua decisão estratégica. <strong>Distribua trimestralmente</strong> para investimento ou reserva pessoal. Não saca tudo!
+                O Pró-labore é seu salário mensal fixo. O Lucro deve ser acumulado na <strong>conta PJ</strong> e distribuído <strong>trimestralmente</strong>.
+              </p>
+              <p className="text-[9px] text-muted-foreground leading-tight">
+                Decida entre <strong>Investir</strong> (mandar para corretora PF), <strong>Guardar</strong> (manter na reserva da conta PJ) ou <strong>Escalar</strong> (reinvestir no negócio para crescer e faturar mais).
               </p>
             </div>
           </div>

@@ -369,10 +369,13 @@ export function CashFlowLedger() {
 
       <div className="p-4 rounded-xl border border-primary/20 bg-primary/5 flex gap-4 items-start">
         <Lightbulb className="w-5 h-5 text-primary shrink-0 mt-1" />
-        <div className="space-y-1">
+        <div className="space-y-2">
           <h4 className="text-xs font-bold uppercase tracking-wider text-primary">Dica de Gestão Profissional</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            A planilha projeta a sobra mensal para sua visão clara, mas lembre-se: <strong>Lucro Real não é salário</strong>. O Pró-labore é sua retirada mensal. O Lucro deve ser acumulado e distribuído <strong>trimestralmente</strong> conforme a saúde do negócio. Você decide se investe, guarda ou escala.
+            A planilha projeta a sobra mensal para sua visão clara, mas lembre-se: <strong>Lucro Real não é salário</strong>.
+          </p>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            O Pró-labore é sua retirada mensal fixa. O Lucro deve ser acumulado na <strong>conta PJ</strong> (não na PF) e distribuído <strong>trimestralmente</strong> conforme a saúde do negócio. Você decide o destino: <strong>Investir</strong> (mandar para sua corretora PF), <strong>Guardar</strong> (manter na conta PJ como reserva de segurança) ou <strong>Escalar</strong> (reinvestir na empresa para aumentar sua capacidade, estoque ou marketing e faturar mais).
           </p>
         </div>
       </div>
