@@ -6,8 +6,26 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/formatters";
-import { FileSpreadsheet, ShieldCheck, HelpCircle, ArrowLeftRight, PenLine, Wallet, TrendingUp, PiggyBank, Scale, Settings2, UserCircle, Percent, Lightbulb } from "lucide-react";
+import { 
+  FileSpreadsheet, 
+  ShieldCheck, 
+  HelpCircle, 
+  ArrowLeftRight, 
+  PenLine, 
+  Wallet, 
+  TrendingUp, 
+  PiggyBank, 
+  Scale, 
+  Settings2, 
+  UserCircle, 
+  Percent, 
+  Lightbulb,
+  ChevronUp,
+  ChevronDown,
+  CalendarClock
+} from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import {
@@ -55,7 +73,8 @@ export function CashFlowLedger() {
   const [globalParams, setGlobalParams] = useState({
     prolabore: 2000,
     reservaPct: 50,
-    das: 76
+    das: 76,
+    mesesReserva: 6
   });
 
   const updateMonth = (index: number, field: keyof MonthlyData, value: any) => {
@@ -106,11 +125,32 @@ export function CashFlowLedger() {
   }, [data, globalParams]);
 
   const custoEmpresaMensal = (data.filter(m => m.active).reduce((acc, curr) => acc + curr.custos, 0) / (data.filter(m => m.active).length || 1)) + globalParams.das;
-  const metaTotal = (custoEmpresaMensal + globalParams.prolabore) * 6;
+  const metaTotal = (custoEmpresaMensal + globalParams.prolabore) * globalParams.mesesReserva;
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
 
   const LIMITE_MEI = 81000;
   const percentualLimite = Math.min(100, (totals.acumuladoReceita / LIMITE_MEI) * 100);
+
+  const StepButtons = ({ onUp, onDown, colorClass }: { onUp: () => void, onDown: () => void, colorClass: string }) => (
+    <div className="flex flex-col -space-y-px">
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        className={`h-4 w-6 rounded-t-md rounded-b-none border border-border hover:bg-secondary ${colorClass}`}
+        onClick={onUp}
+      >
+        <ChevronUp className="w-3 h-3" />
+      </Button>
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        className={`h-4 w-6 rounded-b-md rounded-t-none border border-border hover:bg-secondary ${colorClass}`}
+        onClick={onDown}
+      >
+        <ChevronDown className="w-3 h-3" />
+      </Button>
+    </div>
+  );
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
@@ -120,7 +160,7 @@ export function CashFlowLedger() {
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2 text-primary">
               <ShieldCheck className="w-5 h-5" />
-              <CardTitle className="text-sm font-bold uppercase tracking-wider">Colchão de Segurança (6 meses)</CardTitle>
+              <CardTitle className="text-sm font-bold uppercase tracking-wider">Colchão de Segurança ({globalParams.mesesReserva} meses)</CardTitle>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -131,7 +171,7 @@ export function CashFlowLedger() {
               </div>
               <div className="text-right">
                 <div className="text-lg font-bold text-muted-foreground">{formatCurrency(metaTotal)}</div>
-                <div className="text-[10px] text-muted-foreground uppercase font-bold mt-1">Meta de Segurança</div>
+                <div className="text-[10px] text-muted-foreground uppercase font-bold mt-1">Meta Personalizada</div>
               </div>
             </div>
             <div className="space-y-2">
@@ -154,47 +194,84 @@ export function CashFlowLedger() {
               <Settings2 className="w-5 h-5 text-primary" />
               <div>
                 <CardTitle className="text-sm font-bold uppercase tracking-wider">Regras de Cálculo</CardTitle>
-                <CardDescription className="text-[10px] uppercase font-bold text-muted-foreground">Define como todos os meses são processados</CardDescription>
+                <CardDescription className="text-[10px] uppercase font-bold text-muted-foreground">Personalize sua estratégia financeira</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="space-y-1.5">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
                 <div className="flex items-center gap-1.5 text-[10px] text-blue-500 font-black uppercase">
                   <UserCircle className="w-3 h-3" />
                   Salário PF
                 </div>
-                <div className="relative group/param">
-                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">R$</span>
-                  <Input 
-                    className="h-9 pl-7 pr-7 text-xs font-bold bg-background/80 border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20" 
-                    type="number" 
-                    value={globalParams.prolabore}
-                    onChange={(e) => setGlobalParams({...globalParams, prolabore: parseFloat(e.target.value) || 0})}
+                <div className="flex items-center gap-2">
+                  <StepButtons 
+                    onUp={() => setGlobalParams({...globalParams, prolabore: globalParams.prolabore + 100})}
+                    onDown={() => setGlobalParams({...globalParams, prolabore: Math.max(0, globalParams.prolabore - 100)})}
+                    colorClass="text-blue-500"
                   />
-                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-blue-500/30 group-hover/param:text-blue-500 transition-colors pointer-events-none" />
+                  <div className="relative flex-1 group/param">
+                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">R$</span>
+                    <Input 
+                      className="h-9 pl-7 pr-7 text-xs font-bold bg-background/80 border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20" 
+                      type="number" 
+                      value={globalParams.prolabore}
+                      onChange={(e) => setGlobalParams({...globalParams, prolabore: parseFloat(e.target.value) || 0})}
+                    />
+                    <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-blue-500/30 group-hover/param:text-blue-500 transition-colors pointer-events-none" />
+                  </div>
                 </div>
               </div>
 
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <div className="flex items-center gap-1.5 text-[10px] text-purple-500 font-black uppercase">
                   <Percent className="w-3 h-3" />
                   Reserva PJ
                 </div>
-                <div className="relative group/param">
-                  <span className="absolute right-7 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">%</span>
-                  <Input 
-                    className="h-9 pr-12 text-xs font-bold bg-background/80 border-purple-500/30 focus:border-purple-500 focus:ring-purple-500/20 text-right" 
-                    type="number" 
-                    value={globalParams.reservaPct}
-                    onChange={(e) => setGlobalParams({...globalParams, reservaPct: parseFloat(e.target.value) || 0})}
+                <div className="flex items-center gap-2">
+                  <StepButtons 
+                    onUp={() => setGlobalParams({...globalParams, reservaPct: Math.min(100, globalParams.reservaPct + 5)})}
+                    onDown={() => setGlobalParams({...globalParams, reservaPct: Math.max(0, globalParams.reservaPct - 5)})}
+                    colorClass="text-purple-500"
                   />
-                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-purple-500/30 group-hover/param:text-purple-500 transition-colors pointer-events-none" />
+                  <div className="relative flex-1 group/param">
+                    <span className="absolute right-7 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">%</span>
+                    <Input 
+                      className="h-9 pr-12 text-xs font-bold bg-background/80 border-purple-500/30 focus:border-purple-500 focus:ring-purple-500/20 text-right" 
+                      type="number" 
+                      value={globalParams.reservaPct}
+                      onChange={(e) => setGlobalParams({...globalParams, reservaPct: parseFloat(e.target.value) || 0})}
+                    />
+                    <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-purple-500/30 group-hover/param:text-purple-500 transition-colors pointer-events-none" />
+                  </div>
                 </div>
               </div>
 
-              <div className="space-y-1.5">
+              <div className="space-y-2">
+                <div className="flex items-center gap-1.5 text-[10px] text-primary font-black uppercase">
+                  <CalendarClock className="w-3 h-3" />
+                  Meta (Meses)
+                </div>
+                <div className="flex items-center gap-2">
+                  <StepButtons 
+                    onUp={() => setGlobalParams({...globalParams, mesesReserva: Math.min(24, globalParams.mesesReserva + 1)})}
+                    onDown={() => setGlobalParams({...globalParams, mesesReserva: Math.max(1, globalParams.mesesReserva - 1)})}
+                    colorClass="text-primary"
+                  />
+                  <div className="relative flex-1 group/param">
+                    <Input 
+                      className="h-9 pr-8 text-xs font-bold bg-background/80 border-primary/30 focus:border-primary focus:ring-primary/20 text-center" 
+                      type="number" 
+                      value={globalParams.mesesReserva}
+                      onChange={(e) => setGlobalParams({...globalParams, mesesReserva: parseInt(e.target.value) || 1})}
+                    />
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] font-bold text-muted-foreground uppercase">mês</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
                 <div className="flex items-center gap-1.5 text-[10px] text-red-500 font-black uppercase">
                   <ShieldCheck className="w-3 h-3" />
                   Imposto DAS
@@ -233,7 +310,7 @@ export function CashFlowLedger() {
               <div className="text-lg font-bold text-primary leading-tight">{formatCurrency(totals.acumuladoLucro || 0)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-primary/70">
                 <Wallet className="w-2.5 h-2.5" />
-                Dinheiro Extra (Além do Pró-labore)
+                Dinheiro Extra (Trimestral)
               </div>
             </div>
 
