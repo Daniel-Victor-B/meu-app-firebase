@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { formatCurrency } from "@/lib/formatters";
-import { FileSpreadsheet, ShieldCheck, Info, AlertTriangle, HelpCircle, ArrowLeftRight, PenLine, Wallet, TrendingUp, PiggyBank, Scale, Settings2, UserCircle, Percent } from "lucide-react";
+import { FileSpreadsheet, ShieldCheck, AlertTriangle, HelpCircle, ArrowLeftRight, PenLine, Wallet, TrendingUp, PiggyBank, Scale, Settings2, UserCircle, Percent } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import {
@@ -160,14 +160,15 @@ export function CashFlowLedger() {
                   <UserCircle className="w-3 h-3" />
                   Salário PF
                 </div>
-                <div className="relative">
+                <div className="relative group/param">
                   <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">R$</span>
                   <Input 
-                    className="h-9 pl-7 text-xs font-bold bg-background/80 border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20" 
+                    className="h-9 pl-7 pr-7 text-xs font-bold bg-background/80 border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20" 
                     type="number" 
                     value={globalParams.prolabore}
                     onChange={(e) => setGlobalParams({...globalParams, prolabore: parseFloat(e.target.value) || 0})}
                   />
+                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-orange-500/30 group-hover/param:text-orange-500 transition-colors pointer-events-none" />
                 </div>
               </div>
 
@@ -176,14 +177,15 @@ export function CashFlowLedger() {
                   <Percent className="w-3 h-3" />
                   Reserva PJ
                 </div>
-                <div className="relative">
-                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">%</span>
+                <div className="relative group/param">
+                  <span className="absolute right-7 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">%</span>
                   <Input 
-                    className="h-9 pr-7 text-xs font-bold bg-background/80 border-purple-500/30 focus:border-purple-500 focus:ring-purple-500/20" 
+                    className="h-9 pr-12 text-xs font-bold bg-background/80 border-purple-500/30 focus:border-purple-500 focus:ring-purple-500/20 text-right" 
                     type="number" 
                     value={globalParams.reservaPct}
                     onChange={(e) => setGlobalParams({...globalParams, reservaPct: parseFloat(e.target.value) || 0})}
                   />
+                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-purple-500/30 group-hover/param:text-purple-500 transition-colors pointer-events-none" />
                 </div>
               </div>
 
