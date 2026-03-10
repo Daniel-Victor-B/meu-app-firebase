@@ -157,19 +157,19 @@ export function CashFlowLedger() {
             <div className="grid grid-cols-3 gap-3">
               {/* Pró-labore */}
               <div className="space-y-1.5">
-                <div className="flex items-center gap-1.5 text-[10px] text-orange-500 font-black uppercase">
+                <div className="flex items-center gap-1.5 text-[10px] text-indigo-500 font-black uppercase">
                   <UserCircle className="w-3 h-3" />
                   Salário PF
                 </div>
                 <div className="relative group/param">
                   <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">R$</span>
                   <Input 
-                    className="h-9 pl-7 pr-7 text-xs font-bold bg-background/80 border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20" 
+                    className="h-9 pl-7 pr-7 text-xs font-bold bg-background/80 border-indigo-500/30 focus:border-indigo-500 focus:ring-indigo-500/20" 
                     type="number" 
                     value={globalParams.prolabore}
                     onChange={(e) => setGlobalParams({...globalParams, prolabore: parseFloat(e.target.value) || 0})}
                   />
-                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-orange-500/30 group-hover/param:text-orange-500 transition-colors pointer-events-none" />
+                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-indigo-500/30 group-hover/param:text-indigo-500 transition-colors pointer-events-none" />
                 </div>
               </div>
 
@@ -191,13 +191,13 @@ export function CashFlowLedger() {
                 </div>
               </div>
 
-              {/* DAS - Cor Indigo para distinguir do Faturamento Blue */}
+              {/* DAS - Vermelho conforme pedido */}
               <div className="space-y-1.5">
-                <div className="flex items-center gap-1.5 text-[10px] text-indigo-500 font-black uppercase">
+                <div className="flex items-center gap-1.5 text-[10px] text-red-500 font-black uppercase">
                   <ShieldCheck className="w-3 h-3" />
                   Imposto DAS
                 </div>
-                <div className="h-9 flex items-center justify-center text-xs font-bold bg-secondary/80 rounded-md border border-indigo-500/30 text-indigo-500 tabular-nums">
+                <div className="h-9 flex items-center justify-center text-xs font-bold bg-secondary/80 rounded-md border border-red-500/30 text-red-500 tabular-nums">
                   {formatCurrency(globalParams.das)}
                 </div>
               </div>

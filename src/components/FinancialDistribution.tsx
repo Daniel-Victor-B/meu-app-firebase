@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -31,9 +30,9 @@ export function FinancialDistribution({
   const lucroDisp = sobra - reservaVal;
 
   const items = [
-    { label: "Custos Operacionais", val: custos, color: "bg-red-500", text: "text-red-500" },
-    { label: "DAS (Imposto MEI)", val: das, color: "bg-indigo-500", text: "text-indigo-500" },
-    { label: "Pró-labore", val: prolabore, color: "bg-orange-500", text: "text-orange-500" },
+    { label: "Custos Operacionais", val: custos, color: "bg-orange-500", text: "text-orange-500" },
+    { label: "DAS (Imposto MEI)", val: das, color: "bg-red-500", text: "text-red-500" },
+    { label: "Pró-labore", val: prolabore, color: "bg-indigo-500", text: "text-indigo-500" },
     { label: "Reserva Empresa", val: reservaVal, color: "bg-purple-500", text: "text-purple-500" },
     { label: "Lucro Disponível", val: lucroDisp, color: "bg-primary", text: "text-primary" },
   ];
@@ -75,9 +74,9 @@ export function FinancialDistribution({
                     type="number" 
                     value={custos} 
                     onChange={(e) => setCustos(parseFloat(e.target.value) || 0)}
-                    className="w-28 h-8 text-right font-code font-bold text-red-500 bg-red-500/5 border-red-500/20 focus-visible:ring-1 focus-visible:ring-red-500 pr-7"
+                    className="w-28 h-8 text-right font-code font-bold text-orange-500 bg-orange-500/5 border-orange-500/20 focus-visible:ring-1 focus-visible:ring-orange-500 pr-7"
                   />
-                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-red-500/30" />
+                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-orange-500/30" />
                 </div>
               </div>
             </div>
@@ -94,9 +93,9 @@ export function FinancialDistribution({
                     type="number" 
                     value={prolabore} 
                     onChange={(e) => setProlabore(parseFloat(e.target.value) || 0)}
-                    className="w-28 h-8 text-right font-code font-bold text-orange-500 bg-orange-500/5 border-orange-500/20 focus-visible:ring-1 focus-visible:ring-orange-500 pr-7"
+                    className="w-28 h-8 text-right font-code font-bold text-indigo-500 bg-indigo-500/5 border-indigo-500/20 focus-visible:ring-1 focus-visible:ring-indigo-500 pr-7"
                   />
-                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-orange-500/30" />
+                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-indigo-500/30" />
                 </div>
               </div>
             </div>

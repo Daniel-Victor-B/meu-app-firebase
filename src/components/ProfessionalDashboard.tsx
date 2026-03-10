@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useMemo } from "react";
@@ -37,7 +36,7 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-      {/* KPIs com cores fixas e intuitivas */}
+      {/* KPIs com cores sincronizadas */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-primary/5 border-primary/20">
           <CardContent className="pt-6">
@@ -146,18 +145,18 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
               </TableRow>
               <TableRow>
                 <TableCell>(-) Custos Operacionais</TableCell>
-                <TableCell className="text-right text-red-500 font-medium">{formatCurrency(custos)}</TableCell>
-                <TableCell className="text-right text-red-500">-{((custos/fat)*100).toFixed(0)}%</TableCell>
+                <TableCell className="text-right text-orange-500 font-medium">{formatCurrency(custos)}</TableCell>
+                <TableCell className="text-right text-orange-500">-{((custos/fat)*100).toFixed(0)}%</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>(-) DAS (Impostos Fixos)</TableCell>
-                <TableCell className="text-right text-indigo-500 font-medium">{formatCurrency(das)}</TableCell>
-                <TableCell className="text-right text-indigo-500">-{((das/fat)*100).toFixed(1)}%</TableCell>
+                <TableCell className="text-right text-red-500 font-medium">{formatCurrency(das)}</TableCell>
+                <TableCell className="text-right text-red-500">-{((das/fat)*100).toFixed(1)}%</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>(-) Pró-labore (Salário)</TableCell>
-                <TableCell className="text-right text-orange-500 font-medium">{formatCurrency(prolabore)}</TableCell>
-                <TableCell className="text-right text-orange-500">-{((prolabore/fat)*100).toFixed(0)}%</TableCell>
+                <TableCell className="text-right text-indigo-500 font-medium">{formatCurrency(prolabore)}</TableCell>
+                <TableCell className="text-right text-indigo-500">-{((prolabore/fat)*100).toFixed(0)}%</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>(-) Reserva de Crescimento</TableCell>

@@ -49,9 +49,9 @@ const CONTAS = [
     id: "pf-sal",
     label: "PF Pró-labore",
     tipo: "PESSOAL",
-    color: "text-orange-500",
-    bgColor: "bg-orange-500/10",
-    borderColor: "border-orange-500/20",
+    color: "text-indigo-500",
+    bgColor: "bg-indigo-500/10",
+    borderColor: "border-indigo-500/20",
     icon: <CreditCard className="w-5 h-5" />,
     desc: "Seu 'salário' mensal. Valor fixo transferido da PJ no dia 5.",
     sugestao: "Conta corrente PF (sua preferência)",
@@ -83,7 +83,7 @@ const CONTAS = [
 
 const FLUXO = [
   { de: "Cliente paga", para: "PJ Operacional", color: "text-blue-500" },
-  { de: "PJ Operacional", para: "Custos + DAS + Salário", color: "text-orange-500" },
+  { de: "PJ Operacional", para: "Custos + DAS + Salário", color: "text-indigo-500" },
   { de: "Sobra mensal", para: "PJ Reserva (% fixo)", color: "text-purple-500" },
   { de: "Lucro trimestral", para: "PF Investimentos", color: "text-primary" },
 ];
