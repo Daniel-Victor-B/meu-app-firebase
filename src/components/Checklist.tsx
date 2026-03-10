@@ -13,8 +13,7 @@ import {
   AlertTriangle, 
   CheckCircle2, 
   ListChecks, 
-  HelpCircle,
-  HelpCircleIcon
+  HelpCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -81,7 +80,7 @@ const SECTIONS = [
   },
 ];
 
-const FAQS = [
+const FAQS_GERAL = [
   {
     q: "Posso ter mais de um CNPJ MEI?",
     a: "Não. A legislação permite apenas um CNPJ MEI por CPF e você não pode ser sócio ou administrador de outra empresa."
@@ -92,11 +91,7 @@ const FAQS = [
   },
   {
     q: "Esqueci de pagar o DAS. E agora?",
-    a: "Você deve acessar o portal PGMEI e gerar a guia atualizada com juros e multa. O pagamento em dia é essencial para manter seus benefícios previdenciários (aposentadoria, auxílio-doença)."
-  },
-  {
-    q: "O que acontece se eu passar o limite de 81 mil no ano?",
-    a: "Se exceder em até 20% (R$ 97.200), você paga uma multa sobre o excesso e migra para ME no ano seguinte. Se passar de 20%, a migração é retroativa a janeiro do ano corrente, o que gera impostos altos. Fique de olho no simulador!"
+    a: "Você deve acessar o portal PGMEI e gerar a guia atualizada com juros e multa. O pagamento em dia é essencial para manter seus benefícios previdenciários."
   },
   {
     q: "MEI pode contratar funcionário?",
@@ -104,7 +99,7 @@ const FAQS = [
   },
   {
     q: "Preciso de contador para ser MEI?",
-    a: "Legalmente não. O MEI foi criado para ser autogerido. No entanto, um contador ajuda muito na declaração de Imposto de Renda PF (para isenção de lucros) e no processo de migração para ME."
+    a: "Legalmente não, mas um contador é muito recomendado para ajudar na declaração de Imposto de Renda PF e no processo de migração para ME."
   }
 ];
 
@@ -128,7 +123,7 @@ export function Checklist() {
           Checklist de Operação MEI
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
-          Gerencie suas tarefas fundamentais. Marque o que já foi feito para acompanhar sua evolução.
+          Gerencie suas tarefas fundamentais para manter a saúde do seu negócio.
         </p>
       </header>
 
@@ -191,33 +186,20 @@ export function Checklist() {
         })}
       </div>
 
-      <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 flex gap-4 items-center">
-        <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary shrink-0">
-          <CheckCircle2 className="w-6 h-6" />
-        </div>
-        <div>
-          <h4 className="font-bold text-sm text-primary">Dica de Gestão Profissional</h4>
-          <p className="text-xs text-muted-foreground leading-relaxed mt-1">
-            Mantenha este checklist aberto toda segunda-feira de manhã. 15 minutos de revisão aqui evitam 15 horas de dor de cabeça com a Receita Federal no futuro.
-          </p>
-        </div>
-      </div>
-
-      {/* FAQ Section */}
       <section className="space-y-6 pt-6">
         <div className="flex items-center gap-2">
           <div className="p-2 bg-secondary rounded-lg">
             <HelpCircle className="w-5 h-5 text-muted-foreground" />
           </div>
           <div>
-            <h3 className="font-headline font-bold text-lg">Dúvidas Frequentes</h3>
-            <p className="text-xs text-muted-foreground">Respostas rápidas para a prática do dia a dia.</p>
+            <h3 className="font-headline font-bold text-lg">Perguntas Frequentes (FAQ)</h3>
+            <p className="text-xs text-muted-foreground">Respostas rápidas para as dúvidas mais comuns do dia a dia.</p>
           </div>
         </div>
 
         <Accordion type="single" collapsible className="w-full space-y-2">
-          {FAQS.map((faq, idx) => (
-            <AccordionItem key={idx} value={`item-${idx}`} className="border rounded-xl px-4 bg-card/50">
+          {FAQS_GERAL.map((faq, idx) => (
+            <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-xl px-4 bg-card shadow-sm hover:shadow-md transition-shadow">
               <AccordionTrigger className="text-sm font-bold text-left hover:no-underline py-4">
                 {faq.q}
               </AccordionTrigger>
