@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useRef } from "react";
@@ -37,7 +36,7 @@ export function CashFlowLedger() {
 
   const scrollTable = (direction: 'left' | 'right') => {
     if (tableContainerRef.current) {
-      const scrollAmount = 250;
+      const scrollAmount = 300;
       tableContainerRef.current.scrollBy({ 
         left: direction === 'left' ? -scrollAmount : scrollAmount, 
         behavior: 'smooth' 
@@ -173,27 +172,40 @@ export function CashFlowLedger() {
             <CardDescription>Ajuste os valores mensais para planejar seu fluxo de caixa</CardDescription>
           </div>
           <div className="flex items-center gap-4">
-            <div className="text-right">
+            <div className="text-right mr-4">
               <div className="text-[10px] font-bold text-muted-foreground uppercase">Faturamento Total</div>
               <div className="text-xl font-bold text-primary">{formatCurrency(totals.acumuladoReceita)}</div>
             </div>
-            {/* Controles de Rolagem Superiores */}
-            <div className="flex gap-1 md:hidden">
-              <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" onClick={() => scrollTable('left')}>
+            
+            {/* Controles de Navegação Superiores */}
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className="h-8 w-8 rounded-full shadow-sm hover:bg-primary hover:text-primary-foreground" 
+                onClick={() => scrollTable('left')}
+                title="Rolar para esquerda"
+              >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" onClick={() => scrollTable('right')}>
+              <Button 
+                variant="outline" 
+                size="icon" 
+                className="h-8 w-8 rounded-full shadow-sm hover:bg-primary hover:text-primary-foreground" 
+                onClick={() => scrollTable('right')}
+                title="Rolar para direita"
+              >
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
           </div>
         </CardHeader>
         
-        {/* Indicador de Rolagem Superior (Mobile) */}
-        <div className="md:hidden flex items-center justify-center gap-2 py-2 bg-secondary/20 border-b text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-          <ChevronLeft className="w-3 h-3 animate-pulse" />
-          Arraste para o lado para ver mais colunas
-          <ChevronRight className="w-3 h-3 animate-pulse" />
+        {/* Indicador Visual de Arraste (Mobile) */}
+        <div className="md:hidden flex items-center justify-center gap-3 py-2.5 bg-secondary/20 border-b text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
+          <ChevronLeft className="w-3 h-3 animate-bounce-x-left" />
+          Arraste para ver os lucros
+          <ChevronRight className="w-3 h-3 animate-bounce-x-right" />
         </div>
 
         <CardContent className="p-0 relative">
@@ -204,13 +216,13 @@ export function CashFlowLedger() {
             <Table>
               <TableHeader className="bg-secondary/30">
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="w-[60px] font-bold text-[10px] uppercase text-center">Status</TableHead>
-                  <TableHead className="w-[80px] font-bold text-[10px] uppercase">Mês</TableHead>
-                  <TableHead className="min-w-[130px] font-bold text-[10px] uppercase">Receita (R$)</TableHead>
-                  <TableHead className="min-w-[130px] font-bold text-[10px] uppercase">Custos (R$)</TableHead>
-                  <TableHead className="text-right font-bold text-[10px] uppercase">Sobra</TableHead>
-                  <TableHead className="text-right font-bold text-[10px] uppercase text-purple-500">Reserva</TableHead>
-                  <TableHead className="text-right font-bold text-[10px] uppercase text-primary">Lucro Disp.</TableHead>
+                  <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center sticky left-0 bg-secondary/30 z-10 border-r">Status</TableHead>
+                  <TableHead className="w-[100px] font-bold text-[10px] uppercase sticky left-[80px] bg-secondary/30 z-10 border-r">Mês</TableHead>
+                  <TableHead className="min-w-[140px] font-bold text-[10px] uppercase px-4">Receita (R$)</TableHead>
+                  <TableHead className="min-w-[140px] font-bold text-[10px] uppercase px-4">Custos (R$)</TableHead>
+                  <TableHead className="min-w-[120px] text-right font-bold text-[10px] uppercase px-4">Sobra</TableHead>
+                  <TableHead className="min-w-[120px] text-right font-bold text-[10px] uppercase text-purple-500 px-4">Reserva</TableHead>
+                  <TableHead className="min-w-[120px] text-right font-bold text-[10px] uppercase text-primary px-4">Lucro Disp.</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -219,7 +231,7 @@ export function CashFlowLedger() {
                     "transition-colors group",
                     !row.active ? "opacity-40 bg-secondary/10" : "hover:bg-primary/5"
                   )}>
-                    <TableCell className="py-3 text-center">
+                    <TableCell className="py-3 text-center sticky left-0 bg-card z-10 border-r group-hover:bg-primary/5">
                       <div className="flex justify-center">
                         <Switch 
                           checked={row.active} 
@@ -228,36 +240,34 @@ export function CashFlowLedger() {
                         />
                       </div>
                     </TableCell>
-                    <TableCell className="font-bold text-xs py-3">{MESES[i]}</TableCell>
-                    <TableCell className="py-2">
-                      <div className="relative flex items-center">
-                        <Input 
-                          type="number" 
-                          disabled={!row.active}
-                          value={row.receita} 
-                          onChange={(e) => updateMonth(i, 'receita', e.target.value)}
-                          className="h-9 text-xs bg-transparent border-transparent hover:border-input focus:border-primary focus-visible:ring-0 p-2 font-bold transition-all disabled:opacity-50"
-                        />
-                      </div>
+                    <TableCell className="font-bold text-xs py-3 sticky left-[80px] bg-card z-10 border-r group-hover:bg-primary/5">
+                      {MESES[i]}
                     </TableCell>
-                    <TableCell className="py-2">
-                      <div className="relative flex items-center">
-                        <Input 
-                          type="number" 
-                          disabled={!row.active}
-                          value={row.custos} 
-                          onChange={(e) => updateMonth(i, 'custos', e.target.value)}
-                          className="h-9 text-xs bg-transparent border-transparent hover:border-input focus:border-blue-500 focus-visible:ring-0 p-2 font-bold transition-all disabled:opacity-50"
-                        />
-                      </div>
+                    <TableCell className="py-2 px-4">
+                      <Input 
+                        type="number" 
+                        disabled={!row.active}
+                        value={row.receita} 
+                        onChange={(e) => updateMonth(i, 'receita', e.target.value)}
+                        className="h-9 text-xs bg-transparent border-transparent hover:border-input focus:border-primary focus-visible:ring-0 p-2 font-bold transition-all disabled:opacity-50"
+                      />
                     </TableCell>
-                    <TableCell className="text-right text-xs font-medium tabular-nums py-3">
+                    <TableCell className="py-2 px-4">
+                      <Input 
+                        type="number" 
+                        disabled={!row.active}
+                        value={row.custos} 
+                        onChange={(e) => updateMonth(i, 'custos', e.target.value)}
+                        className="h-9 text-xs bg-transparent border-transparent hover:border-input focus:border-blue-500 focus-visible:ring-0 p-2 font-bold transition-all disabled:opacity-50"
+                      />
+                    </TableCell>
+                    <TableCell className="text-right text-xs font-medium tabular-nums py-3 px-4">
                       {formatCurrency(row.sobra)}
                     </TableCell>
-                    <TableCell className="text-right text-xs font-bold text-purple-500 bg-purple-500/5 tabular-nums py-3">
+                    <TableCell className="text-right text-xs font-bold text-purple-500 bg-purple-500/5 tabular-nums py-3 px-4">
                       {formatCurrency(row.reserva)}
                     </TableCell>
-                    <TableCell className="text-right text-xs font-bold text-primary bg-primary/5 tabular-nums py-3">
+                    <TableCell className="text-right text-xs font-bold text-primary bg-primary/5 tabular-nums py-3 px-4">
                       {formatCurrency(row.lucro)}
                     </TableCell>
                   </TableRow>
@@ -266,21 +276,36 @@ export function CashFlowLedger() {
             </Table>
           </div>
           
-          {/* Controles de Rolagem Inferiores (Mobile) */}
-          <div className="md:hidden flex items-center justify-between p-3 bg-secondary/10 border-t">
-            <Button variant="ghost" size="sm" className="h-8 gap-2 text-[10px] font-bold uppercase" onClick={() => scrollTable('left')}>
-              <ChevronLeft className="h-3 w-3" />
-              Ver Status
+          {/* Controles de Navegação Inferiores */}
+          <div className="flex items-center justify-between p-3 bg-secondary/10 border-t">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-8 gap-2 text-[10px] font-bold uppercase hover:bg-background" 
+              onClick={() => scrollTable('left')}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Ver Início
             </Button>
-            <Button variant="ghost" size="sm" className="h-8 gap-2 text-[10px] font-bold uppercase" onClick={() => scrollTable('right')}>
-              Ver Lucro
-              <ChevronRight className="h-3 w-3" />
+            
+            <div className="hidden sm:block text-[10px] font-bold text-muted-foreground uppercase opacity-50">
+              Controle de Fluxo Anual MEI
+            </div>
+
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-8 gap-2 text-[10px] font-bold uppercase hover:bg-background" 
+              onClick={() => scrollTable('right')}
+            >
+              Ver Resultados
+              <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Dica de Rotina */}
+      {/* Dicas e Alertas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="p-4 rounded-xl border border-border bg-card/50">
           <h4 className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
@@ -289,8 +314,8 @@ export function CashFlowLedger() {
           </h4>
           <ul className="space-y-2 text-xs text-muted-foreground">
             <li className="flex gap-2 items-start"><span className="text-primary font-bold">1.</span> <span>Sexta-feira à tarde: atualize a receita e os custos da semana.</span></li>
-            <li className="flex gap-2 items-start"><span className="text-primary font-bold">2.</span> <span>Use o interruptor lateral para desativar meses sem operação e manter suas metas reais.</span></li>
-            <li className="flex gap-2 items-start"><span className="text-primary font-bold">3.</span> <span>Confira se o acumulado da reserva está batendo com sua conta PJ Reserva.</span></li>
+            <li className="flex gap-2 items-start"><span className="text-primary font-bold">2.</span> <span>Use o interruptor lateral para desativar meses sem operação.</span></li>
+            <li className="flex gap-2 items-start"><span className="text-primary font-bold">3.</span> <span>Confira se o acumulado da reserva bate com seu extrato.</span></li>
           </ul>
         </div>
         <div className="p-4 rounded-xl border border-border bg-card/50">
@@ -299,10 +324,23 @@ export function CashFlowLedger() {
             Análise de Sustentabilidade
           </h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Se a "Sobra" mensal for menor que o valor do Pró-labore, você está retirando dinheiro do capital da empresa. Use o interruptor para simular períodos de entressafra e planeje seu caixa para esses momentos.
+            Se a "Sobra" mensal for menor que o valor do Pró-labore, você está "comendo" o capital da empresa. Use a planilha para simular períodos de baixa e planejar o caixa.
           </p>
         </div>
       </div>
+
+      <style jsx global>{`
+        @keyframes bounce-x-left {
+          0%, 100% { transform: translateX(0); }
+          50% { transform: translateX(-4px); }
+        }
+        @keyframes bounce-x-right {
+          0%, 100% { transform: translateX(0); }
+          50% { transform: translateX(4px); }
+        }
+        .animate-bounce-x-left { animation: bounce-x-left 1.5s infinite; }
+        .animate-bounce-x-right { animation: bounce-x-right 1.5s infinite; }
+      `}</style>
     </div>
   );
 }
