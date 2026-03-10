@@ -269,7 +269,7 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
                 <div className="space-y-4">
                   <h4 className="text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-500">Regra de Ouro: Lucro não é salário.</h4>
                   <p className="text-[11px] text-muted-foreground leading-relaxed">
-                    O Pró-labore é sua retirada mensal fixa. O Lucro deve ser acumulado na <strong>conta PJ Operacional</strong> (não na PF) e distribuído <strong>trimestralmente</strong> conforme a saúde do negócio.
+                    O Pró-labore é sua retirada mensal fixa. O Lucro deve ser acumulado na <strong>conta PJ Operacional</strong> e distribuído <strong>trimestralmente</strong> conforme a saúde do negócio.
                   </p>
                   
                   <div className="space-y-2">
