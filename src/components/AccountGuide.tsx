@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Settings, Landmark, CreditCard, TrendingUp, ArrowRight, HelpCircle } from "lucide-react";
 import {
@@ -88,9 +88,32 @@ const FLUXO = [
   { de: "Lucro trimestral", para: "PF Investimentos", color: "text-primary" },
 ];
 
+const FAQS_CONTAS = [
+  {
+    q: "Posso usar minha conta pessoal para receber dos clientes?",
+    a: "Não é recomendado. Embora o MEI e a pessoa física tenham o mesmo patrimônio legal, a mistura de extratos dificulta muito a comprovação de renda para empréstimos e a declaração anual do DASN-SIMEI. Ter uma conta PJ separada traz profissionalismo e clareza fiscal."
+  },
+  {
+    q: "Como comprovo minha renda pessoal sendo MEI?",
+    a: "Sua melhor ferramenta é o extrato bancário da sua conta PF mostrando as transferências mensais fixas vindas da sua conta PJ (o Pró-labore). Bancos e imobiliárias aceitam o extrato bancário de 3 a 6 meses como comprovante de rendimentos estáveis."
+  },
+  {
+    q: "Paguei uma conta pessoal na conta PJ. Tem problema?",
+    a: "Um erro isolado não é o fim do mundo, mas evite que vire rotina. Fiscalmente, isso é chamado de 'confusão patrimonial'. Se precisar de dinheiro para algo pessoal, transfira da PJ para a PF e pague pela sua conta pessoal."
+  },
+  {
+    q: "O lucro que eu transfiro para a minha conta PF paga Imposto de Renda?",
+    a: "O lucro líquido do MEI pode ser distribuído para a pessoa física de forma isenta, desde que você siga as regras de presunção de lucro (32% para serviços) ou tenha uma contabilidade que comprove o lucro real. Consulte um contador para garantir a isenção total na sua Declaração Anual de IRPF."
+  },
+  {
+    q: "Preciso de conta em banco físico para o MEI?",
+    a: "Geralmente não. Bancos digitais (Inter, Nubank, Cora, C6) oferecem contas PJ gratuitas que atendem 100% das necessidades do MEI, economizando de R$ 30 a R$ 60 mensais em tarifas bancárias inúteis."
+  }
+];
+
 export function AccountGuide() {
   return (
-    <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-12">
+    <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
       <div className="text-sm text-muted-foreground leading-relaxed">
         A clareza financeira do MEI começa na separação total entre pessoa física e jurídica. 
         Use este modelo de 4 contas para nunca mais misturar dinheiro. **Clique em cada conta para ver as dicas práticas.**
@@ -168,6 +191,32 @@ export function AccountGuide() {
           </div>
         </CardContent>
       </Card>
+
+      {/* FAQ Section */}
+      <section className="space-y-6 pt-6">
+        <div className="flex items-center gap-2">
+          <div className="p-2 bg-secondary rounded-lg">
+            <HelpCircle className="w-5 h-5 text-muted-foreground" />
+          </div>
+          <div>
+            <h3 className="font-headline font-bold text-lg">Dúvidas sobre Contas e PF vs PJ</h3>
+            <p className="text-xs text-muted-foreground">Orientações práticas para não ter problemas com a Receita.</p>
+          </div>
+        </div>
+
+        <Accordion type="single" collapsible className="w-full space-y-2">
+          {FAQS_CONTAS.map((faq, idx) => (
+            <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-xl px-4 bg-card/50">
+              <AccordionTrigger className="text-sm font-bold text-left hover:no-underline py-4">
+                {faq.q}
+              </AccordionTrigger>
+              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-4">
+                {faq.a}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </section>
     </div>
   );
 }
