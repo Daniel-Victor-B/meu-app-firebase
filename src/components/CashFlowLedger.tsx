@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect } from "react";
@@ -34,17 +33,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { type MonthlyData } from "@/app/page";
 
 const MESES = [
   "Jan", "Fev", "Mar", "Abr", "Mai", "Jun", 
   "Jul", "Ago", "Set", "Out", "Nov", "Dez"
 ];
-
-interface MonthlyData {
-  receita: number;
-  custos: number;
-  active: boolean;
-}
 
 interface CashFlowLedgerProps {
   fat: number;
@@ -55,6 +49,8 @@ interface CashFlowLedgerProps {
   setProlabore: (v: number) => void;
   reservaPct: number;
   setReservaPct: (v: number) => void;
+  monthlyData: MonthlyData[];
+  setMonthlyData: (v: MonthlyData[]) => void;
 }
 
 const FAQS_PLANILHA = [
@@ -80,29 +76,29 @@ export function CashFlowLedger({
   fat, setFat, 
   custos, setCustos, 
   prolabore, setProlabore, 
-  reservaPct, setReservaPct 
+  reservaPct, setReservaPct,
+  monthlyData, setMonthlyData
 }: CashFlowLedgerProps) {
-  const [data, setData] = useState<MonthlyData[]>(
-    Array(12).fill(null).map(() => ({ receita: 5000, custos: 500, active: true }))
-  );
-  
   const [mesesReserva, setMesesReserva] = useState(6);
   const das = 76;
 
-  // Sincroniza a tabela inicial com o faturamento e custos globais na primeira carga
+  // Sincroniza a planilha se ela estiver vazia ou com valores padrão no início
   useEffect(() => {
-    setData(prev => prev.map(m => ({ ...m, receita: fat, custos: custos })));
+    // Só sincroniza uma vez se os dados estiverem com o valor inicial para facilitar o setup do usuário
+    if (monthlyData.every(m => m.receita === 5000 && m.custos === 1500)) {
+        setMonthlyData(monthlyData.map(m => ({ ...m, receita: fat, custos: custos })));
+    }
   }, []);
 
   const updateMonth = (index: number, field: keyof MonthlyData, value: any) => {
-    const newData = [...data];
+    const newData = [...monthlyData];
     if (field === 'active') {
       newData[index] = { ...newData[index], active: value };
     } else {
       const newValue = parseFloat(value) || 0;
       newData[index] = { ...newData[index], [field]: newValue };
     }
-    setData(newData);
+    setMonthlyData(newData);
   };
 
   const totals = useMemo(() => {
@@ -110,7 +106,7 @@ export function CashFlowLedger({
     let acumuladoReceita = 0;
     let acumuladoLucro = 0;
 
-    const rows = data.map((m) => {
+    const rows = monthlyData.map((m) => {
       if (!m.active) {
         return {
           ...m,
@@ -139,9 +135,8 @@ export function CashFlowLedger({
     });
 
     return { rows, acumuladoReserva, acumuladoReceita, acumuladoLucro };
-  }, [data, fat, custos, prolabore, reservaPct]);
+  }, [monthlyData, fat, custos, prolabore, reservaPct]);
 
-  // A meta é baseada nos parâmetros da Pág 1: (Custos + DAS + Pró-labore) * Meses de Reserva
   const metaTotal = (custos + das + prolabore) * mesesReserva;
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
 
@@ -205,7 +200,7 @@ export function CashFlowLedger({
           </CardContent>
         </Card>
 
-        {/* Bloco de Regras do Jogo - Sincronizado com Pág 1 */}
+        {/* Bloco de Regras do Jogo */}
         <Card className="bg-secondary/20 border-border/60 border-2 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
             <Settings2 className="w-16 h-16" />

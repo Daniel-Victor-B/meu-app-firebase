@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react";
@@ -13,6 +12,12 @@ import { NfseGuide } from "@/components/NfseGuide";
 import { CashFlowLedger } from "@/components/CashFlowLedger";
 import { DollarSign, Landmark, LayoutList, ShieldCheck, Sparkles, FileText, BarChart3, FileSpreadsheet } from "lucide-react";
 
+export interface MonthlyData {
+  receita: number;
+  custos: number;
+  active: boolean;
+}
+
 export default function Home() {
   const [fat, setFat] = useState(5000);
   const [custos, setCustos] = useState(1500);
@@ -20,6 +25,11 @@ export default function Home() {
   const [reservaPct, setReservaPct] = useState(20);
   const [mesesFat, setMesesFat] = useState(6);
   const [fatAcum, setFatAcum] = useState(0);
+  
+  // Estado centralizado da planilha para sincronização
+  const [monthlyData, setMonthlyData] = useState<MonthlyData[]>(
+    Array(12).fill(null).map(() => ({ receita: 5000, custos: 1500, active: true }))
+  );
 
   const LIMITE_MEI_ANUAL = 81000;
 
@@ -105,6 +115,7 @@ export default function Home() {
               custos={custos} setCustos={setCustos}
               prolabore={prolabore} setProlabore={setProlabore}
               reservaPct={reservaPct} setReservaPct={setReservaPct}
+              monthlyData={monthlyData} setMonthlyData={setMonthlyData}
             />
           </TabsContent>
 
@@ -117,6 +128,7 @@ export default function Home() {
               mesesFat={mesesFat}
               setMesesFat={setMesesFat}
               mesesRestantes={mesesRestantes}
+              monthlySpreadsheetData={monthlyData}
             />
           </TabsContent>
 
