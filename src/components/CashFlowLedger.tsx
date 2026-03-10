@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react";
@@ -6,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { formatCurrency } from "@/lib/formatters";
-import { FileSpreadsheet, ShieldCheck, Info, AlertTriangle, HelpCircle, ArrowLeftRight, PenLine } from "lucide-react";
+import { FileSpreadsheet, ShieldCheck, Info, AlertTriangle, HelpCircle, ArrowLeftRight, PenLine, Wallet, TrendingUp, PiggyBank, Scale } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import {
@@ -213,11 +214,31 @@ export function CashFlowLedger() {
                 <TableRow className="hover:bg-transparent border-b">
                   <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r bg-secondary/10">Ativar</TableHead>
                   <TableHead className="w-[90px] font-bold text-[10px] uppercase border-r text-center bg-secondary/10">Mês</TableHead>
-                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-blue-500 bg-blue-500/5">Receita Mensal (R$)</TableHead>
-                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-orange-500 bg-orange-500/5">Custos Operacionais (R$)</TableHead>
+                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-blue-500 bg-blue-500/5">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="w-3 h-3" />
+                      Receita Mensal (R$)
+                    </div>
+                  </TableHead>
+                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-orange-500 bg-orange-500/5">
+                    <div className="flex items-center gap-2">
+                      <Scale className="w-3 h-3" />
+                      Custos Operacionais (R$)
+                    </div>
+                  </TableHead>
                   <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase px-6">Sobra Bruta</TableHead>
-                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-purple-500 px-6">Reserva PJ</TableHead>
-                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-primary px-6">Lucro Disp.</TableHead>
+                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-purple-500 px-6">
+                    <div className="flex items-center justify-end gap-2">
+                      <PiggyBank className="w-3 h-3" />
+                      Reserva PJ
+                    </div>
+                  </TableHead>
+                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-primary px-6">
+                    <div className="flex items-center justify-end gap-2">
+                      <Wallet className="w-3 h-3" />
+                      Lucro Disp.
+                    </div>
+                  </TableHead>
                   <TableHead className="w-[180px] text-right font-bold text-[10px] uppercase px-6 opacity-30">Reserva Acum.</TableHead>
                 </TableRow>
               </TableHeader>
@@ -263,13 +284,13 @@ export function CashFlowLedger() {
                         <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-orange-500/30 group-hover/input:text-orange-500 transition-colors pointer-events-none" />
                       </div>
                     </TableCell>
-                    <TableCell className="text-right text-xs font-medium tabular-nums px-6">
+                    <TableCell className="text-right text-xs font-medium tabular-nums px-6 bg-secondary/10">
                       {formatCurrency(row.sobra)}
                     </TableCell>
-                    <TableCell className="text-right text-xs font-bold text-purple-500 tabular-nums px-6">
+                    <TableCell className="text-right text-xs font-bold text-purple-500 tabular-nums px-6 bg-purple-500/5">
                       {formatCurrency(row.reserva)}
                     </TableCell>
-                    <TableCell className="text-right text-xs font-bold text-primary tabular-nums px-6">
+                    <TableCell className="text-right text-sm font-black text-primary tabular-nums px-6 bg-primary/5">
                       {formatCurrency(row.lucro)}
                     </TableCell>
                     <TableCell className="text-right text-xs font-medium tabular-nums px-6 opacity-30">
