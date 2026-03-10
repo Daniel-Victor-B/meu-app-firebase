@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { formatCurrency } from "@/lib/formatters";
-import { FileSpreadsheet, ShieldCheck, Info, AlertTriangle, CheckCircle2, HelpCircle, MoveHorizontal, ArrowLeftRight } from "lucide-react";
+import { FileSpreadsheet, ShieldCheck, Info, AlertTriangle, HelpCircle, ArrowLeftRight } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import {
@@ -171,23 +171,19 @@ export function CashFlowLedger() {
         </Card>
       </div>
 
-      {/* Container da Planilha com Instrução Visual Integrada */}
+      {/* Tabela de Planejamento */}
       <Card className="overflow-hidden border-border/50 shadow-xl">
-        {/* Espaço Visual de Navegação (Swipe Area) */}
-        <div className="bg-secondary/40 border-b border-border/50 py-3 px-6 flex items-center justify-between group cursor-grab active:cursor-grabbing">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/20 rounded-full animate-pulse">
-              <ArrowLeftRight className="w-4 h-4 text-primary" />
-            </div>
-            <div>
-              <span className="text-[11px] font-bold uppercase tracking-widest text-foreground block">Deslize para o lado</span>
-              <span className="text-[9px] text-muted-foreground font-medium uppercase">Arraste para ver Receita, Custos e Lucro</span>
-            </div>
+        {/* ESPAÇO DE INSTRUÇÃO: Pista visual para deslizar com o dedo */}
+        <div className="bg-secondary/40 border-b border-border/50 py-4 px-6 flex items-center justify-center gap-3 group cursor-grab active:cursor-grabbing">
+          <div className="p-2 bg-primary/20 rounded-full animate-pulse">
+            <ArrowLeftRight className="w-5 h-5 text-primary" />
           </div>
-          <div className="flex gap-1.5 opacity-50 group-hover:opacity-100 transition-opacity">
-            <div className="w-1.5 h-1.5 rounded-full bg-border" />
-            <div className="w-8 h-1.5 rounded-full bg-primary" />
-            <div className="w-1.5 h-1.5 rounded-full bg-border" />
+          <div className="text-center">
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-foreground block">Deslize para o lado</span>
+            <span className="text-[10px] text-muted-foreground font-medium uppercase mt-0.5">Use o dedo para ver Receita, Custos e Lucro</span>
+          </div>
+          <div className="p-2 bg-primary/20 rounded-full animate-pulse">
+            <ArrowLeftRight className="w-5 h-5 text-primary" />
           </div>
         </div>
 
@@ -197,7 +193,7 @@ export function CashFlowLedger() {
               <FileSpreadsheet className="w-5 h-5 text-primary" />
               Planejamento de Fluxo Anual
             </CardTitle>
-            <CardDescription className="text-xs">Ative os meses e simule seu ano fiscal</CardDescription>
+            <CardDescription className="text-xs">Configure seus meses para simular o ano fiscal</CardDescription>
           </div>
           <div className="text-right p-3 bg-primary/5 rounded-xl border border-primary/10">
             <div className="text-[10px] font-bold text-muted-foreground uppercase">Receita Total Projetada</div>
@@ -206,25 +202,26 @@ export function CashFlowLedger() {
         </CardHeader>
 
         <CardContent className="p-0">
-          <div className="overflow-x-auto scrollbar-custom pb-4">
+          {/* Container com scroll horizontal e barra escondida */}
+          <div className="overflow-x-auto no-scrollbar pb-6">
             <Table className="min-w-[1100px] border-collapse">
               <TableHeader className="bg-secondary/30">
                 <TableRow className="hover:bg-transparent border-b">
-                  <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r bg-secondary/10">Ativar</TableHead>
+                  <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r bg-secondary/10">Status</TableHead>
                   <TableHead className="w-[90px] font-bold text-[10px] uppercase border-r text-center bg-secondary/10">Mês</TableHead>
-                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-4 text-blue-500">Receita Mensal (R$)</TableHead>
-                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-4 text-orange-500">Custos Operacionais (R$)</TableHead>
-                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase px-4 bg-secondary/5">Sobra Bruta</TableHead>
-                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-purple-500 px-4 bg-purple-500/5">Reserva PJ</TableHead>
-                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-primary px-4 bg-primary/5">Lucro Disp.</TableHead>
-                  <TableHead className="w-[180px] text-right font-bold text-[10px] uppercase px-4 opacity-50">Reserva Acum.</TableHead>
+                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-blue-500">Receita Mensal (R$)</TableHead>
+                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-orange-500">Custos Operacionais (R$)</TableHead>
+                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase px-6">Sobra Bruta</TableHead>
+                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-purple-500 px-6">Reserva PJ</TableHead>
+                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-primary px-6">Lucro Disp.</TableHead>
+                  <TableHead className="w-[180px] text-right font-bold text-[10px] uppercase px-6 opacity-30">Reserva Acum.</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {totals.rows.map((row, i) => (
                   <TableRow key={i} className={cn(
-                    "transition-all duration-300 group",
-                    !row.active ? "opacity-25 grayscale scale-[0.99]" : "hover:bg-primary/5"
+                    "transition-all duration-300",
+                    !row.active ? "opacity-20 grayscale scale-[0.98]" : "hover:bg-primary/5"
                   )}>
                     <TableCell className="py-3 text-center border-r">
                       <div className="flex justify-center">
@@ -235,37 +232,37 @@ export function CashFlowLedger() {
                         />
                       </div>
                     </TableCell>
-                    <TableCell className="font-bold text-xs py-3 border-r text-center">
+                    <TableCell className="font-bold text-xs py-3 border-r text-center bg-card">
                       {MESES[i]}
                     </TableCell>
-                    <TableCell className="py-2 px-4">
+                    <TableCell className="py-2 px-6">
                       <Input 
                         type="number" 
                         disabled={!row.active}
                         value={row.receita} 
                         onChange={(e) => updateMonth(i, 'receita', e.target.value)}
-                        className="h-9 text-xs font-bold bg-transparent border-transparent hover:border-input focus:border-blue-500 focus:bg-background/50 transition-all"
+                        className="h-10 text-xs font-bold bg-transparent border-transparent hover:border-input focus:border-blue-500 focus:bg-background/50 transition-all text-blue-500"
                       />
                     </TableCell>
-                    <TableCell className="py-2 px-4">
+                    <TableCell className="py-2 px-6">
                       <Input 
                         type="number" 
                         disabled={!row.active}
                         value={row.custos} 
                         onChange={(e) => updateMonth(i, 'custos', e.target.value)}
-                        className="h-9 text-xs font-bold bg-transparent border-transparent hover:border-input focus:border-orange-500 focus:bg-background/50 transition-all"
+                        className="h-10 text-xs font-bold bg-transparent border-transparent hover:border-input focus:border-orange-500 focus:bg-background/50 transition-all text-orange-500"
                       />
                     </TableCell>
-                    <TableCell className="text-right text-xs font-medium tabular-nums px-4">
+                    <TableCell className="text-right text-xs font-medium tabular-nums px-6">
                       {formatCurrency(row.sobra)}
                     </TableCell>
-                    <TableCell className="text-right text-xs font-bold text-purple-500 tabular-nums px-4 bg-purple-500/5">
+                    <TableCell className="text-right text-xs font-bold text-purple-500 tabular-nums px-6">
                       {formatCurrency(row.reserva)}
                     </TableCell>
-                    <TableCell className="text-right text-xs font-bold text-primary tabular-nums px-4 bg-primary/5">
+                    <TableCell className="text-right text-xs font-bold text-primary tabular-nums px-6">
                       {formatCurrency(row.lucro)}
                     </TableCell>
-                    <TableCell className="text-right text-xs font-medium tabular-nums px-4 opacity-40">
+                    <TableCell className="text-right text-xs font-medium tabular-nums px-6 opacity-30">
                       {formatCurrency(row.acumuladoReserva)}
                     </TableCell>
                   </TableRow>
@@ -276,26 +273,15 @@ export function CashFlowLedger() {
         </CardContent>
       </Card>
 
-      {/* Dicas de Navegação e FAQ */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-4 rounded-xl border border-border bg-card/50 shadow-inner">
-          <h4 className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
-            <MoveHorizontal className="w-4 h-4 text-primary" />
-            Navegação da Tabela
-          </h4>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Esta planilha é larga para garantir a precisão dos dados. Use o espaço de instrução no topo (com o ícone de setas) para deslizar a tabela e ver os resultados de Sobra e Lucro.
-          </p>
-        </div>
-        <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5">
-          <h4 className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2 text-amber-500">
-            <AlertTriangle className="w-4 h-4" />
-            Alerta Financeiro
-          </h4>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Sempre que um mês ficar com "Sobra" negativa, o sistema zerará os cálculos de reserva para aquele período. Fique atento aos custos fixos altos!
-          </p>
-        </div>
+      {/* Alerta Financeiro */}
+      <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5">
+        <h4 className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2 text-amber-500">
+          <AlertTriangle className="w-4 h-4" />
+          Importante
+        </h4>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Sempre que um mês ficar com a sobra negativa, o sistema não calculará reserva ou lucro. Desative os meses de férias ou inatividade para ter uma projeção real de fechamento de ano.
+        </p>
       </div>
 
       <section className="space-y-6 pt-6">
@@ -323,23 +309,14 @@ export function CashFlowLedger() {
         </Accordion>
       </section>
 
-      {/* Estilos customizados para a Scrollbar (barra de rolagem) */}
+      {/* Estilo para esconder a barra de rolagem */}
       <style jsx global>{`
-        .scrollbar-custom::-webkit-scrollbar {
-          height: 10px;
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
         }
-        .scrollbar-custom::-webkit-scrollbar-track {
-          background: hsl(var(--secondary));
-          border-radius: 10px;
-          margin: 0 10px;
-        }
-        .scrollbar-custom::-webkit-scrollbar-thumb {
-          background: hsl(var(--primary));
-          border-radius: 10px;
-          border: 3px solid hsl(var(--secondary));
-        }
-        .scrollbar-custom::-webkit-scrollbar-thumb:hover {
-          background: hsl(var(--primary) / 0.8);
+        .no-scrollbar {
+          -ms-overflow-style: none;  /* IE and Edge */
+          scrollbar-width: none;  /* Firefox */
         }
       `}</style>
     </div>
