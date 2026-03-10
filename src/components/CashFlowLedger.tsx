@@ -480,7 +480,7 @@ export function CashFlowLedger({
                     <Wallet className="w-3.5 h-3.5" />
                     Investir
                   </div>
-                  <p className="text-[10px] text-muted-foreground leading-tight">Mandar para sua corretora <strong>Pessoal (PF/CPF)</strong> para patrimônio de longo prazo.</p>
+                  <p className="text-[10px] text-muted-foreground leading-tight">Mandar para sua corretora <strong>Pessoal (PF/CPF) (ex.: XP, BTG, RICO)</strong> para patrimônio de longo prazo.</p>
                 </div>
                 <div className="flex flex-col gap-2 bg-background/60 p-4 rounded-xl border border-amber-500/10 transition-all hover:border-amber-500/30">
                   <div className="flex items-center gap-2 text-amber-600 font-bold text-[10px] uppercase">
@@ -575,7 +575,7 @@ export function CashFlowLedger({
                 {/* Linha de Conexão Central */}
                 <div className="absolute top-1/2 left-1/4 right-1/4 h-0.5 bg-amber-500/20 -translate-y-1/2" />
                 
-                <div className="grid grid-cols-2 gap-8 w-full max-w-md mt-6">
+                <div className="grid grid-cols-2 gap-8 w-full max-md mt-6">
                   {/* Destino 1: PF */}
                   <div className="space-y-3 text-center group">
                     <div className="mx-auto w-12 h-12 rounded-xl bg-background border-2 border-amber-500/30 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform shadow-sm">
@@ -583,7 +583,7 @@ export function CashFlowLedger({
                     </div>
                     <div className="space-y-1">
                       <div className="text-xs font-black uppercase text-amber-600">R$ 1.452 (50%)</div>
-                      <div className="text-[9px] text-muted-foreground font-medium leading-tight">Distribuição para sua <strong>Conta Pessoal (PF/CPF)</strong></div>
+                      <div className="text-[9px] text-muted-foreground font-medium leading-tight">Distribuição para sua <strong>Conta Corrente Pessoal (PF/CPF)</strong></div>
                     </div>
                   </div>
 

@@ -277,7 +277,7 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
                     <div className="grid gap-2">
                       <div className="flex items-center gap-3 bg-background/40 p-2.5 rounded-lg border border-amber-500/10 transition-all hover:bg-background/60">
                         <Wallet className="w-3.5 h-3.5 text-amber-600" />
-                        <p className="text-[10px] text-muted-foreground"><strong>Investir</strong>: Mandar para sua corretora <strong>Pessoal (PF/CPF)</strong></p>
+                        <p className="text-[10px] text-muted-foreground"><strong>Investir</strong>: Mandar para sua corretora <strong>Pessoal (PF/CPF) (ex.: XP, BTG, RICO)</strong></p>
                       </div>
                       <div className="flex items-center gap-3 bg-background/40 p-2.5 rounded-lg border border-amber-500/10 transition-all hover:bg-background/60">
                         <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
@@ -357,7 +357,7 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
               <div className="pt-4 border-t border-amber-500/20 space-y-4">
                 <div className="text-center space-y-1">
                   <div className="text-[10px] font-black uppercase text-amber-600 tracking-[0.3em]">Fechamento do Trimestre</div>
-                  <div className="text-2xl font-black text-foreground">R$ 2.904 <span className="text-xs font-normal text-muted-foreground">acumulados</span></div>
+                  <div className="text-2xl font-black text-foreground">R$ 2.904 <span className="text-xs font-normal text-muted-foreground">acumulados na PJ Operacional</span></div>
                 </div>
 
                 <div className="relative flex flex-col items-center py-4">
@@ -377,7 +377,7 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
                       </div>
                       <div>
                         <div className="text-[9px] font-black uppercase text-amber-600">R$ 1.452 (50%)</div>
-                        <div className="text-[8px] text-muted-foreground font-medium leading-tight">Para sua <strong>Conta Pessoal (PF/CPF)</strong></div>
+                        <div className="text-[8px] text-muted-foreground font-medium leading-tight">Para sua <strong>Conta Corrente Pessoal (PF/CPF)</strong></div>
                       </div>
                     </div>
 
