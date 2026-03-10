@@ -67,6 +67,7 @@ export function CashFlowLedger() {
   const totals = useMemo(() => {
     let acumuladoReserva = 0;
     let acumuladoReceita = 0;
+    let acumuladoLucro = 0;
 
     const rows = data.map((m) => {
       if (!m.active) {
@@ -85,6 +86,7 @@ export function CashFlowLedger() {
       
       acumuladoReserva += reserva;
       acumuladoReceita += m.receita;
+      acumuladoLucro += lucro;
 
       return {
         ...m,
@@ -95,7 +97,7 @@ export function CashFlowLedger() {
       };
     });
 
-    return { rows, acumuladoReserva, acumuladoReceita };
+    return { rows, acumuladoReserva, acumuladoReceita, acumuladoLucro };
   }, [data, globalParams]);
 
   const custoEmpresaMensal = (data.filter(m => m.active).reduce((acc, curr) => acc + curr.custos, 0) / (data.filter(m => m.active).length || 1)) + globalParams.das;
@@ -173,21 +175,43 @@ export function CashFlowLedger() {
       </div>
 
       <Card className="overflow-hidden border-border/50 shadow-xl">
-        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between bg-card pb-4 gap-4 px-6 pt-6 border-b">
-          <div>
+        <CardHeader className="flex flex-col lg:flex-row lg:items-center justify-between bg-card pb-4 gap-4 px-6 pt-6 border-b">
+          <div className="flex-shrink-0">
             <CardTitle className="text-lg flex items-center gap-2">
               <FileSpreadsheet className="w-5 h-5 text-primary" />
               Planejamento de Fluxo Anual
             </CardTitle>
             <CardDescription className="text-xs">Configure seus meses para simular o ano fiscal</CardDescription>
           </div>
-          <div className="flex flex-col items-end gap-1.5">
-            <div className="text-right p-3 bg-primary/10 rounded-xl border border-primary/20">
-              <div className="text-[10px] font-bold text-muted-foreground uppercase leading-none mb-1">Total de Vendas no Ano</div>
-              <div className="text-xl font-bold text-primary">{formatCurrency(totals.accumuladoReceita)}</div>
-              <div className="flex items-center justify-end gap-1 mt-1 text-[9px] font-black uppercase text-primary/70">
+          
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl">
+            {/* Bloco 1: Vendas Anuais */}
+            <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
+              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Vendas Anuais (Limite)</div>
+              <div className="text-lg font-bold text-blue-500 leading-tight">{formatCurrency(totals.acumuladoReceita)}</div>
+              <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-blue-500/70">
                 <ShieldCheck className="w-2.5 h-2.5" />
                 {percentualLimite.toFixed(1)}% do Limite MEI
+              </div>
+            </div>
+
+            {/* Bloco 2: Lucro Líquido */}
+            <div className="p-3 bg-primary/10 rounded-xl border border-primary/20">
+              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Lucro Líquido Total</div>
+              <div className="text-lg font-bold text-primary leading-tight">{formatCurrency(totals.acumuladoLucro)}</div>
+              <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-primary/70">
+                <Wallet className="w-2.5 h-2.5" />
+                Dinheiro para você
+              </div>
+            </div>
+
+            {/* Bloco 3: Reserva Total */}
+            <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
+              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Reserva Acumulada</div>
+              <div className="text-lg font-bold text-purple-500 leading-tight">{formatCurrency(totals.acumuladoReserva)}</div>
+              <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-purple-500/70">
+                <PiggyBank className="w-2.5 h-2.5" />
+                Segurança do Negócio
               </div>
             </div>
           </div>
