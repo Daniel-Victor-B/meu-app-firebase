@@ -59,16 +59,16 @@ interface CashFlowLedgerProps {
 
 const FAQS_PLANILHA = [
   {
+    q: "Qual o valor ideal para o Colchão de Segurança?",
+    a: "Para um MEI, o ideal é ter entre 6 a 12 meses de custos totais (Custos Operacionais + DAS + Pró-labore) guardados. Isso garante que, se as vendas caírem ou você precisar de uma pausa, as contas da empresa e o seu salário pessoal continuem pagos sem gerar dívidas."
+  },
+  {
     q: "O lucro deve ser sacado mensalmente?",
     a: "Não! A regra de ouro é: Pró-labore é mensal, Lucro é trimestral. Use a planilha para ver a sobra mensal, mas só decida o que fazer com esse dinheiro a cada 90 dias. Isso garante que você tenha fôlego financeiro para meses de baixa."
   },
   {
     q: "Como projetar meses com faturamento incerto?",
     a: "No MEI, a sazonalidade é comum. Use a média dos últimos 3 meses para os meses futuros ou, se for comércio, projete 20-30% a mais em meses como Dezembro (Natal). A planilha serve justamente para você ver o impacto desses picos na sua reserva."
-  },
-  {
-    q: "O que entra como 'Custos Operacionais' na planilha?",
-    a: "Tudo o que a empresa gasta para existir: ferramentas (SaaS), internet, materiais, embalagens, fretes e assinaturas. Não inclua aqui o seu Pró-labore nem o DAS, pois a planilha já calcula esses valores separadamente para te dar a Sobra Real."
   },
   {
     q: "Por que separar a 'Reserva' do 'Lucro Disponível'?",
@@ -197,6 +197,10 @@ export function CashFlowLedger({
                 <span>{progressoMeta.toFixed(1)}%</span>
               </div>
               <Progress value={progressoMeta} className="h-2" />
+            </div>
+            <div className="pt-2 flex items-start gap-2 text-[10px] text-muted-foreground leading-tight italic">
+              <Lightbulb className="w-3 h-3 text-primary shrink-0" />
+              <span>Sua meta é cobrir seus gastos totais de {formatCurrency(custos + das + prolabore)}/mês por {mesesReserva} meses.</span>
             </div>
           </CardContent>
         </Card>
