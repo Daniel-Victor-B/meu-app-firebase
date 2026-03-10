@@ -7,7 +7,8 @@ import { MeiLimitTracker } from "@/components/MeiLimitTracker";
 import { AccountGuide } from "@/components/AccountGuide";
 import { Checklist } from "@/components/Checklist";
 import { AiAdvisor } from "@/components/AiAdvisor";
-import { DollarSign, Landmark, LayoutList, ShieldCheck, Sparkles } from "lucide-react";
+import { NfseGuide } from "@/components/NfseGuide";
+import { DollarSign, Landmark, LayoutList, ShieldCheck, Sparkles, FileText } from "lucide-react";
 
 export default function Home() {
   const [fat, setFat] = useState(5000);
@@ -41,7 +42,7 @@ export default function Home() {
 
       {/* Main Navigation */}
       <Tabs defaultValue="distribuicao" className="w-full">
-        <TabsList className="grid grid-cols-5 h-auto p-1 bg-secondary/50 backdrop-blur-sm border sticky top-4 z-50">
+        <TabsList className="grid grid-cols-6 h-auto p-1 bg-secondary/50 backdrop-blur-sm border sticky top-4 z-50">
           <TabsTrigger value="distribuicao" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs">
             <DollarSign className="w-4 h-4" />
             <span className="hidden sm:inline">Mensal</span>
@@ -53,6 +54,10 @@ export default function Home() {
           <TabsTrigger value="contas" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs">
             <Landmark className="w-4 h-4" />
             <span className="hidden sm:inline">Contas</span>
+          </TabsTrigger>
+          <TabsTrigger value="nfse" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs">
+            <FileText className="w-4 h-4" />
+            <span className="hidden sm:inline">NFS-e</span>
           </TabsTrigger>
           <TabsTrigger value="guia" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs">
             <LayoutList className="w-4 h-4" />
@@ -85,6 +90,10 @@ export default function Home() {
 
           <TabsContent value="contas">
             <AccountGuide />
+          </TabsContent>
+
+          <TabsContent value="nfse">
+            <NfseGuide />
           </TabsContent>
 
           <TabsContent value="guia">
