@@ -6,8 +6,23 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Rocket, CalendarDays, CalendarCheck, AlertTriangle, CheckCircle2, ListChecks } from "lucide-react";
+import { 
+  Rocket, 
+  CalendarDays, 
+  CalendarCheck, 
+  AlertTriangle, 
+  CheckCircle2, 
+  ListChecks, 
+  HelpCircle,
+  HelpCircleIcon
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const SECTIONS = [
   {
@@ -66,6 +81,33 @@ const SECTIONS = [
   },
 ];
 
+const FAQS = [
+  {
+    q: "Posso ter mais de um CNPJ MEI?",
+    a: "Não. A legislação permite apenas um CNPJ MEI por CPF e você não pode ser sócio ou administrador de outra empresa."
+  },
+  {
+    q: "Sou obrigado a emitir nota fiscal para pessoa física?",
+    a: "Não, a menos que o cliente exija. No entanto, para vendas a empresas (CNPJ), a emissão é obrigatória."
+  },
+  {
+    q: "Esqueci de pagar o DAS. E agora?",
+    a: "Você deve acessar o portal PGMEI e gerar a guia atualizada com juros e multa. O pagamento em dia é essencial para manter seus benefícios previdenciários (aposentadoria, auxílio-doença)."
+  },
+  {
+    q: "O que acontece se eu passar o limite de 81 mil no ano?",
+    a: "Se exceder em até 20% (R$ 97.200), você paga uma multa sobre o excesso e migra para ME no ano seguinte. Se passar de 20%, a migração é retroativa a janeiro do ano corrente, o que gera impostos altos. Fique de olho no simulador!"
+  },
+  {
+    q: "MEI pode contratar funcionário?",
+    a: "Sim, o MEI pode contratar um único funcionário que receba o salário mínimo ou o piso da categoria."
+  },
+  {
+    q: "Preciso de contador para ser MEI?",
+    a: "Legalmente não. O MEI foi criado para ser autogerido. No entanto, um contador ajuda muito na declaração de Imposto de Renda PF (para isenção de lucros) e no processo de migração para ME."
+  }
+];
+
 export function Checklist() {
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
 
@@ -79,7 +121,7 @@ export function Checklist() {
   };
 
   return (
-    <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500 pb-10">
+    <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500 pb-16">
       <header>
         <h2 className="text-xl font-headline font-bold flex items-center gap-2">
           <ListChecks className="w-6 h-6 text-primary" />
@@ -127,7 +169,7 @@ export function Checklist() {
                       onCheckedChange={() => toggleTask(task.id)}
                       className="mt-1"
                     />
-                    <div className="grid gap-1 cursor-pointer" onClick={() => toggleTask(task.id)}>
+                    <div className="grid gap-1 cursor-pointer flex-1" onClick={() => toggleTask(task.id)}>
                       <label 
                         htmlFor={task.id} 
                         className={cn(
@@ -160,6 +202,32 @@ export function Checklist() {
           </p>
         </div>
       </div>
+
+      {/* FAQ Section */}
+      <section className="space-y-6 pt-6">
+        <div className="flex items-center gap-2">
+          <div className="p-2 bg-secondary rounded-lg">
+            <HelpCircle className="w-5 h-5 text-muted-foreground" />
+          </div>
+          <div>
+            <h3 className="font-headline font-bold text-lg">Dúvidas Frequentes</h3>
+            <p className="text-xs text-muted-foreground">Respostas rápidas para a prática do dia a dia.</p>
+          </div>
+        </div>
+
+        <Accordion type="single" collapsible className="w-full space-y-2">
+          {FAQS.map((faq, idx) => (
+            <AccordionItem key={idx} value={`item-${idx}`} className="border rounded-xl px-4 bg-card/50">
+              <AccordionTrigger className="text-sm font-bold text-left hover:no-underline py-4">
+                {faq.q}
+              </AccordionTrigger>
+              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-4">
+                {faq.a}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </section>
     </div>
   );
 }
