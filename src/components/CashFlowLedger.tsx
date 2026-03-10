@@ -369,14 +369,40 @@ export function CashFlowLedger() {
 
       <div className="p-4 rounded-xl border border-primary/20 bg-primary/5 flex gap-4 items-start">
         <Lightbulb className="w-5 h-5 text-primary shrink-0 mt-1" />
-        <div className="space-y-2">
+        <div className="space-y-3">
           <h4 className="text-xs font-bold uppercase tracking-wider text-primary">Dica de Gestão Profissional</h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
             A planilha projeta a sobra mensal para sua visão clara, mas lembre-se: <strong>Lucro Real não é salário</strong>.
           </p>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            O Pró-labore é sua retirada mensal fixa. O Lucro deve ser acumulado na <strong>conta PJ</strong> (não na PF) e distribuído <strong>trimestralmente</strong> conforme a saúde do negócio. Você decide o destino: <strong>Investir</strong> (mandar para sua corretora PF), <strong>Guardar</strong> (manter na conta PJ como reserva de segurança) ou <strong>Escalar</strong> (reinvestir na empresa para aumentar sua capacidade, estoque ou marketing e faturar mais).
-          </p>
+          <div className="space-y-3">
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              O Pró-labore é sua retirada mensal fixa. O Lucro deve ser acumulado na <strong>conta PJ</strong> (não na PF) e distribuído <strong>trimestralmente</strong> conforme a saúde do negócio.
+            </p>
+            <div className="grid gap-2 pt-1">
+              <p className="text-[10px] font-black uppercase text-primary/70 tracking-widest">Você decide o destino:</p>
+              
+              <div className="flex gap-3 items-start bg-background/40 p-3 rounded-lg border border-primary/10 hover:bg-background/60 transition-colors">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  <strong>Investir</strong>: Mandar para sua corretora PF.
+                </p>
+              </div>
+
+              <div className="flex gap-3 items-start bg-background/40 p-3 rounded-lg border border-primary/10 hover:bg-background/60 transition-colors">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  <strong>Guardar</strong>: Manter na conta PJ como reserva de segurança.
+                </p>
+              </div>
+
+              <div className="flex gap-3 items-start bg-background/40 p-3 rounded-lg border border-primary/10 hover:bg-background/60 transition-colors">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  <strong>Escalar</strong>: Reinvestir na empresa para aumentar sua capacidade, estoque ou marketing e faturar mais.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
