@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { formatCurrency } from "@/lib/formatters";
-import { FileSpreadsheet, ShieldCheck, Info, AlertTriangle, HelpCircle, ArrowLeftRight, PenLine, Wallet, TrendingUp, PiggyBank, Scale } from "lucide-react";
+import { FileSpreadsheet, ShieldCheck, Info, AlertTriangle, HelpCircle, ArrowLeftRight, PenLine, Wallet, TrendingUp, PiggyBank, Scale, Settings2, UserCircle, Percent } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import {
@@ -30,7 +30,7 @@ interface MonthlyData {
 const FAQS_PLANILHA = [
   {
     q: "Como projetar meses com faturamento incerto?",
-    a: "No MEI, a sazonalidade é comum. Use a média dos últimos 3 meses para los meses futuros ou, se for comércio, projete 20-30% a mais em meses como Dezembro (Natal). A planilha serve justamente para você ver o impacto desses picos na sua reserva."
+    a: "No MEI, a sazonalidade é comum. Use a média dos últimos 3 meses para os meses futuros ou, se for comércio, projete 20-30% a mais em meses como Dezembro (Natal). A planilha serve justamente para você ver o impacto desses picos na sua reserva."
   },
   {
     q: "O que entra como 'Custos Operacionais' na planilha?",
@@ -110,6 +110,7 @@ export function CashFlowLedger() {
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Bloco de Reserva */}
         <Card className="bg-primary/5 border-primary/20 shadow-md">
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2 text-primary">
@@ -138,42 +139,69 @@ export function CashFlowLedger() {
           </CardContent>
         </Card>
 
-        <Card className="bg-secondary/30 border-dashed border-2">
+        {/* Bloco de Parâmetros / Regras do Jogo */}
+        <Card className="bg-secondary/20 border-border/60 border-2 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+            <Settings2 className="w-16 h-16" />
+          </div>
           <CardHeader className="pb-2">
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Info className="w-5 h-5" />
-              <CardTitle className="text-sm font-bold uppercase tracking-wider">Parâmetros de Cálculo</CardTitle>
+            <div className="flex items-center gap-2 text-foreground">
+              <Settings2 className="w-5 h-5 text-primary" />
+              <div>
+                <CardTitle className="text-sm font-bold uppercase tracking-wider">Regras de Cálculo</CardTitle>
+                <CardDescription className="text-[10px] uppercase font-bold text-muted-foreground">Define como todos os meses são processados</CardDescription>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <div className="text-[10px] text-muted-foreground font-bold mb-1 uppercase">Pró-labore</div>
-                <Input 
-                  className="h-8 text-xs font-bold bg-background/50 border-primary/20" 
-                  type="number" 
-                  value={globalParams.prolabore}
-                  onChange={(e) => setGlobalParams({...globalParams, prolabore: parseFloat(e.target.value) || 0})}
-                />
+            <div className="grid grid-cols-3 gap-3">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-[10px] text-orange-500 font-black uppercase">
+                  <UserCircle className="w-3 h-3" />
+                  Salário PF
+                </div>
+                <div className="relative">
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">R$</span>
+                  <Input 
+                    className="h-9 pl-7 text-xs font-bold bg-background/80 border-orange-500/30 focus:border-orange-500 focus:ring-orange-500/20" 
+                    type="number" 
+                    value={globalParams.prolabore}
+                    onChange={(e) => setGlobalParams({...globalParams, prolabore: parseFloat(e.target.value) || 0})}
+                  />
+                </div>
               </div>
-              <div>
-                <div className="text-[10px] text-muted-foreground font-bold mb-1 uppercase">% Reserva</div>
-                <Input 
-                  className="h-8 text-xs font-bold bg-background/50 border-purple-500/20" 
-                  type="number" 
-                  value={globalParams.reservaPct}
-                  onChange={(e) => setGlobalParams({...globalParams, reservaPct: parseFloat(e.target.value) || 0})}
-                />
+
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-[10px] text-purple-500 font-black uppercase">
+                  <Percent className="w-3 h-3" />
+                  Reserva PJ
+                </div>
+                <div className="relative">
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">%</span>
+                  <Input 
+                    className="h-9 pr-7 text-xs font-bold bg-background/80 border-purple-500/30 focus:border-purple-500 focus:ring-purple-500/20" 
+                    type="number" 
+                    value={globalParams.reservaPct}
+                    onChange={(e) => setGlobalParams({...globalParams, reservaPct: parseFloat(e.target.value) || 0})}
+                  />
+                </div>
               </div>
-              <div>
-                <div className="text-[10px] text-muted-foreground font-bold mb-1 uppercase">DAS Fixo</div>
-                <div className="h-8 flex items-center text-xs font-bold px-3 bg-secondary/50 rounded-md border border-input/50">{formatCurrency(globalParams.das)}</div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-[10px] text-blue-500 font-black uppercase">
+                  <ShieldCheck className="w-3 h-3" />
+                  Imposto DAS
+                </div>
+                <div className="h-9 flex items-center justify-center text-xs font-bold bg-secondary/80 rounded-md border border-blue-500/20 text-blue-500 tabular-nums">
+                  {formatCurrency(globalParams.das)}
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
+      {/* Cabeçalho de Resumo da Planilha */}
       <Card className="overflow-hidden border-border/50 shadow-xl">
         <CardHeader className="flex flex-col lg:flex-row lg:items-center justify-between bg-card pb-4 gap-4 px-6 pt-6 border-b">
           <div className="flex-shrink-0">
@@ -188,7 +216,7 @@ export function CashFlowLedger() {
             {/* Bloco 1: Faturamento Anual / Limite MEI */}
             <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
               <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Faturamento Anual (Limite MEI)</div>
-              <div className="text-lg font-bold text-blue-500 leading-tight">{formatCurrency(totals.acumuladoReceita)}</div>
+              <div className="text-lg font-bold text-blue-500 leading-tight">{formatCurrency(totals.acumuladoReceita || 0)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-blue-500/70">
                 <ShieldCheck className="w-2.5 h-2.5" />
                 {percentualLimite.toFixed(1)}% do Teto de 81k
@@ -198,7 +226,7 @@ export function CashFlowLedger() {
             {/* Bloco 2: Lucro Real Extra (Dinheiro no Bolso) */}
             <div className="p-3 bg-primary/10 rounded-xl border border-primary/20">
               <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Lucro Real (Livre para Você)</div>
-              <div className="text-lg font-bold text-primary leading-tight">{formatCurrency(totals.acumuladoLucro)}</div>
+              <div className="text-lg font-bold text-primary leading-tight">{formatCurrency(totals.acumuladoLucro || 0)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-primary/70">
                 <Wallet className="w-2.5 h-2.5" />
                 Dinheiro Extra (Além do Pró-labore)
@@ -208,7 +236,7 @@ export function CashFlowLedger() {
             {/* Bloco 3: Reserva Total (Caixa da Empresa) */}
             <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
               <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Reserva (Caixa da Empresa)</div>
-              <div className="text-lg font-bold text-purple-500 leading-tight">{formatCurrency(totals.acumuladoReserva)}</div>
+              <div className="text-lg font-bold text-purple-500 leading-tight">{formatCurrency(totals.acumuladoReserva || 0)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-purple-500/70">
                 <PiggyBank className="w-2.5 h-2.5" />
                 Patrimônio do Negócio
@@ -317,16 +345,16 @@ export function CashFlowLedger() {
                       </div>
                     </TableCell>
                     <TableCell className="text-right text-xs font-medium tabular-nums px-6 bg-secondary/10">
-                      {formatCurrency(row.sobra)}
+                      {formatCurrency(row.sobra || 0)}
                     </TableCell>
                     <TableCell className="text-right text-xs font-bold text-purple-500 tabular-nums px-6 bg-purple-500/5">
-                      {formatCurrency(row.reserva)}
+                      {formatCurrency(row.reserva || 0)}
                     </TableCell>
                     <TableCell className="text-right text-sm font-black text-primary tabular-nums px-6 bg-primary/5">
-                      {formatCurrency(row.lucro)}
+                      {formatCurrency(row.lucro || 0)}
                     </TableCell>
                     <TableCell className="text-right text-xs font-medium tabular-nums px-6 opacity-30">
-                      {formatCurrency(row.acumuladoReserva)}
+                      {formatCurrency(row.acumuladoReserva || 0)}
                     </TableCell>
                   </TableRow>
                 ))}
