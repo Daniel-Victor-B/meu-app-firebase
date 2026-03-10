@@ -5,8 +5,8 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatCurrency } from "@/lib/formatters";
-import { TrendingUp, Wallet, ArrowUpRight, ArrowDownRight, Target, ShieldCheck, BarChart3, MousePointer2 } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Dot } from "recharts";
+import { TrendingUp, Wallet, Target, ShieldCheck, BarChart3, MousePointer2, Info } from "lucide-react";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 interface ProfessionalDashboardProps {
   fat: number;
@@ -170,52 +170,123 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
 
       {/* Tabela com cores sincronizadas */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">DRE Simplificada (Mês Atual)</CardTitle>
-          <CardDescription>Fluxo de caixa detalhado com a separação por cores</CardDescription>
+        <CardHeader className="pb-4">
+          <div className="flex items-center gap-2">
+            <Target className="w-5 h-5 text-primary" />
+            <CardTitle className="text-lg">DRE Simplificada (O Caminho do Dinheiro)</CardTitle>
+          </div>
+          <CardDescription className="text-xs">Veja como cada real do seu faturamento é fatiado até chegar ao lucro real.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader className="bg-secondary/50">
-              <TableRow>
-                <TableHead className="font-bold text-xs uppercase tracking-wider">Descrição</TableHead>
-                <TableHead className="text-right font-bold text-xs uppercase tracking-wider">Valor</TableHead>
-                <TableHead className="text-right font-bold text-xs uppercase tracking-wider">%</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow className="bg-indigo-500/5">
-                <TableCell className="font-bold text-indigo-500">(=) Faturamento (Vendas)</TableCell>
-                <TableCell className="text-right font-bold text-indigo-500">{formatCurrency(fat)}</TableCell>
-                <TableCell className="text-right font-bold text-indigo-500">100%</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>(-) Custos Operacionais</TableCell>
-                <TableCell className="text-right text-orange-500 font-medium">{formatCurrency(custos)}</TableCell>
-                <TableCell className="text-right text-orange-500">-{((custos/fat)*100).toFixed(0)}%</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>(-) DAS (Impostos Fixos)</TableCell>
-                <TableCell className="text-right text-red-500 font-medium">{formatCurrency(das)}</TableCell>
-                <TableCell className="text-right text-red-500">-{((das/fat)*100).toFixed(1)}%</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>(-) Pró-labore (Salário)</TableCell>
-                <TableCell className="text-right text-blue-500 font-medium">{formatCurrency(prolabore)}</TableCell>
-                <TableCell className="text-right text-blue-500">-{((prolabore/fat)*100).toFixed(0)}%</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>(-) Reserva de Crescimento</TableCell>
-                <TableCell className="text-right text-purple-500 font-medium">{formatCurrency(reservaMensal)}</TableCell>
-                <TableCell className="text-right text-purple-500">-{((reservaMensal/fat)*100).toFixed(0)}%</TableCell>
-              </TableRow>
-              <TableRow className="bg-primary/20">
-                <TableCell className="font-bold text-primary">(=) LUCRO REAL DISPONÍVEL</TableCell>
-                <TableCell className="text-right font-bold text-primary">{formatCurrency(lucroReal)}</TableCell>
-                <TableCell className="text-right font-bold text-primary">{margemLucro.toFixed(1)}%</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+          <div className="rounded-xl border overflow-hidden">
+            <Table>
+              <TableHeader className="bg-secondary/30">
+                <TableRow>
+                  <TableHead className="font-black text-[10px] uppercase tracking-widest py-4">Estrutura de Fluxo</TableHead>
+                  <TableHead className="text-right font-black text-[10px] uppercase tracking-widest py-4">Valor Nominal</TableHead>
+                  <TableHead className="text-right font-black text-[10px] uppercase tracking-widest py-4">Peso %</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {/* FATURAMENTO */}
+                <TableRow className="bg-indigo-500/10 hover:bg-indigo-500/15 border-indigo-500/20 transition-colors">
+                  <TableCell className="py-5">
+                    <div className="flex items-center gap-3">
+                      <span className="text-indigo-500 font-black text-xl w-8 text-center">(=)</span>
+                      <div>
+                        <div className="font-bold text-indigo-500 text-sm">Faturamento Bruto</div>
+                        <div className="text-[10px] text-indigo-500/70 font-bold uppercase">Total de Vendas</div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right font-black text-lg text-indigo-500">{formatCurrency(fat)}</TableCell>
+                  <TableCell className="text-right font-bold text-indigo-500/60">100%</TableCell>
+                </TableRow>
+
+                {/* CUSTOS */}
+                <TableRow className="hover:bg-orange-500/5 transition-colors">
+                  <TableCell className="py-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-orange-500 font-black text-xl w-8 text-center">(-)</span>
+                      <div>
+                        <div className="font-bold text-foreground text-sm">Custos Operacionais</div>
+                        <div className="text-[10px] text-orange-500 font-bold uppercase tracking-tighter">Manutenção do Negócio</div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right font-bold text-orange-500">{formatCurrency(custos)}</TableCell>
+                  <TableCell className="text-right text-muted-foreground text-xs">-{((custos/fat)*100).toFixed(0)}%</TableCell>
+                </TableRow>
+
+                {/* DAS */}
+                <TableRow className="hover:bg-red-500/5 transition-colors">
+                  <TableCell className="py-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-red-500 font-black text-xl w-8 text-center">(-)</span>
+                      <div>
+                        <div className="font-bold text-foreground text-sm">Imposto DAS</div>
+                        <div className="text-[10px] text-red-500 font-bold uppercase tracking-tighter">Obrigação Previdenciária</div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right font-bold text-red-500">{formatCurrency(das)}</TableCell>
+                  <TableCell className="text-right text-muted-foreground text-xs">-{((das/fat)*100).toFixed(1)}%</TableCell>
+                </TableRow>
+
+                {/* PRÓ-LABORE */}
+                <TableRow className="hover:bg-blue-500/5 transition-colors">
+                  <TableCell className="py-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-blue-500 font-black text-xl w-8 text-center">(-)</span>
+                      <div>
+                        <div className="font-bold text-foreground text-sm">Pró-labore (Salário)</div>
+                        <div className="text-[10px] text-blue-500 font-bold uppercase tracking-tighter">Sua Remuneração PF</div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right font-bold text-blue-500">{formatCurrency(prolabore)}</TableCell>
+                  <TableCell className="text-right text-muted-foreground text-xs">-{((prolabore/fat)*100).toFixed(0)}%</TableCell>
+                </TableRow>
+
+                {/* RESERVA */}
+                <TableRow className="hover:bg-purple-500/5 transition-colors">
+                  <TableCell className="py-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-purple-500 font-black text-xl w-8 text-center">(-)</span>
+                      <div>
+                        <div className="font-bold text-foreground text-sm">Reserva de Crescimento</div>
+                        <div className="text-[10px] text-purple-500 font-bold uppercase tracking-tighter">Capital de Giro</div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right font-bold text-purple-500">{formatCurrency(reservaMensal)}</TableCell>
+                  <TableCell className="text-right text-muted-foreground text-xs">-{((reservaMensal/fat)*100).toFixed(0)}%</TableCell>
+                </TableRow>
+
+                {/* LUCRO REAL */}
+                <TableRow className="bg-primary/20 hover:bg-primary/25 border-t-2 border-primary/30 transition-colors">
+                  <TableCell className="py-6">
+                    <div className="flex items-center gap-3">
+                      <span className="text-primary font-black text-2xl w-8 text-center">(=)</span>
+                      <div>
+                        <div className="font-black text-primary text-base uppercase tracking-tight">Lucro Real Disponível</div>
+                        <div className="text-[10px] text-primary/70 font-bold uppercase">Seu ganho extra livre</div>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right font-black text-2xl text-primary">{formatCurrency(lucroReal)}</TableCell>
+                  <TableCell className="text-right font-black text-primary">{margemLucro.toFixed(1)}%</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </div>
+          
+          <div className="mt-6 p-4 bg-secondary/30 rounded-xl border border-dashed flex gap-3 items-center">
+            <Info className="w-5 h-5 text-muted-foreground shrink-0" />
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              <strong>Nota Didática:</strong> O lucro real é o que sobra após você já ter recebido seu salário (Pró-labore) e a empresa ter guardado a parte dela (Reserva). É o dinheiro da sua liberdade financeira.
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>
