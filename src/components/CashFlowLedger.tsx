@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { formatCurrency } from "@/lib/formatters";
-import { FileSpreadsheet, ShieldCheck, Info, AlertTriangle, HelpCircle, ArrowLeftRight } from "lucide-react";
+import { FileSpreadsheet, ShieldCheck, Info, AlertTriangle, HelpCircle, ArrowLeftRight, PenLine } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import {
@@ -213,8 +213,8 @@ export function CashFlowLedger() {
                 <TableRow className="hover:bg-transparent border-b">
                   <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r bg-secondary/10">Ativar</TableHead>
                   <TableHead className="w-[90px] font-bold text-[10px] uppercase border-r text-center bg-secondary/10">Mês</TableHead>
-                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-blue-500">Receita Mensal (R$)</TableHead>
-                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-orange-500">Custos Operacionais (R$)</TableHead>
+                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-blue-500 bg-blue-500/5">Receita Mensal (R$)</TableHead>
+                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-orange-500 bg-orange-500/5">Custos Operacionais (R$)</TableHead>
                   <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase px-6">Sobra Bruta</TableHead>
                   <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-purple-500 px-6">Reserva PJ</TableHead>
                   <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-primary px-6">Lucro Disp.</TableHead>
@@ -239,23 +239,29 @@ export function CashFlowLedger() {
                     <TableCell className="font-bold text-xs py-3 border-r text-center bg-card">
                       {MESES[i]}
                     </TableCell>
-                    <TableCell className="py-2 px-6">
-                      <Input 
-                        type="number" 
-                        disabled={!row.active}
-                        value={row.receita} 
-                        onChange={(e) => updateMonth(i, 'receita', e.target.value)}
-                        className="h-10 text-xs font-bold bg-transparent border-transparent hover:border-input focus:border-blue-500 focus:bg-background/50 transition-all text-blue-500"
-                      />
+                    <TableCell className="py-2 px-6 bg-blue-500/5">
+                      <div className="relative group/input">
+                        <Input 
+                          type="number" 
+                          disabled={!row.active}
+                          value={row.receita} 
+                          onChange={(e) => updateMonth(i, 'receita', e.target.value)}
+                          className="h-10 text-xs font-bold bg-background/40 border-blue-500/20 hover:border-blue-500 focus:border-blue-500 focus:bg-background/80 transition-all text-blue-500 pr-8"
+                        />
+                        <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-blue-500/30 group-hover/input:text-blue-500 transition-colors pointer-events-none" />
+                      </div>
                     </TableCell>
-                    <TableCell className="py-2 px-6">
-                      <Input 
-                        type="number" 
-                        disabled={!row.active}
-                        value={row.custos} 
-                        onChange={(e) => updateMonth(i, 'custos', e.target.value)}
-                        className="h-10 text-xs font-bold bg-transparent border-transparent hover:border-input focus:border-orange-500 focus:bg-background/50 transition-all text-orange-500"
-                      />
+                    <TableCell className="py-2 px-6 bg-orange-500/5">
+                      <div className="relative group/input">
+                        <Input 
+                          type="number" 
+                          disabled={!row.active}
+                          value={row.custos} 
+                          onChange={(e) => updateMonth(i, 'custos', e.target.value)}
+                          className="h-10 text-xs font-bold bg-background/40 border-orange-500/20 hover:border-orange-500 focus:border-orange-500 focus:bg-background/80 transition-all text-orange-500 pr-8"
+                        />
+                        <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-orange-500/30 group-hover/input:text-orange-500 transition-colors pointer-events-none" />
+                      </div>
                     </TableCell>
                     <TableCell className="text-right text-xs font-medium tabular-nums px-6">
                       {formatCurrency(row.sobra)}
