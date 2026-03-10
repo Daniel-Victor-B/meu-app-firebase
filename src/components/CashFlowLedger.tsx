@@ -1,12 +1,14 @@
+
 "use client"
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/formatters";
-import { FileSpreadsheet, ShieldCheck, Info, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { FileSpreadsheet, ShieldCheck, Info, AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +24,7 @@ interface MonthlyData {
 }
 
 export function CashFlowLedger() {
+  const tableContainerRef = useRef<HTMLDivElement>(null);
   const [data, setData] = useState<MonthlyData[]>(
     Array(12).fill(null).map(() => ({ receita: 5000, custos: 500, active: true }))
   );
@@ -31,6 +34,16 @@ export function CashFlowLedger() {
     reservaPct: 50,
     das: 76
   });
+
+  const scrollTable = (direction: 'left' | 'right') => {
+    if (tableContainerRef.current) {
+      const scrollAmount = 250;
+      tableContainerRef.current.scrollBy({ 
+        left: direction === 'left' ? -scrollAmount : scrollAmount, 
+        behavior: 'smooth' 
+      });
+    }
+  };
 
   const updateMonth = (index: number, field: keyof MonthlyData, value: any) => {
     const newData = [...data];
@@ -77,7 +90,6 @@ export function CashFlowLedger() {
     return { rows, acumuladoReserva, acumuladoReceita };
   }, [data, globalParams]);
 
-  // Cálculo da Meta de Reserva (6 meses de custos fixos + 6 meses de pró-labore)
   const custoEmpresaMensal = (data.filter(m => m.active).reduce((acc, curr) => acc + curr.custos, 0) / (data.filter(m => m.active).length || 1)) + globalParams.das;
   const metaTotal = (custoEmpresaMensal + globalParams.prolabore) * 6;
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
@@ -152,7 +164,7 @@ export function CashFlowLedger() {
 
       {/* Planilha */}
       <Card className="overflow-hidden border-border/50">
-        <CardHeader className="flex flex-row items-center justify-between bg-secondary/10 pb-4">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between bg-secondary/10 pb-4 gap-4">
           <div>
             <CardTitle className="text-lg flex items-center gap-2">
               <FileSpreadsheet className="w-5 h-5 text-primary" />
@@ -160,13 +172,35 @@ export function CashFlowLedger() {
             </CardTitle>
             <CardDescription>Ajuste os valores mensais para planejar seu fluxo de caixa</CardDescription>
           </div>
-          <div className="text-right">
-            <div className="text-[10px] font-bold text-muted-foreground uppercase">Faturamento Total</div>
-            <div className="text-xl font-bold text-primary">{formatCurrency(totals.acumuladoReceita)}</div>
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <div className="text-[10px] font-bold text-muted-foreground uppercase">Faturamento Total</div>
+              <div className="text-xl font-bold text-primary">{formatCurrency(totals.acumuladoReceita)}</div>
+            </div>
+            {/* Controles de Rolagem Superiores */}
+            <div className="flex gap-1 md:hidden">
+              <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" onClick={() => scrollTable('left')}>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button variant="outline" size="icon" className="h-8 w-8 rounded-full" onClick={() => scrollTable('right')}>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
+        
+        {/* Indicador de Rolagem Superior (Mobile) */}
+        <div className="md:hidden flex items-center justify-center gap-2 py-2 bg-secondary/20 border-b text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+          <ChevronLeft className="w-3 h-3 animate-pulse" />
+          Arraste para o lado para ver mais colunas
+          <ChevronRight className="w-3 h-3 animate-pulse" />
+        </div>
+
+        <CardContent className="p-0 relative">
+          <div 
+            ref={tableContainerRef}
+            className="overflow-x-auto scrollbar-hide scroll-smooth"
+          >
             <Table>
               <TableHeader className="bg-secondary/30">
                 <TableRow className="hover:bg-transparent">
@@ -230,6 +264,18 @@ export function CashFlowLedger() {
                 ))}
               </TableBody>
             </Table>
+          </div>
+          
+          {/* Controles de Rolagem Inferiores (Mobile) */}
+          <div className="md:hidden flex items-center justify-between p-3 bg-secondary/10 border-t">
+            <Button variant="ghost" size="sm" className="h-8 gap-2 text-[10px] font-bold uppercase" onClick={() => scrollTable('left')}>
+              <ChevronLeft className="h-3 w-3" />
+              Ver Status
+            </Button>
+            <Button variant="ghost" size="sm" className="h-8 gap-2 text-[10px] font-bold uppercase" onClick={() => scrollTable('right')}>
+              Ver Lucro
+              <ChevronRight className="h-3 w-3" />
+            </Button>
           </div>
         </CardContent>
       </Card>
