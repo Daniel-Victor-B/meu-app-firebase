@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FinancialDistribution } from "@/components/FinancialDistribution";
+import { ProfessionalDashboard } from "@/components/ProfessionalDashboard";
 import { MeiLimitTracker } from "@/components/MeiLimitTracker";
 import { AccountGuide } from "@/components/AccountGuide";
 import { Checklist } from "@/components/Checklist";
 import { AiAdvisor } from "@/components/AiAdvisor";
 import { NfseGuide } from "@/components/NfseGuide";
-import { DollarSign, Landmark, LayoutList, ShieldCheck, Sparkles, FileText } from "lucide-react";
+import { DollarSign, Landmark, LayoutList, ShieldCheck, Sparkles, FileText, BarChart3 } from "lucide-react";
 
 export default function Home() {
   const [fat, setFat] = useState(5000);
@@ -42,10 +43,14 @@ export default function Home() {
 
       {/* Main Navigation */}
       <Tabs defaultValue="distribuicao" className="w-full">
-        <TabsList className="grid grid-cols-6 h-auto p-1 bg-secondary/50 backdrop-blur-sm border sticky top-4 z-50">
+        <TabsList className="grid grid-cols-4 md:grid-cols-7 h-auto p-1 bg-secondary/50 backdrop-blur-sm border sticky top-4 z-50">
           <TabsTrigger value="distribuicao" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs">
             <DollarSign className="w-4 h-4" />
             <span className="hidden sm:inline">Mensal</span>
+          </TabsTrigger>
+          <TabsTrigger value="gestao" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs text-blue-500 data-[state=active]:bg-blue-500/20">
+            <BarChart3 className="w-4 h-4" />
+            <span className="hidden sm:inline">Gestão</span>
           </TabsTrigger>
           <TabsTrigger value="limite" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs">
             <ShieldCheck className="w-4 h-4" />
@@ -76,6 +81,15 @@ export default function Home() {
               custos={custos} setCustos={setCustos}
               prolabore={prolabore} setProlabore={setProlabore}
               reservaPct={reservaPct} setReservaPct={setReservaPct}
+            />
+          </TabsContent>
+
+          <TabsContent value="gestao">
+            <ProfessionalDashboard 
+              fat={fat}
+              custos={custos}
+              prolabore={prolabore}
+              reservaPct={reservaPct}
             />
           </TabsContent>
 
