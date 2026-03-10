@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect } from "react";
@@ -24,7 +23,9 @@ import {
   Lightbulb,
   ChevronUp,
   ChevronDown,
-  CalendarClock
+  CalendarClock,
+  Info,
+  ArrowRight
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -461,40 +462,69 @@ export function CashFlowLedger({
         </CardContent>
       </Card>
 
-      <div className="p-4 rounded-xl border border-primary/20 bg-primary/5 flex gap-4 items-start">
-        <Lightbulb className="w-5 h-5 text-primary shrink-0 mt-1" />
-        <div className="space-y-3">
-          <h4 className="text-xs font-bold uppercase tracking-wider text-primary">Dica de Gestão Profissional</h4>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            A planilha projeta a sobra mensal para sua visão clara, mas lembre-se: <strong>Lucro Real não é salário</strong>.
-          </p>
+      <div className="p-4 rounded-xl border border-primary/20 bg-primary/5 flex flex-col gap-4">
+        <div className="flex gap-4 items-start">
+          <Lightbulb className="w-5 h-5 text-primary shrink-0 mt-1" />
           <div className="space-y-3">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-primary">Regra de Ouro: Lucro não é salário.</h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
               O Pró-labore é sua retirada mensal fixa. O Lucro deve ser acumulado na <strong>conta PJ Operacional</strong> (não na PF) e distribuído <strong>trimestralmente</strong> conforme a saúde do negócio.
             </p>
-            <div className="grid gap-2 pt-1">
+            <div className="space-y-3">
               <p className="text-[10px] font-black uppercase text-primary/70 tracking-widest">Você decide o destino do lucro acumulado:</p>
-              
-              <div className="flex gap-3 items-start bg-background/40 p-3 rounded-lg border border-primary/10 hover:bg-background/60 transition-colors">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  <strong>Investir</strong>: Mandar para sua corretora PF.
-                </p>
+              <div className="grid gap-2">
+                <div className="flex gap-3 items-start bg-background/40 p-2.5 rounded-lg border border-primary/10">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                  <p className="text-xs text-muted-foreground"><strong>Investir</strong>: Mandar para sua corretora PF</p>
+                </div>
+                <div className="flex gap-3 items-start bg-background/40 p-2.5 rounded-lg border border-primary/10">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                  <p className="text-xs text-muted-foreground"><strong>Guardar</strong>: Manter na reserva da conta PJ Operacional como segurança extra</p>
+                </div>
+                <div className="flex gap-3 items-start bg-background/40 p-2.5 rounded-lg border border-primary/10">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
+                  <p className="text-xs text-muted-foreground"><strong>Escalar</strong>: Reinvestir na empresa para aumentar sua capacidade, estoque ou marketing</p>
+                </div>
               </div>
+            </div>
+          </div>
+        </div>
 
-              <div className="flex gap-3 items-start bg-background/40 p-3 rounded-lg border border-primary/10 hover:bg-background/60 transition-colors">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  <strong>Guardar</strong>: Manter na reserva da conta PJ Operacional como segurança extra.
-                </p>
+        {/* Sub-bloco Amarelo com Exemplo Prático */}
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 space-y-3">
+          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500">
+            <Info className="w-4 h-4" />
+            <span className="text-[10px] font-black uppercase tracking-widest">Exemplo Prático (O Caminho do Capital)</span>
+          </div>
+          <p className="text-[11px] text-muted-foreground leading-relaxed">
+            O faturamento primeiro pertence à empresa. Antes de pensar em lucros, pague as obrigações: impostos, custos e pró-labore. 
+            O que sobra é lucro. Em vez de retirar tudo, divida: uma parte vai para a <strong>PJ Reserva</strong> e outra fica na <strong>PJ Operacional</strong> (Conta Operação) como lucro acumulado.
+          </p>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-1">
+            <div className="space-y-1">
+              <p className="text-[9px] font-bold text-muted-foreground uppercase">Resultado de 1 Mês</p>
+              <div className="text-[10px] space-y-1">
+                <p>Faturamento: R$ 5.000</p>
+                <p>Custos + DAS + Pró-labore: R$ 2.580</p>
+                <p className="text-amber-600 dark:text-amber-400 font-bold">Sobra Mensal: R$ 2.420</p>
               </div>
+            </div>
+            <div className="space-y-1">
+              <p className="text-[9px] font-bold text-muted-foreground uppercase">Destino da Sobra (60/40)</p>
+              <div className="text-[10px] space-y-1">
+                <p>Para PJ Reserva: R$ 1.452</p>
+                <p>Lucro Acumulado (PJ Operacional): R$ 968</p>
+              </div>
+            </div>
+          </div>
 
-              <div className="flex gap-3 items-start bg-background/40 p-3 rounded-lg border border-primary/10 hover:bg-background/60 transition-colors">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  <strong>Escalar</strong>: Reinvestir na empresa para aumentar sua capacidade, estoque ou marketing e faturar mais.
-                </p>
-              </div>
+          <div className="pt-3 border-t border-amber-500/20">
+            <div className="flex gap-3 items-center">
+              <ArrowRight className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <p className="text-[11px] text-muted-foreground leading-snug">
+                <strong>No final de 3 meses</strong>: Você terá <strong>R$ 2.904</strong> de lucro acumulado na <strong>PJ Operacional</strong>. Nesse momento, você pode transferir parte disso (ex: R$ 1.452) para sua <strong>PF</strong> como distribuição trimestral. O restante fica na empresa para fortalecer o caixa.
+              </p>
             </div>
           </div>
         </div>
