@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react";
@@ -26,7 +27,9 @@ import {
   CalendarClock,
   Info,
   ArrowRight,
-  Target
+  Target,
+  Rocket,
+  Landmark
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -461,69 +464,141 @@ export function CashFlowLedger({
         </CardContent>
       </Card>
 
-      <div className="p-4 rounded-xl border border-primary/20 bg-primary/5 flex flex-col gap-4">
-        <div className="flex gap-4 items-start">
-          <Target className="w-5 h-5 text-primary shrink-0 mt-1" />
-          <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-primary">Gestão de Destino: O Ciclo do Capital</h4>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Diferente do Pró-labore, que é sua retirada mensal fixa, o <strong>Lucro Real</strong> deve permanecer na <strong>conta PJ Operacional</strong> (não na PF) para ser avaliado estrategicamente a cada 90 dias.
-            </p>
-            <div className="space-y-3">
-              <p className="text-[10px] font-black uppercase text-primary/70 tracking-widest">Você decide o destino do lucro acumulado:</p>
-              <div className="grid gap-2">
-                <div className="flex gap-3 items-start bg-background/40 p-2.5 rounded-lg border border-primary/10">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                  <p className="text-xs text-muted-foreground"><strong>Investir</strong>: Transferir para sua corretora Pessoal (PF/CPF) para longo prazo.</p>
-                </div>
-                <div className="flex gap-3 items-start bg-background/40 p-2.5 rounded-lg border border-primary/10">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                  <p className="text-xs text-muted-foreground"><strong>Guardar</strong>: Manter na própria conta PJ Operacional como capital de giro extra.</p>
-                </div>
-                <div className="flex gap-3 items-start bg-background/40 p-2.5 rounded-lg border border-primary/10">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                  <p className="text-xs text-muted-foreground"><strong>Escalar</strong>: Reinvestir em marketing, ferramentas ou estoque para aumentar seu teto.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Sub-bloco Amarelo com Exemplo Prático */}
-        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 space-y-3">
-          <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500">
-            <Info className="w-5 h-5" />
-            <span className="text-[10px] font-black uppercase tracking-widest">Estudo de Caso: Fluxo de R$ 5k</span>
-          </div>
-          <p className="text-[11px] text-muted-foreground leading-relaxed">
-            O dinheiro que entra primeiro pertence à empresa. Antes de qualquer lucro, pague as obrigações fundamentais: impostos, custos e seu próprio salário (pró-labore). 
-            O lucro é o que resta após blindar o negócio.
-          </p>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-1">
-            <div className="space-y-1">
-              <p className="text-[9px] font-bold text-muted-foreground uppercase">Mês de Referência</p>
-              <div className="text-[10px] space-y-1">
-                <p>Faturamento: R$ 5.000</p>
-                <p>Custos + DAS + Pró-labore: R$ 2.580</p>
-                <p className="text-amber-600 dark:text-amber-400 font-bold">Sobra Mensal Bruta: R$ 2.420</p>
-              </div>
-            </div>
-            <div className="space-y-1">
-              <p className="text-[9px] font-bold text-muted-foreground uppercase">Divisão Estratégica (60% / 40%)</p>
-              <div className="text-[10px] space-y-1">
-                <p>Para PJ Reserva: R$ 1.452 (60%)</p>
-                <p>Para Acumulado na PJ Operacional: R$ 968 (40%)</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-3 border-t border-amber-500/20">
-            <div className="flex gap-3 items-center">
-              <ArrowRight className="w-5 h-5 text-amber-500 shrink-0" />
-              <p className="text-[11px] text-muted-foreground leading-snug">
-                <strong>No Fechamento Trimestral</strong>: Você acumulou <strong>R$ 2.904</strong> na conta <strong>PJ Operacional</strong>. Agora, você pode transferir metade disso <strong>(R$ 1.452 - 50%)</strong> para sua <strong>Conta Corrente Pessoal (PF/CPF)</strong> como distribuição de lucros. O restante permanece na empresa para estabilidade e novos investimentos.
+      <div className="grid grid-cols-1 gap-6">
+        <div className="p-6 rounded-2xl border border-primary/20 bg-primary/5 flex flex-col gap-6 shadow-sm">
+          <div className="flex gap-4 items-start">
+            <Target className="w-6 h-6 text-primary shrink-0 mt-1" />
+            <div className="space-y-4">
+              <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-primary">Gestão de Destino: O Ciclo do Capital</h4>
+              <p className="text-xs text-muted-foreground leading-relaxed max-w-2xl">
+                Diferente do Pró-labore, que é sua retirada mensal fixa, o <strong>Lucro Real</strong> deve permanecer na <strong>conta PJ Operacional</strong> (não na PF) para ser avaliado estrategicamente a cada 90 dias.
               </p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                <div className="flex flex-col gap-2 bg-background/60 p-4 rounded-xl border border-primary/10 transition-all hover:border-primary/30">
+                  <div className="flex items-center gap-2 text-primary font-bold text-[10px] uppercase">
+                    <Wallet className="w-3.5 h-3.5" />
+                    Investir
+                  </div>
+                  <p className="text-[10px] text-muted-foreground leading-tight">Mandar para sua corretora <strong>Pessoal (PF/CPF)</strong> para patrimônio de longo prazo.</p>
+                </div>
+                <div className="flex flex-col gap-2 bg-background/60 p-4 rounded-xl border border-primary/10 transition-all hover:border-primary/30">
+                  <div className="flex items-center gap-2 text-primary font-bold text-[10px] uppercase">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    Guardar
+                  </div>
+                  <p className="text-[10px] text-muted-foreground leading-tight">Manter na própria <strong>conta PJ Operacional</strong> como capital de giro extra para meses de baixa.</p>
+                </div>
+                <div className="flex flex-col gap-2 bg-background/60 p-4 rounded-xl border border-primary/10 transition-all hover:border-primary/30">
+                  <div className="flex items-center gap-2 text-primary font-bold text-[10px] uppercase">
+                    <Rocket className="w-3.5 h-3.5" />
+                    Escalar
+                  </div>
+                  <p className="text-[10px] text-muted-foreground leading-tight">Reinvestir em marketing, ferramentas ou estoque para aumentar o teto de faturamento.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Representação Unicórnio: Estudo de Caso Trimestral */}
+          <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500">
+                <Info className="w-5 h-5" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Estudo de Caso: Ciclo de R$ 5k</span>
+              </div>
+              <div className="px-3 py-1 bg-amber-500/20 rounded-full border border-amber-500/30 text-[9px] font-black text-amber-600 uppercase tracking-widest">
+                Modelo Educativo
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  <h5 className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Fluxo Mensal (Base)</h5>
+                </div>
+                <div className="p-4 rounded-xl bg-background/40 border border-amber-500/10 space-y-3 shadow-inner">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-muted-foreground">Faturamento</span>
+                    <span className="font-bold text-amber-600">R$ 5.000</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="text-muted-foreground">Obrigações Totais</span>
+                    <span className="font-medium">R$ 2.580</span>
+                  </div>
+                  <div className="h-px bg-amber-500/20" />
+                  <div className="flex justify-between items-center">
+                    <span className="text-[9px] font-black uppercase text-amber-600">Sobra Bruta</span>
+                    <span className="text-sm font-black text-amber-700 dark:text-amber-400">R$ 2.420</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  <h5 className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Alocação Inicial</h5>
+                </div>
+                <div className="p-4 rounded-xl bg-background/40 border border-amber-500/10 space-y-3 shadow-inner">
+                  <div className="flex justify-between items-center text-xs">
+                    <div className="flex items-center gap-2">
+                      <PiggyBank className="w-3.5 h-3.5 text-purple-500" />
+                      <span className="text-muted-foreground">PJ Reserva</span>
+                    </div>
+                    <span className="font-bold text-purple-500">R$ 1.452 (60%)</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs">
+                    <div className="flex items-center gap-2">
+                      <Landmark className="w-3.5 h-3.5 text-primary" />
+                      <span className="text-muted-foreground">Acumulado PJ Op.</span>
+                    </div>
+                    <span className="font-bold text-primary">R$ 968 (40%)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* A Grande Decisão Trimestral (Representação Gráfica) */}
+            <div className="pt-6 border-t border-amber-500/20 space-y-6">
+              <div className="text-center space-y-1">
+                <div className="text-[10px] font-black uppercase text-amber-600 tracking-[0.3em]">Fechamento do Trimestre</div>
+                <div className="text-2xl font-black text-foreground">R$ 2.904 <span className="text-xs font-normal text-muted-foreground">acumulados na PJ Operacional</span></div>
+              </div>
+
+              <div className="relative flex flex-col items-center py-6">
+                {/* Ícone Central: Ponto de Decisão */}
+                <div className="w-14 h-14 rounded-2xl bg-amber-500 text-white flex items-center justify-center shadow-lg z-10 animate-pulse">
+                  <Target className="w-7 h-7" />
+                </div>
+                
+                {/* Linha de Conexão Central */}
+                <div className="absolute top-1/2 left-1/4 right-1/4 h-0.5 bg-amber-500/20 -translate-y-1/2" />
+                
+                <div className="grid grid-cols-2 gap-8 w-full max-w-md mt-6">
+                  {/* Destino 1: PF */}
+                  <div className="space-y-3 text-center group">
+                    <div className="mx-auto w-12 h-12 rounded-xl bg-background border-2 border-amber-500/30 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform shadow-sm">
+                      <Wallet className="w-6 h-6" />
+                    </div>
+                    <div className="space-y-1">
+                      <div className="text-xs font-black uppercase text-amber-600">R$ 1.452 (50%)</div>
+                      <div className="text-[9px] text-muted-foreground font-medium leading-tight">Distribuição para sua <strong>Conta Pessoal (PF/CPF)</strong></div>
+                    </div>
+                  </div>
+
+                  {/* Destino 2: Empresa */}
+                  <div className="space-y-3 text-center group">
+                    <div className="mx-auto w-12 h-12 rounded-xl bg-background border-2 border-amber-500/30 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform shadow-sm">
+                      <Rocket className="w-6 h-6" />
+                    </div>
+                    <div className="space-y-1">
+                      <div className="text-xs font-black uppercase text-amber-600">R$ 1.452 (50%)</div>
+                      <div className="text-[9px] text-muted-foreground font-medium leading-tight">Permanece na <strong>PJ Operacional</strong> para Escala/Caixa</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
