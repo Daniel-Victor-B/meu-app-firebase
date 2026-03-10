@@ -109,9 +109,15 @@ const FAQS_CONTAS = [
 export function AccountGuide() {
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
-      <div className="text-sm text-muted-foreground leading-relaxed">
-        A clareza financeira do MEI começa na separação total entre pessoa física e jurídica. 
-        Use este modelo de 4 contas para nunca mais misturar dinheiro. **Clique em cada conta para ver as dicas práticas.**
+      <div className="space-y-3">
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          A clareza financeira do MEI começa na separação total entre pessoa física e jurídica. 
+          Use este modelo de 4 contas para nunca mais misturar dinheiro.
+        </p>
+        <div className="flex items-center gap-2 text-[11px] font-medium text-primary/80 bg-primary/5 w-fit px-3 py-1.5 rounded-full border border-primary/10">
+          <HelpCircle className="w-3.5 h-3.5" />
+          Clique em cada conta para ver as dicas práticas.
+        </div>
       </div>
 
       <Accordion type="single" collapsible className="w-full space-y-4">
