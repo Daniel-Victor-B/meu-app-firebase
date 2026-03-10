@@ -42,7 +42,7 @@ const CONTAS = [
     detalhes: [
       "Patrimônio do Negócio: Dinheiro que pertence ao CNPJ, não à você.",
       "Segurança: Protege sua operação em meses de baixa ou emergências.",
-      "Separação: Não use para gastos do dia a dia. É um fundo de reserva.",
+      "Separação: Não use para gastos do dia a dia. É um fluxo de reserva.",
       "Crescimento: No futuro, use para investir em novos equipamentos."
     ]
   },
@@ -84,9 +84,11 @@ const CONTAS = [
 
 const FLUXO = [
   { de: "Cliente paga", para: "PJ Operacional", color: "text-indigo-500" },
-  { de: "PJ Operacional", para: "Custos + DAS + Pró-labore", color: "text-orange-500" },
-  { de: "Sobra mensal", para: "PJ Reserva (Roxo)", color: "text-purple-500" },
-  { de: "Lucro trimestral", para: "PF Investimentos (Verde)", color: "text-primary" },
+  { de: "PJ Operacional", para: "Custos Operacionais", color: "text-orange-500" },
+  { de: "PJ Operacional", para: "Imposto DAS", color: "text-red-500" },
+  { de: "PJ Operacional", para: "Pró-labore (Salário)", color: "text-blue-500" },
+  { de: "Sobra mensal", para: "PJ Reserva (Caixa)", color: "text-purple-500" },
+  { de: "Lucro Real", para: "PF Investimentos (Extra)", color: "text-primary" },
 ];
 
 const FAQS_CONTAS = [
