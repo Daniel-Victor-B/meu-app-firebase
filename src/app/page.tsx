@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react";
@@ -97,7 +98,10 @@ export default function Home() {
             <MeiLimitTracker 
               fatAcum={fatAcum}
               fatMensal={fat}
+              setFatMensal={setFat}
               limiteAnual={LIMITE_MEI_ANUAL}
+              mesesFat={mesesFat}
+              setMesesFat={setMesesFat}
               mesesRestantes={mesesRestantes}
             />
           </TabsContent>
