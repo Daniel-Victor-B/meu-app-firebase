@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { formatCurrency } from "@/lib/formatters";
 import { FileSpreadsheet, ShieldCheck, Info, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
@@ -170,7 +170,7 @@ export function CashFlowLedger() {
             <Table>
               <TableHeader className="bg-secondary/30">
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="w-[40px] font-bold text-[10px] uppercase"></TableHead>
+                  <TableHead className="w-[60px] font-bold text-[10px] uppercase text-center">Status</TableHead>
                   <TableHead className="w-[80px] font-bold text-[10px] uppercase">Mês</TableHead>
                   <TableHead className="min-w-[130px] font-bold text-[10px] uppercase">Receita (R$)</TableHead>
                   <TableHead className="min-w-[130px] font-bold text-[10px] uppercase">Custos (R$)</TableHead>
@@ -185,11 +185,14 @@ export function CashFlowLedger() {
                     "transition-colors group",
                     !row.active ? "opacity-40 bg-secondary/10" : "hover:bg-primary/5"
                   )}>
-                    <TableCell className="py-3">
-                      <Checkbox 
-                        checked={row.active} 
-                        onCheckedChange={(checked) => updateMonth(i, 'active', !!checked)}
-                      />
+                    <TableCell className="py-3 text-center">
+                      <div className="flex justify-center">
+                        <Switch 
+                          checked={row.active} 
+                          onCheckedChange={(checked) => updateMonth(i, 'active', !!checked)}
+                          className="scale-75 data-[state=checked]:bg-primary"
+                        />
+                      </div>
                     </TableCell>
                     <TableCell className="font-bold text-xs py-3">{MESES[i]}</TableCell>
                     <TableCell className="py-2">
@@ -240,7 +243,7 @@ export function CashFlowLedger() {
           </h4>
           <ul className="space-y-2 text-xs text-muted-foreground">
             <li className="flex gap-2 items-start"><span className="text-primary font-bold">1.</span> <span>Sexta-feira à tarde: atualize a receita e os custos da semana.</span></li>
-            <li className="flex gap-2 items-start"><span className="text-primary font-bold">2.</span> <span>Desative os meses onde não haverá operação para não distorcer as metas.</span></li>
+            <li className="flex gap-2 items-start"><span className="text-primary font-bold">2.</span> <span>Use o interruptor lateral para desativar meses sem operação e manter suas metas reais.</span></li>
             <li className="flex gap-2 items-start"><span className="text-primary font-bold">3.</span> <span>Confira se o acumulado da reserva está batendo com sua conta PJ Reserva.</span></li>
           </ul>
         </div>
@@ -250,7 +253,7 @@ export function CashFlowLedger() {
             Análise de Sustentabilidade
           </h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Se a "Sobra" mensal for menor que o valor do Pró-labore, você está retirando dinheiro do capital da empresa. Use os campos de ativação para simular meses de entressafra e planeje seu caixa para esses períodos.
+            Se a "Sobra" mensal for menor que o valor do Pró-labore, você está retirando dinheiro do capital da empresa. Use o interruptor para simular períodos de entressafra e planeje seu caixa para esses momentos.
           </p>
         </div>
       </div>
