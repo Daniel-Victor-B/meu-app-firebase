@@ -100,7 +100,12 @@ export default function Home() {
           </TabsContent>
 
           <TabsContent value="planilha">
-            <CashFlowLedger />
+            <CashFlowLedger 
+              fat={fat} setFat={setFat}
+              custos={custos} setCustos={setCustos}
+              prolabore={prolabore} setProlabore={setProlabore}
+              reservaPct={reservaPct} setReservaPct={setReservaPct}
+            />
           </TabsContent>
 
           <TabsContent value="limite">
