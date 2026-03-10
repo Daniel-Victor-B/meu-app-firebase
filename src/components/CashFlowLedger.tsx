@@ -60,28 +60,30 @@ export function CashFlowLedger() {
     das: 76
   });
 
-  // Atualiza o limite máximo de scroll quando a tabela carrega ou redimensiona
-  useEffect(() => {
-    const updateMaxScroll = () => {
-      if (tableContainerRef.current) {
-        const { scrollWidth, clientWidth } = tableContainerRef.current;
-        setMaxScroll(scrollWidth - clientWidth);
-      }
-    };
+  // Função para atualizar o valor máximo de scroll baseado no conteúdo real
+  const updateMaxScroll = () => {
+    if (tableContainerRef.current) {
+      const { scrollWidth, clientWidth } = tableContainerRef.current;
+      // Define o máximo como a diferença entre o que existe e o que cabe na tela
+      setMaxScroll(Math.max(1, scrollWidth - clientWidth));
+    }
+  };
 
+  useEffect(() => {
+    // Mede após o primeiro render e em cada mudança de dados
     updateMaxScroll();
+    
+    // Observador para redimensionamento de janela
     window.addEventListener('resize', updateMaxScroll);
     return () => window.removeEventListener('resize', updateMaxScroll);
   }, [data]);
 
-  // Sincroniza o slider com o scroll da tabela
   const handleScroll = () => {
     if (tableContainerRef.current) {
       setScrollPos(tableContainerRef.current.scrollLeft);
     }
   };
 
-  // Sincroniza a tabela com o movimento do slider
   const handleSliderChange = (value: number[]) => {
     if (tableContainerRef.current) {
       tableContainerRef.current.scrollLeft = value[0];
@@ -140,7 +142,6 @@ export function CashFlowLedger() {
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
-      {/* Resumo de Metas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="bg-primary/5 border-primary/20">
           <CardHeader className="pb-2">
@@ -206,19 +207,22 @@ export function CashFlowLedger() {
         </Card>
       </div>
 
-      {/* Navegador Superior */}
-      <div className="px-2 py-1 flex items-center gap-4 bg-secondary/20 rounded-t-xl border border-b-0 border-border/50">
-        <MoveHorizontal className="w-4 h-4 text-muted-foreground shrink-0" />
+      {/* Navegador Superior: Barra de Deslizar */}
+      <div className="space-y-3 px-2 py-4 bg-secondary/20 rounded-t-xl border border-b-0 border-border/50">
+        <div className="flex items-center justify-between text-[10px] font-bold uppercase text-muted-foreground px-1">
+          <span className="flex items-center gap-1"><MoveHorizontal className="w-3 h-3" /> Início</span>
+          <span>Navegar na Planilha</span>
+          <span>Fim <MoveHorizontal className="w-3 h-3" /></span>
+        </div>
         <Slider 
           value={[scrollPos]} 
           max={maxScroll} 
           step={1} 
           onValueChange={handleSliderChange} 
-          className="flex-1"
+          className="w-full"
         />
       </div>
 
-      {/* Planilha */}
       <Card className="overflow-hidden border-border/50 rounded-none border-y">
         <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between bg-secondary/10 pb-4 gap-4">
           <div>
@@ -226,7 +230,7 @@ export function CashFlowLedger() {
               <FileSpreadsheet className="w-5 h-5 text-primary" />
               Planejamento Anual
             </CardTitle>
-            <CardDescription>Arraste a barra para navegar lateralmente</CardDescription>
+            <CardDescription>Use a barra de deslizar acima para ver todos os campos</CardDescription>
           </div>
           <div className="text-right">
             <div className="text-[10px] font-bold text-muted-foreground uppercase">Receita Total Projetada</div>
@@ -240,17 +244,18 @@ export function CashFlowLedger() {
             onScroll={handleScroll}
             className="overflow-x-auto scroll-smooth scrollbar-hide"
           >
-            <Table className="min-w-[1000px]">
+            {/* min-w-[1200px] garante que a tabela seja larga o suficiente para rolar */}
+            <Table className="min-w-[1200px] table-fixed">
               <TableHeader className="bg-secondary/30">
                 <TableRow className="hover:bg-transparent border-b">
-                  <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r">Status</TableHead>
+                  <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r">Ativo</TableHead>
                   <TableHead className="w-[100px] font-bold text-[10px] uppercase border-r">Mês</TableHead>
-                  <TableHead className="w-[150px] font-bold text-[10px] uppercase px-4 text-blue-500">Receita (R$)</TableHead>
-                  <TableHead className="w-[150px] font-bold text-[10px] uppercase px-4 text-orange-500">Custos (R$)</TableHead>
-                  <TableHead className="w-[120px] text-right font-bold text-[10px] uppercase px-4">Sobra</TableHead>
-                  <TableHead className="w-[120px] text-right font-bold text-[10px] uppercase text-purple-500 px-4">Reserva</TableHead>
-                  <TableHead className="w-[120px] text-right font-bold text-[10px] uppercase text-primary px-4">Lucro Disp.</TableHead>
-                  <TableHead className="w-[150px] text-right font-bold text-[10px] uppercase px-4 opacity-50">Reserva Acum.</TableHead>
+                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-4 text-blue-500">Receita (R$)</TableHead>
+                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-4 text-orange-500">Custos (R$)</TableHead>
+                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase px-4">Sobra</TableHead>
+                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-purple-500 px-4">Reserva</TableHead>
+                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-primary px-4">Lucro Disp.</TableHead>
+                  <TableHead className="w-[180px] text-right font-bold text-[10px] uppercase px-4 opacity-50">Reserva Acum.</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -264,7 +269,7 @@ export function CashFlowLedger() {
                         <Switch 
                           checked={row.active} 
                           onCheckedChange={(checked) => updateMonth(i, 'active', !!checked)}
-                          className="scale-75"
+                          className="scale-90"
                         />
                       </div>
                     </TableCell>
@@ -309,27 +314,25 @@ export function CashFlowLedger() {
         </CardContent>
       </Card>
 
-      {/* Navegador Inferior */}
-      <div className="px-2 py-1 flex items-center gap-4 bg-secondary/20 rounded-b-xl border border-t-0 border-border/50">
-        <MoveHorizontal className="w-4 h-4 text-muted-foreground shrink-0" />
+      {/* Navegador Inferior: Barra de Deslizar */}
+      <div className="px-2 py-4 bg-secondary/20 rounded-b-xl border border-t-0 border-border/50">
         <Slider 
           value={[scrollPos]} 
           max={maxScroll} 
           step={1} 
           onValueChange={handleSliderChange} 
-          className="flex-1"
+          className="w-full"
         />
       </div>
 
-      {/* Dicas e Alertas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="p-4 rounded-xl border border-border bg-card/50">
           <h4 className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            Dica de Navegação
+            Navegação Lateral
           </h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Use as barras de deslizar acima e abaixo da planilha para visualizar todas as colunas de resultado. Em dispositivos móveis, você também pode arrastar a tabela diretamente com o dedo.
+            Use as barras de deslizar acima e abaixo da planilha para navegar. Elas funcionam como um controle deslizante de volume, movendo a tabela para a esquerda e para a direita.
           </p>
         </div>
         <div className="p-4 rounded-xl border border-border bg-card/50">
@@ -338,12 +341,11 @@ export function CashFlowLedger() {
             Análise de Sustentabilidade
           </h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Se a "Sobra" mensal for menor que o valor do Pró-labore, você está "comendo" o capital da empresa. Use a planilha para simular períodos de baixa e planejar o caixa.
+            Se a "Sobra" mensal for menor que o valor do Pró-labore, você está "comendo" o capital da empresa. Use a planilha para planejar meses de baixa.
           </p>
         </div>
       </div>
 
-      {/* FAQ Section */}
       <section className="space-y-6 pt-6">
         <div className="flex items-center gap-2">
           <div className="p-2 bg-secondary rounded-lg">
