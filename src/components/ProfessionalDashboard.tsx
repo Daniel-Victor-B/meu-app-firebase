@@ -268,20 +268,21 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
               <p className="text-[10px] font-bold uppercase text-primary tracking-wider">Regra de Ouro: Lucro não é salário.</p>
               <div className="space-y-2">
                 <p className="text-[9px] text-muted-foreground leading-tight">
-                  O Pró-labore é seu salário mensal fixo. O Lucro deve ser acumulado na <strong>conta PJ</strong> e distribuído <strong>trimestralmente</strong>.
+                  O Pró-labore é seu salário mensal fixo. O Lucro deve ser acumulado na <strong>conta PJ Operacional</strong> (não na PF) e distribuído <strong>trimestralmente</strong>.
                 </p>
                 <div className="grid gap-1.5 pt-1">
+                  <p className="text-[10px] font-black uppercase text-primary/70 tracking-widest">Você decide o destino do lucro acumulado:</p>
                   <div className="flex items-center gap-2 text-[9px] text-muted-foreground">
                     <div className="w-1 h-1 rounded-full bg-primary" />
                     <p><strong>Investir</strong>: Mandar para sua corretora PF</p>
                   </div>
                   <div className="flex items-center gap-2 text-[9px] text-muted-foreground">
                     <div className="w-1 h-1 rounded-full bg-primary" />
-                    <p><strong>Guardar</strong>: Manter na reserva da conta PJ</p>
+                    <p><strong>Guardar</strong>: Manter na reserva da conta PJ Operacional como segurança extra</p>
                   </div>
                   <div className="flex items-center gap-2 text-[9px] text-muted-foreground">
                     <div className="w-1 h-1 rounded-full bg-primary" />
-                    <p><strong>Escalar</strong>: Reinvestir para crescer e faturar mais</p>
+                    <p><strong>Escalar</strong>: Reinvestir na empresa para aumentar sua capacidade, estoque ou marketing</p>
                   </div>
                 </div>
               </div>

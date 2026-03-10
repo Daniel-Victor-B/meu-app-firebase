@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect } from "react";
@@ -469,10 +470,10 @@ export function CashFlowLedger({
           </p>
           <div className="space-y-3">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              O Pró-labore é sua retirada mensal fixa. O Lucro deve ser acumulado na <strong>conta PJ</strong> (não na PF) e distribuído <strong>trimestralmente</strong> conforme a saúde do negócio.
+              O Pró-labore é sua retirada mensal fixa. O Lucro deve ser acumulado na <strong>conta PJ Operacional</strong> (não na PF) e distribuído <strong>trimestralmente</strong> conforme a saúde do negócio.
             </p>
             <div className="grid gap-2 pt-1">
-              <p className="text-[10px] font-black uppercase text-primary/70 tracking-widest">Você decide o destino:</p>
+              <p className="text-[10px] font-black uppercase text-primary/70 tracking-widest">Você decide o destino do lucro acumulado:</p>
               
               <div className="flex gap-3 items-start bg-background/40 p-3 rounded-lg border border-primary/10 hover:bg-background/60 transition-colors">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
@@ -484,7 +485,7 @@ export function CashFlowLedger({
               <div className="flex gap-3 items-start bg-background/40 p-3 rounded-lg border border-primary/10 hover:bg-background/60 transition-colors">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  <strong>Guardar</strong>: Manter na conta PJ como reserva de segurança.
+                  <strong>Guardar</strong>: Manter na reserva da conta PJ Operacional como segurança extra.
                 </p>
               </div>
 
