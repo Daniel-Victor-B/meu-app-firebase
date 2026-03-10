@@ -30,7 +30,7 @@ interface MonthlyData {
 const FAQS_PLANILHA = [
   {
     q: "Como projetar meses com faturamento incerto?",
-    a: "No MEI, a sazonalidade é comum. Use a média dos últimos 3 meses para os meses futuros ou, se for comércio, projete 20-30% a mais em meses como Dezembro (Natal). A planilha serve justamente para você ver o impacto desses picos na sua reserva."
+    a: "No MEI, a sazonalidade é comum. Use a média dos últimos 3 meses para los meses futuros ou, se for comércio, projete 20-30% a mais em meses como Dezembro (Natal). A planilha serve justamente para você ver o impacto desses picos na sua reserva."
   },
   {
     q: "O que entra como 'Custos Operacionais' na planilha?",
@@ -185,33 +185,33 @@ export function CashFlowLedger() {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl">
-            {/* Bloco 1: Vendas Anuais */}
+            {/* Bloco 1: Faturamento Anual / Limite MEI */}
             <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
-              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Vendas Anuais (Limite)</div>
+              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Faturamento Anual (Limite MEI)</div>
               <div className="text-lg font-bold text-blue-500 leading-tight">{formatCurrency(totals.acumuladoReceita)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-blue-500/70">
                 <ShieldCheck className="w-2.5 h-2.5" />
-                {percentualLimite.toFixed(1)}% do Limite MEI
+                {percentualLimite.toFixed(1)}% do Teto de 81k
               </div>
             </div>
 
-            {/* Bloco 2: Lucro Líquido */}
+            {/* Bloco 2: Lucro Líquido (Dinheiro no Bolso) */}
             <div className="p-3 bg-primary/10 rounded-xl border border-primary/20">
-              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Lucro Líquido Total</div>
+              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Lucro Real (Dinheiro no Bolso)</div>
               <div className="text-lg font-bold text-primary leading-tight">{formatCurrency(totals.acumuladoLucro)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-primary/70">
                 <Wallet className="w-2.5 h-2.5" />
-                Dinheiro para você
+                Valor para uso Pessoal
               </div>
             </div>
 
-            {/* Bloco 3: Reserva Total */}
+            {/* Bloco 3: Reserva Total (Caixa da Empresa) */}
             <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
-              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Reserva Acumulada</div>
+              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Reserva (Caixa da Empresa)</div>
               <div className="text-lg font-bold text-purple-500 leading-tight">{formatCurrency(totals.acumuladoReserva)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-purple-500/70">
                 <PiggyBank className="w-2.5 h-2.5" />
-                Segurança do Negócio
+                Patrimônio do Negócio
               </div>
             </div>
           </div>
