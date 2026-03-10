@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useRef } from "react";
@@ -7,9 +8,15 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/formatters";
-import { FileSpreadsheet, ShieldCheck, Info, AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
+import { FileSpreadsheet, ShieldCheck, Info, AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, HelpCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const MESES = [
   "Jan", "Fev", "Mar", "Abr", "Mai", "Jun", 
@@ -21,6 +28,21 @@ interface MonthlyData {
   custos: number;
   active: boolean;
 }
+
+const FAQS_PLANILHA = [
+  {
+    q: "Como projetar meses com faturamento incerto?",
+    a: "No MEI, a sazonalidade é comum. Use a média dos últimos 3 meses para os meses futuros ou, se for comércio, projete 20-30% a mais em meses como Dezembro (Natal). A planilha serve justamente para você ver o impacto desses picos na sua reserva."
+  },
+  {
+    q: "O que entra como 'Custos Operacionais' na planilha?",
+    a: "Tudo o que a empresa gasta para existir: ferramentas (SaaS), internet, materiais, embalagens, fretes e assinaturas. Não inclua aqui o seu Pró-labore nem o DAS, pois a planilha já calcula esses valores separadamente para te dar a Sobra Real."
+  },
+  {
+    q: "Por que separar a 'Reserva' do 'Lucro Disponível'?",
+    a: "O Lucro Disponível é o dinheiro que você pode gastar com você (além do salário) ou reinvestir. A Reserva é o dinheiro da empresa para emergências. Sem essa separação, você corre o risco de ficar sem caixa no primeiro mês que o faturamento cair."
+  }
+];
 
 export function CashFlowLedger() {
   const tableContainerRef = useRef<HTMLDivElement>(null);
@@ -36,10 +58,11 @@ export function CashFlowLedger() {
 
   const scrollTable = (direction: 'left' | 'right') => {
     if (tableContainerRef.current) {
-      const scrollAmount = 300;
-      tableContainerRef.current.scrollBy({ 
-        left: direction === 'left' ? -scrollAmount : scrollAmount, 
-        behavior: 'smooth' 
+      const scrollAmount = 350;
+      const currentScroll = tableContainerRef.current.scrollLeft;
+      tableContainerRef.current.scrollTo({
+        left: direction === 'left' ? currentScroll - scrollAmount : currentScroll + scrollAmount,
+        behavior: 'smooth'
       });
     }
   };
@@ -94,7 +117,7 @@ export function CashFlowLedger() {
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
 
   return (
-    <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-10">
+    <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
       {/* Resumo de Metas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="bg-primary/5 border-primary/20">
@@ -169,78 +192,58 @@ export function CashFlowLedger() {
               <FileSpreadsheet className="w-5 h-5 text-primary" />
               Planejamento Anual
             </CardTitle>
-            <CardDescription>Ajuste os valores mensais para planejar seu fluxo de caixa</CardDescription>
+            <CardDescription>Ajuste os valores para simular seu ano</CardDescription>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right mr-4">
-              <div className="text-[10px] font-bold text-muted-foreground uppercase">Faturamento Total</div>
-              <div className="text-xl font-bold text-primary">{formatCurrency(totals.acumuladoReceita)}</div>
+          <div className="flex items-center gap-3">
+            <div className="text-right mr-2">
+              <div className="text-[10px] font-bold text-muted-foreground uppercase">Receita Total</div>
+              <div className="text-lg font-bold text-primary">{formatCurrency(totals.acumuladoReceita)}</div>
             </div>
-            
-            {/* Controles de Navegação Superiores */}
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className="h-8 w-8 rounded-full shadow-sm hover:bg-primary hover:text-primary-foreground" 
-                onClick={() => scrollTable('left')}
-                title="Rolar para esquerda"
-              >
-                <ChevronLeft className="h-4 w-4" />
+            {/* Controles no Topo */}
+            <div className="flex gap-1.5 p-1 bg-background/50 rounded-full border">
+              <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full" onClick={() => scrollTable('left')}>
+                <ChevronLeft className="w-4 h-4" />
               </Button>
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className="h-8 w-8 rounded-full shadow-sm hover:bg-primary hover:text-primary-foreground" 
-                onClick={() => scrollTable('right')}
-                title="Rolar para direita"
-              >
-                <ChevronRight className="h-4 w-4" />
+              <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full" onClick={() => scrollTable('right')}>
+                <ChevronRight className="w-4 h-4" />
               </Button>
             </div>
           </div>
         </CardHeader>
-        
-        {/* Indicador Visual de Arraste (Mobile) */}
-        <div className="md:hidden flex items-center justify-center gap-3 py-2.5 bg-secondary/20 border-b text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
-          <ChevronLeft className="w-3 h-3 animate-bounce-x-left" />
-          Arraste para ver os lucros
-          <ChevronRight className="w-3 h-3 animate-bounce-x-right" />
-        </div>
 
-        <CardContent className="p-0 relative">
+        <CardContent className="p-0">
           <div 
             ref={tableContainerRef}
-            className="overflow-x-auto scrollbar-hide scroll-smooth"
+            className="overflow-x-auto scroll-smooth scrollbar-hide relative"
           >
-            <Table>
+            <Table className="min-w-[900px]">
               <TableHeader className="bg-secondary/30">
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center sticky left-0 bg-secondary/30 z-10 border-r">Status</TableHead>
-                  <TableHead className="w-[100px] font-bold text-[10px] uppercase sticky left-[80px] bg-secondary/30 z-10 border-r">Mês</TableHead>
-                  <TableHead className="min-w-[140px] font-bold text-[10px] uppercase px-4">Receita (R$)</TableHead>
-                  <TableHead className="min-w-[140px] font-bold text-[10px] uppercase px-4">Custos (R$)</TableHead>
-                  <TableHead className="min-w-[120px] text-right font-bold text-[10px] uppercase px-4">Sobra</TableHead>
-                  <TableHead className="min-w-[120px] text-right font-bold text-[10px] uppercase text-purple-500 px-4">Reserva</TableHead>
-                  <TableHead className="min-w-[120px] text-right font-bold text-[10px] uppercase text-primary px-4">Lucro Disp.</TableHead>
+                <TableRow className="hover:bg-transparent border-b">
+                  <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center sticky left-0 z-20 bg-muted/95 backdrop-blur-sm border-r">Status</TableHead>
+                  <TableHead className="w-[100px] font-bold text-[10px] uppercase sticky left-[80px] z-20 bg-muted/95 backdrop-blur-sm border-r">Mês</TableHead>
+                  <TableHead className="w-[150px] font-bold text-[10px] uppercase px-4">Receita (R$)</TableHead>
+                  <TableHead className="w-[150px] font-bold text-[10px] uppercase px-4">Custos (R$)</TableHead>
+                  <TableHead className="w-[120px] text-right font-bold text-[10px] uppercase px-4">Sobra</TableHead>
+                  <TableHead className="w-[120px] text-right font-bold text-[10px] uppercase text-purple-500 px-4">Reserva</TableHead>
+                  <TableHead className="w-[120px] text-right font-bold text-[10px] uppercase text-primary px-4">Lucro Disp.</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {totals.rows.map((row, i) => (
-                  <TableRow key={MESES[i]} className={cn(
+                  <TableRow key={i} className={cn(
                     "transition-colors group",
-                    !row.active ? "opacity-40 bg-secondary/10" : "hover:bg-primary/5"
+                    !row.active ? "opacity-30 grayscale" : "hover:bg-primary/5"
                   )}>
-                    <TableCell className="py-3 text-center sticky left-0 bg-card z-10 border-r group-hover:bg-primary/5">
+                    <TableCell className="py-3 text-center sticky left-0 z-20 bg-card border-r">
                       <div className="flex justify-center">
                         <Switch 
                           checked={row.active} 
                           onCheckedChange={(checked) => updateMonth(i, 'active', !!checked)}
-                          className="scale-75 data-[state=checked]:bg-primary"
+                          className="scale-75"
                         />
                       </div>
                     </TableCell>
-                    <TableCell className="font-bold text-xs py-3 sticky left-[80px] bg-card z-10 border-r group-hover:bg-primary/5">
+                    <TableCell className="font-bold text-xs py-3 sticky left-[80px] z-20 bg-card border-r">
                       {MESES[i]}
                     </TableCell>
                     <TableCell className="py-2 px-4">
@@ -249,7 +252,7 @@ export function CashFlowLedger() {
                         disabled={!row.active}
                         value={row.receita} 
                         onChange={(e) => updateMonth(i, 'receita', e.target.value)}
-                        className="h-9 text-xs bg-transparent border-transparent hover:border-input focus:border-primary focus-visible:ring-0 p-2 font-bold transition-all disabled:opacity-50"
+                        className="h-8 text-xs font-bold bg-transparent border-transparent hover:border-input focus:border-primary focus:ring-0"
                       />
                     </TableCell>
                     <TableCell className="py-2 px-4">
@@ -258,16 +261,16 @@ export function CashFlowLedger() {
                         disabled={!row.active}
                         value={row.custos} 
                         onChange={(e) => updateMonth(i, 'custos', e.target.value)}
-                        className="h-9 text-xs bg-transparent border-transparent hover:border-input focus:border-blue-500 focus-visible:ring-0 p-2 font-bold transition-all disabled:opacity-50"
+                        className="h-8 text-xs font-bold bg-transparent border-transparent hover:border-input focus:border-blue-500 focus:ring-0"
                       />
                     </TableCell>
-                    <TableCell className="text-right text-xs font-medium tabular-nums py-3 px-4">
+                    <TableCell className="text-right text-xs font-medium tabular-nums px-4">
                       {formatCurrency(row.sobra)}
                     </TableCell>
-                    <TableCell className="text-right text-xs font-bold text-purple-500 bg-purple-500/5 tabular-nums py-3 px-4">
+                    <TableCell className="text-right text-xs font-bold text-purple-500 tabular-nums px-4 bg-purple-500/5">
                       {formatCurrency(row.reserva)}
                     </TableCell>
-                    <TableCell className="text-right text-xs font-bold text-primary bg-primary/5 tabular-nums py-3 px-4">
+                    <TableCell className="text-right text-xs font-bold text-primary tabular-nums px-4 bg-primary/5">
                       {formatCurrency(row.lucro)}
                     </TableCell>
                   </TableRow>
@@ -276,30 +279,18 @@ export function CashFlowLedger() {
             </Table>
           </div>
           
-          {/* Controles de Navegação Inferiores */}
+          {/* Controles no Rodapé da Planilha */}
           <div className="flex items-center justify-between p-3 bg-secondary/10 border-t">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-8 gap-2 text-[10px] font-bold uppercase hover:bg-background" 
-              onClick={() => scrollTable('left')}
-            >
-              <ChevronLeft className="h-4 w-4" />
+            <Button variant="ghost" size="sm" className="h-8 gap-2 text-[10px] font-bold uppercase" onClick={() => scrollTable('left')}>
+              <ChevronLeft className="w-4 h-4" />
               Ver Início
             </Button>
-            
-            <div className="hidden sm:block text-[10px] font-bold text-muted-foreground uppercase opacity-50">
-              Controle de Fluxo Anual MEI
+            <div className="text-[10px] font-bold text-muted-foreground uppercase opacity-50 tracking-widest hidden sm:block">
+              Controle Mensal Detalhado
             </div>
-
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-8 gap-2 text-[10px] font-bold uppercase hover:bg-background" 
-              onClick={() => scrollTable('right')}
-            >
+            <Button variant="ghost" size="sm" className="h-8 gap-2 text-[10px] font-bold uppercase" onClick={() => scrollTable('right')}>
               Ver Resultados
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="w-4 h-4" />
             </Button>
           </div>
         </CardContent>
@@ -329,18 +320,31 @@ export function CashFlowLedger() {
         </div>
       </div>
 
-      <style jsx global>{`
-        @keyframes bounce-x-left {
-          0%, 100% { transform: translateX(0); }
-          50% { transform: translateX(-4px); }
-        }
-        @keyframes bounce-x-right {
-          0%, 100% { transform: translateX(0); }
-          50% { transform: translateX(4px); }
-        }
-        .animate-bounce-x-left { animation: bounce-x-left 1.5s infinite; }
-        .animate-bounce-x-right { animation: bounce-x-right 1.5s infinite; }
-      `}</style>
+      {/* FAQ Section */}
+      <section className="space-y-6 pt-6">
+        <div className="flex items-center gap-2">
+          <div className="p-2 bg-secondary rounded-lg">
+            <HelpCircle className="w-5 h-5 text-muted-foreground" />
+          </div>
+          <div>
+            <h3 className="font-headline font-bold text-lg">Dúvidas sobre o Controle Mensal</h3>
+            <p className="text-xs text-muted-foreground">Como usar a planilha para tomar decisões melhores.</p>
+          </div>
+        </div>
+
+        <Accordion type="single" collapsible className="w-full space-y-2">
+          {FAQS_PLANILHA.map((faq, idx) => (
+            <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-xl px-4 bg-card/50">
+              <AccordionTrigger className="text-sm font-bold text-left hover:no-underline py-4">
+                {faq.q}
+              </AccordionTrigger>
+              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-4">
+                {faq.a}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </section>
     </div>
   );
 }
