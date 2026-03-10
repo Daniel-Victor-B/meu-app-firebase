@@ -5,8 +5,8 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatCurrency } from "@/lib/formatters";
-import { TrendingUp, Wallet, ArrowUpRight, ArrowDownRight, Target, ShieldCheck, BarChart3 } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { TrendingUp, Wallet, ArrowUpRight, ArrowDownRight, Target, ShieldCheck, BarChart3, MousePointer2 } from "lucide-react";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Dot } from "recharts";
 
 interface ProfessionalDashboardProps {
   fat: number;
@@ -87,17 +87,23 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
 
       {/* Gráfico de Projeção com cores sincronizadas */}
       <Card>
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-primary" />
-            <CardTitle className="text-lg">Projeção de Acúmulo (6 meses)</CardTitle>
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-primary" />
+              <CardTitle className="text-lg">Projeção de Acúmulo (6 meses)</CardTitle>
+            </div>
+            <div className="flex items-center gap-1.5 text-[10px] font-bold text-primary bg-primary/10 px-2 py-1 rounded-full border border-primary/20">
+              <MousePointer2 className="w-3 h-3" />
+              TOQUE PARA VER DETALHES
+            </div>
           </div>
-          <CardDescription>Crescimento previsto do caixa e da reserva</CardDescription>
+          <CardDescription>Crescimento previsto do seu lucro e reserva ao longo do tempo</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-[250px] w-full">
+          <div className="h-[280px] w-full mt-4">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={projecaoData}>
+              <AreaChart data={projecaoData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorLucro" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
@@ -108,15 +114,54 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
                     <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(v) => `R$${v/1000}k`} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
-                  labelStyle={{ color: 'hsl(var(--foreground))' }}
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
+                <XAxis 
+                  dataKey="name" 
+                  stroke="hsl(var(--muted-foreground))" 
+                  fontSize={12} 
+                  tickLine={false}
+                  axisLine={false}
+                  dy={10}
                 />
-                <Area type="monotone" dataKey="lucroAcumulado" name="Lucro Acumulado" stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#colorLucro)" strokeWidth={2} />
-                <Area type="monotone" dataKey="reservaAcumulada" name="Reserva Acumulada" stroke="#8b5cf6" fillOpacity={1} fill="url(#colorReserva)" strokeWidth={2} />
+                <YAxis 
+                  stroke="hsl(var(--muted-foreground))" 
+                  fontSize={10} 
+                  tickFormatter={(v) => `R$${v/1000}k`} 
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <Tooltip 
+                  cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '4 4' }}
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--card))', 
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '12px',
+                    padding: '12px',
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                  }}
+                  formatter={(value: number) => [formatCurrency(value), '']}
+                  labelStyle={{ fontWeight: 'bold', marginBottom: '8px', color: 'hsl(var(--foreground))' }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="lucroAcumulado" 
+                  name="Lucro Acumulado" 
+                  stroke="hsl(var(--primary))" 
+                  fillOpacity={1} 
+                  fill="url(#colorLucro)" 
+                  strokeWidth={3}
+                  activeDot={{ r: 6, strokeWidth: 0 }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="reservaAcumulada" 
+                  name="Reserva Acumulada" 
+                  stroke="#8b5cf6" 
+                  fillOpacity={1} 
+                  fill="url(#colorReserva)" 
+                  strokeWidth={3}
+                  activeDot={{ r: 6, strokeWidth: 0 }}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -127,7 +172,7 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">DRE Simplificada (Mês Atual)</CardTitle>
-          <CardDescription>Fluxo de caixa detalhado</CardDescription>
+          <CardDescription>Fluxo de caixa detalhado com a separação por cores</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
