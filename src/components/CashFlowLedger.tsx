@@ -104,7 +104,6 @@ export function CashFlowLedger() {
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
-      {/* Cards de Resumo */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="bg-primary/5 border-primary/20 shadow-md">
           <CardHeader className="pb-2">
@@ -170,7 +169,6 @@ export function CashFlowLedger() {
         </Card>
       </div>
 
-      {/* Tabela de Planejamento */}
       <Card className="overflow-hidden border-border/50 shadow-xl">
         <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between bg-card pb-4 gap-4 px-6 pt-6 border-b">
           <div>
@@ -187,22 +185,31 @@ export function CashFlowLedger() {
         </CardHeader>
 
         <CardContent className="p-0">
-          {/* Container com scroll horizontal e barra escondida */}
           <div className="overflow-x-auto no-scrollbar pb-6">
             <Table className="min-w-[1100px] border-collapse">
               <TableHeader className="bg-secondary/30">
-                {/* LINHA DE INSTRUÇÃO: Dentro da planilha, acima das descrições */}
                 <TableRow className="hover:bg-transparent border-b bg-primary/10">
                   <TableHead colSpan={8} className="h-12 py-0 text-center border-b border-primary/20">
-                    <div className="flex items-center justify-center gap-12 animate-pulse text-[10px] font-bold uppercase tracking-[0.4em] text-primary/80">
-                      <ArrowLeftRight className="w-4 h-4" />
-                      Área de Rolagem Lateral
-                      <ArrowLeftRight className="w-4 h-4" />
+                    <div className="flex items-center justify-between px-8 animate-pulse text-[10px] font-bold uppercase tracking-[0.4em] text-primary/80">
+                      <div className="flex items-center gap-4">
+                        <ArrowLeftRight className="w-4 h-4" />
+                        Área de Rolagem Lateral
+                        <ArrowLeftRight className="w-4 h-4" />
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <ArrowLeftRight className="w-4 h-4" />
+                        Área de Rolagem Lateral
+                        <ArrowLeftRight className="w-4 h-4" />
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <ArrowLeftRight className="w-4 h-4" />
+                        Área de Rolagem Lateral
+                        <ArrowLeftRight className="w-4 h-4" />
+                      </div>
                     </div>
                   </TableHead>
                 </TableRow>
                 
-                {/* LINHA DE DESCRIÇÃO (Cabeçalho Real) */}
                 <TableRow className="hover:bg-transparent border-b">
                   <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r bg-secondary/10">Ativar</TableHead>
                   <TableHead className="w-[90px] font-bold text-[10px] uppercase border-r text-center bg-secondary/10">Mês</TableHead>
@@ -270,7 +277,6 @@ export function CashFlowLedger() {
         </CardContent>
       </Card>
 
-      {/* Alerta Financeiro */}
       <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5">
         <h4 className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2 text-amber-500">
           <AlertTriangle className="w-4 h-4" />
@@ -306,7 +312,6 @@ export function CashFlowLedger() {
         </Accordion>
       </section>
 
-      {/* Estilo para esconder a barra de rolagem */}
       <style jsx global>{`
         .no-scrollbar::-webkit-scrollbar {
           display: none;
