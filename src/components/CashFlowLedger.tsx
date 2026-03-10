@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo } from "react";
@@ -103,6 +102,9 @@ export function CashFlowLedger() {
   const metaTotal = (custoEmpresaMensal + globalParams.prolabore) * 6;
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
 
+  const LIMITE_MEI = 81000;
+  const percentualLimite = Math.min(100, (totals.acumuladoReceita / LIMITE_MEI) * 100);
+
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -179,9 +181,15 @@ export function CashFlowLedger() {
             </CardTitle>
             <CardDescription className="text-xs">Configure seus meses para simular o ano fiscal</CardDescription>
           </div>
-          <div className="text-right p-3 bg-primary/5 rounded-xl border border-primary/10">
-            <div className="text-[10px] font-bold text-muted-foreground uppercase">Receita Total Projetada</div>
-            <div className="text-xl font-bold text-primary">{formatCurrency(totals.acumuladoReceita)}</div>
+          <div className="flex flex-col items-end gap-1.5">
+            <div className="text-right p-3 bg-primary/10 rounded-xl border border-primary/20">
+              <div className="text-[10px] font-bold text-muted-foreground uppercase leading-none mb-1">Total de Vendas no Ano</div>
+              <div className="text-xl font-bold text-primary">{formatCurrency(totals.accumuladoReceita)}</div>
+              <div className="flex items-center justify-end gap-1 mt-1 text-[9px] font-black uppercase text-primary/70">
+                <ShieldCheck className="w-2.5 h-2.5" />
+                {percentualLimite.toFixed(1)}% do Limite MEI
+              </div>
+            </div>
           </div>
         </CardHeader>
 
