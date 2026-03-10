@@ -29,7 +29,10 @@ import {
   ArrowRight,
   Target,
   Rocket,
-  Landmark
+  Landmark,
+  Sparkles,
+  ChevronRight,
+  Zap
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -39,6 +42,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
 import { type MonthlyData } from "@/app/page";
 
 const MESES = [
@@ -465,140 +469,172 @@ export function CashFlowLedger({
       </Card>
 
       <div className="grid grid-cols-1 gap-6">
-        <div className="p-6 rounded-2xl border border-amber-500/20 bg-amber-500/5 flex flex-col gap-6 shadow-sm">
-          <div className="flex gap-4 items-start">
-            <Lightbulb className="w-6 h-6 text-amber-600 dark:text-amber-500 shrink-0 mt-1" />
-            <div className="space-y-4">
-              <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-500">Gestão de Destino: O Ciclo do Capital</h4>
-              <p className="text-xs text-muted-foreground leading-relaxed max-w-2xl">
-                Diferente do Pró-labore, que é sua retirada mensal fixa, o <strong>Lucro Real</strong> deve permanecer na <strong>conta PJ Operacional</strong> (não na PF) para ser avaliado estrategicamente a cada 90 dias.
-              </p>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                <div className="flex flex-col gap-2 bg-background/60 p-4 rounded-xl border border-amber-500/10 transition-all hover:border-amber-500/30">
-                  <div className="flex items-center gap-2 text-amber-600 font-bold text-[10px] uppercase">
-                    <Wallet className="w-3.5 h-3.5" />
-                    Investir
-                  </div>
-                  <p className="text-[10px] text-muted-foreground leading-tight">Mandar para sua corretora <strong>Pessoal (PF/CPF) (ex.: XP, BTG, RICO)</strong> para patrimônio de longo prazo.</p>
+        <div className="p-1 rounded-3xl bg-gradient-to-br from-amber-500/40 via-amber-500/10 to-transparent shadow-2xl">
+          <div className="bg-background/95 backdrop-blur-xl rounded-[22px] p-8 space-y-10 overflow-hidden relative">
+            {/* Background Decorativo */}
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-amber-500/5 blur-[100px] rounded-full" />
+            
+            {/* Header: Motor de Prosperidade */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
+              <div className="space-y-3">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full">
+                  <Zap className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-600">Gestão de Destino Profissional</span>
                 </div>
-                <div className="flex flex-col gap-2 bg-background/60 p-4 rounded-xl border border-amber-500/10 transition-all hover:border-amber-500/30">
-                  <div className="flex items-center gap-2 text-amber-600 font-bold text-[10px] uppercase">
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    Guardar
-                  </div>
-                  <p className="text-[10px] text-muted-foreground leading-tight">Manter na própria <strong>conta PJ Operacional</strong> como capital de giro extra para meses de baixa.</p>
+                <h3 className="text-4xl font-black tracking-tighter text-foreground leading-none">
+                  O Ciclo do Capital <span className="text-amber-500">R$ 10k</span>
+                </h3>
+                <p className="text-sm text-muted-foreground font-medium max-w-md leading-relaxed">
+                  Visualize o potencial explosivo de uma operação otimizada com 10% de custos. 
+                  Transforme faturamento bruto em patrimônio real.
+                </p>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Padrão de Excelência</div>
+                  <div className="text-xl font-black text-amber-600">Unicórnio</div>
                 </div>
-                <div className="flex flex-col gap-2 bg-background/60 p-4 rounded-xl border border-amber-500/10 transition-all hover:border-amber-500/30">
-                  <div className="flex items-center gap-2 text-amber-600 font-bold text-[10px] uppercase">
-                    <Rocket className="w-3.5 h-3.5" />
-                    Escalar
-                  </div>
-                  <p className="text-[10px] text-muted-foreground leading-tight">Reinvestir em marketing, ferramentas ou estoque para aumentar o teto de faturamento.</p>
+                <div className="w-12 h-12 rounded-2xl bg-amber-500 flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
+                  <Target className="w-6 h-6" />
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Representação Unicórnio: Estudo de Caso Trimestral */}
-          <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500">
-                <Info className="w-5 h-5" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Estudo de Caso: Ciclo de R$ 5k</span>
-              </div>
-              <div className="px-3 py-1 bg-amber-500/20 rounded-full border border-amber-500/30 text-[9px] font-black text-amber-600 uppercase tracking-widest">
-                Modelo Educativo
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-              <div className="space-y-4">
+            {/* Fluxo Visual: Nível Unicórnio */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
+              {/* Coluna 1: Input de Energia (Faturamento) */}
+              <div className="lg:col-span-3 space-y-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                  <h5 className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Fluxo Mensal (Base)</h5>
+                  <div className="w-2 h-2 rounded-full bg-amber-500" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Faturamento Mensal</span>
                 </div>
-                <div className="p-4 rounded-xl bg-background/40 border border-amber-500/10 space-y-3 shadow-inner">
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="text-muted-foreground">Faturamento</span>
-                    <span className="font-bold text-amber-600">R$ 5.000</span>
+                <div className="p-6 rounded-3xl bg-secondary/30 border-2 border-amber-500/20 shadow-inner group hover:border-amber-500/40 transition-all">
+                  <div className="text-3xl font-black text-foreground tabular-nums tracking-tighter">R$ 10.000</div>
+                  <div className="mt-2 flex items-center gap-2 text-[9px] font-black uppercase text-amber-600/70">
+                    <Rocket className="w-3 h-3" />
+                    Potencial de Escala 10x
                   </div>
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="text-muted-foreground">Obrigações Totais</span>
-                    <span className="font-medium">R$ 2.580</span>
-                  </div>
-                  <div className="h-px bg-amber-500/20" />
-                  <div className="flex justify-between items-center">
-                    <span className="text-[9px] font-black uppercase text-amber-600">Sobra Bruta</span>
-                    <span className="text-sm font-black text-amber-700 dark:text-amber-400">R$ 2.420</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                  <h5 className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Alocação Inicial</h5>
-                </div>
-                <div className="p-4 rounded-xl bg-background/40 border border-amber-500/10 space-y-3 shadow-inner">
-                  <div className="flex justify-between items-center text-xs">
-                    <div className="flex items-center gap-2">
-                      <PiggyBank className="w-3.5 h-3.5 text-purple-500" />
-                      <span className="text-muted-foreground">PJ Reserva</span>
-                    </div>
-                    <span className="font-bold text-purple-500">R$ 1.452 (60%)</span>
-                  </div>
-                  <div className="flex justify-between items-center text-xs">
-                    <div className="flex items-center gap-2">
-                      <Landmark className="w-3.5 h-3.5 text-primary" />
-                      <span className="text-muted-foreground">Acumulado PJ Op.</span>
-                    </div>
-                    <span className="font-bold text-primary">R$ 968 (40%)</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* A Grande Decisão Trimestral (Representação Gráfica) */}
-            <div className="pt-6 border-t border-amber-500/20 space-y-6">
-              <div className="text-center space-y-1">
-                <div className="text-[10px] font-black uppercase text-amber-600 tracking-[0.3em]">Fechamento do Trimestre</div>
-                <div className="text-2xl font-black text-foreground">R$ 2.904 <span className="text-xs font-normal text-muted-foreground">acumulados na PJ Operacional</span></div>
-              </div>
-
-              <div className="relative flex flex-col items-center py-6">
-                {/* Ícone Central: Ponto de Decisão */}
-                <div className="w-14 h-14 rounded-2xl bg-amber-500 text-white flex items-center justify-center shadow-lg z-10 animate-pulse">
-                  <Target className="w-7 h-7" />
                 </div>
                 
-                {/* Linha de Conexão Central */}
-                <div className="absolute top-1/2 left-1/4 right-1/4 h-0.5 bg-amber-500/20 -translate-y-1/2" />
-                
-                <div className="grid grid-cols-2 gap-8 w-full max-md mt-6">
-                  {/* Destino 1: PF */}
-                  <div className="space-y-3 text-center group">
-                    <div className="mx-auto w-12 h-12 rounded-xl bg-background border-2 border-amber-500/30 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform shadow-sm">
-                      <Wallet className="w-6 h-6" />
+                {/* Deduções Visuais */}
+                <div className="space-y-2 pl-4 border-l-2 border-dashed border-amber-500/20">
+                  <div className="flex justify-between text-xs py-1">
+                    <span className="text-muted-foreground">Custos (10%)</span>
+                    <span className="font-bold text-orange-500">- R$ 1.000</span>
+                  </div>
+                  <div className="flex justify-between text-xs py-1">
+                    <span className="text-muted-foreground">DAS (Fixo)</span>
+                    <span className="font-bold text-red-500">- R$ 76</span>
+                  </div>
+                  <div className="flex justify-between text-xs py-1">
+                    <span className="text-muted-foreground">Pró-labore</span>
+                    <span className="font-bold text-blue-500">- R$ 2.000</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Conector Central: O Filtro de Lucro */}
+              <div className="lg:col-span-1 flex items-center justify-center py-4">
+                <div className="h-px lg:h-full w-full lg:w-px bg-gradient-to-b from-amber-500/50 via-amber-500/10 to-transparent relative">
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background border-2 border-amber-500/30 flex items-center justify-center shadow-xl">
+                    <ChevronRight className="w-4 h-4 text-amber-500 rotate-90 lg:rotate-0" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Coluna 2: A Sobra Explosiva */}
+              <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Bloco de Resultado Mensal */}
+                <div className="space-y-6">
+                   <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-primary" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Resultado Líquido do Mês</span>
+                  </div>
+                  
+                  <div className="p-8 rounded-[40px] bg-amber-500/10 border-2 border-amber-500/30 shadow-2xl relative group overflow-hidden">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                      <Sparkles className="w-20 h-20" />
                     </div>
-                    <div className="space-y-1">
-                      <div className="text-xs font-black uppercase text-amber-600">R$ 1.452 (50%)</div>
-                      <div className="text-[9px] text-muted-foreground font-medium leading-tight">Distribuição para sua <strong>Conta Corrente Pessoal (PF/CPF)</strong></div>
+                    <div className="text-[10px] font-black uppercase text-amber-600 mb-2 tracking-[0.3em]">Sobra Bruta Mensal</div>
+                    <div className="text-5xl font-black text-foreground tracking-tighter tabular-nums">R$ 6.924</div>
+                    <div className="mt-4 flex items-center gap-2">
+                       <Badge className="bg-amber-500 text-white border-none font-black text-[9px] uppercase tracking-widest">Taxa de Eficiência: 69%</Badge>
                     </div>
                   </div>
 
-                  {/* Destino 2: Empresa */}
-                  <div className="space-y-3 text-center group">
-                    <div className="mx-auto w-12 h-12 rounded-xl bg-background border-2 border-amber-500/30 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform shadow-sm">
-                      <Rocket className="w-6 h-6" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 rounded-2xl bg-secondary/50 border border-purple-500/20 space-y-1">
+                      <div className="text-[8px] font-black text-purple-500 uppercase tracking-widest">Reserva PJ (60%)</div>
+                      <div className="text-lg font-black text-foreground">R$ 4.154</div>
                     </div>
-                    <div className="space-y-1">
-                      <div className="text-xs font-black uppercase text-amber-600">R$ 1.452 (50%)</div>
-                      <div className="text-[9px] text-muted-foreground font-medium leading-tight">Permanece na <strong>PJ Operacional</strong> para Escala/Caixa</div>
+                    <div className="p-4 rounded-2xl bg-secondary/50 border border-primary/20 space-y-1">
+                      <div className="text-[8px] font-black text-primary uppercase tracking-widest">Acumulado Op (40%)</div>
+                      <div className="text-lg font-black text-foreground">R$ 2.770</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bloco de Explosão Trimestral */}
+                <div className="space-y-6">
+                   <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">O Poder dos 90 Dias</span>
+                  </div>
+
+                  <div className="relative h-full">
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-transparent blur-3xl opacity-30 rounded-full" />
+                    <div className="relative h-full flex flex-col justify-between p-8 rounded-[40px] border-2 border-dashed border-amber-500/30 bg-background/40 backdrop-blur-md shadow-xl group">
+                      <div className="space-y-1">
+                        <div className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Fechamento do Trimestre</div>
+                        <div className="text-2xl font-black text-foreground">R$ 8.310 <span className="text-xs font-normal text-muted-foreground opacity-60">acumulados</span></div>
+                        <div className="text-[9px] font-bold text-amber-600 uppercase italic">Cálculo: R$ 2.770 x 3 meses</div>
+                      </div>
+
+                      <div className="py-8 flex items-center justify-center relative">
+                        <div className="absolute h-px w-full bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
+                        <div className="w-16 h-16 rounded-3xl bg-amber-500 text-white flex items-center justify-center shadow-2xl shadow-amber-500/40 z-10 group-hover:scale-110 transition-transform">
+                          <Landmark className="w-8 h-8" />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="text-center space-y-2">
+                          <div className="mx-auto w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
+                             <Wallet className="w-5 h-5" />
+                          </div>
+                          <div className="space-y-0.5">
+                            <div className="text-sm font-black text-amber-600">R$ 4.155</div>
+                            <div className="text-[8px] font-black text-muted-foreground uppercase leading-none">PF: Sua Liberdade (50%)</div>
+                          </div>
+                        </div>
+                        <div className="text-center space-y-2">
+                          <div className="mx-auto w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
+                             <Rocket className="w-5 h-5" />
+                          </div>
+                          <div className="space-y-0.5">
+                            <div className="text-sm font-black text-amber-600">R$ 4.155</div>
+                            <div className="text-[8px] font-black text-muted-foreground uppercase leading-none">PJ: Sua Escala (50%)</div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Footer Educativo */}
+            <div className="pt-8 border-t border-amber-500/10 relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+               <div className="flex items-center gap-3">
+                  <div className="p-2 bg-amber-500/20 rounded-lg text-amber-600">
+                    <Lightbulb className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black uppercase text-foreground">Regra de Ouro: Disciplina gera Liberdade</h4>
+                    <p className="text-[10px] text-muted-foreground leading-tight">O Pró-labore é sua sobrevivência. O Lucro trimestral é sua construção de riqueza.</p>
+                  </div>
+               </div>
+               <div className="text-[10px] font-black text-amber-600/50 uppercase tracking-[0.4em]">MEI Flow Elite Model</div>
             </div>
           </div>
         </div>
