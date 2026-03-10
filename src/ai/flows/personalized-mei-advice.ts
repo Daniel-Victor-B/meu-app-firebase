@@ -72,7 +72,7 @@ export async function personalizedMeiAdvice(
   return personalizedMeiAdviceFlow(input);
 }
 
-const MEI_DAS_FIXO = 75; // Valor fixo do DAS
+const MEI_DAS_FIXO = 76; // Valor fixo do DAS atualizado (INSS + ISS)
 const MEI_LIMITE_80_PERCENT = 0.8;
 
 const personalizedMeiAdvicePrompt = ai.definePrompt({
@@ -93,10 +93,10 @@ Limite Anual MEI: R\${{{meiLimiteAnual}}}
 Considere os seguintes cálculos para sua análise:
 
 DAS Fixo Mensal: R\$${MEI_DAS_FIXO}
-Total de Despesas Mensais (Custos + DAS + Pró-labore): R\${{math 'add' custosOperacionais MEI_DAS_FIXO prolabore}}
-Sobra Mensal (Faturamento - Total Despesas): R\${{math 'sub' faturamentoMensal (math 'add' custosOperacionais MEI_DAS_FIXO prolabore)}}
-Valor da Reserva (se houver sobra): R\${{math 'round' (math 'mul' (math 'div' (math 'sub' faturamentoMensal (math 'add' custosOperacionais MEI_DAS_FIXO prolabore)) 100) reservaPct)}}
-Lucro Disponível (Sobra - Reserva): R\${{math 'sub' (math 'sub' faturamentoMensal (math 'add' custosOperacionais MEI_DAS_FIXO prolabore)) (math 'round' (math 'mul' (math 'div' (math 'sub' faturamentoMensal (math 'add' custosOperacionais MEI_DAS_FIXO prolabore)) 100) reservaPct))}}
+Total de Despesas Mensais (Custos + DAS + Pró-labore): R\${{math 'add' custosOperacionais (math 'add' ${MEI_DAS_FIXO} prolabore)}}
+Sobra Mensal (Faturamento - Total Despesas): R\${{math 'sub' faturamentoMensal (math 'add' custosOperacionais (math 'add' ${MEI_DAS_FIXO} prolabore))}}
+Valor da Reserva (se houver sobra): R\${{math 'round' (math 'mul' (math 'div' (math 'sub' faturamentoMensal (math 'add' custosOperacionais (math 'add' ${MEI_DAS_FIXO} prolabore))) 100) reservaPct)}}
+Lucro Disponível (Sobra - Reserva): R\${{math 'sub' (math 'sub' faturamentoMensal (math 'add' custosOperacionais (math 'add' ${MEI_DAS_FIXO} prolabore))) (math 'round' (math 'mul' (math 'div' (math 'sub' faturamentoMensal (math 'add' custosOperacionais (math 'add' ${MEI_DAS_FIXO} prolabore))) 100) reservaPct))}}
 
 Faturamento Anual Projetado (Faturamento Mensal * 12): R\${{math 'mul' faturamentoMensal 12}}
 Faturamento Acumulado no Ano (Faturamento Mensal * Meses Faturamento): R\${{math 'mul' faturamentoMensal mesesFaturamento}}

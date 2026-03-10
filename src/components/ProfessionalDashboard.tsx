@@ -16,7 +16,7 @@ interface ProfessionalDashboardProps {
 }
 
 export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: ProfessionalDashboardProps) {
-  const das = 75;
+  const das = 76;
   const totalDespesas = custos + das + prolabore;
   const sobraMensal = Math.max(0, fat - totalDespesas);
   const reservaMensal = Math.round((sobraMensal * reservaPct) / 100);

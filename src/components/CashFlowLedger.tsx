@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo } from "react";
@@ -27,7 +26,7 @@ export function CashFlowLedger() {
   const [globalParams, setGlobalParams] = useState({
     prolabore: 2000,
     reservaPct: 50,
-    das: 75
+    das: 76
   });
 
   const updateMonth = (index: number, field: keyof MonthlyData, value: string) => {

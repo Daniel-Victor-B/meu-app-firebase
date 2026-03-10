@@ -23,7 +23,7 @@ export function FinancialDistribution({
   prolabore, setProlabore, 
   reservaPct, setReservaPct 
 }: FinancialDistributionProps) {
-  const das = 75;
+  const das = 76;
   const totalDespesas = custos + das + prolabore;
   const sobra = Math.max(0, fat - totalDespesas);
   const reservaVal = Math.round((sobra * reservaPct) / 100);
@@ -113,7 +113,7 @@ export function FinancialDistribution({
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl font-headline">Distribuição Recomendada</CardTitle>
+          <CardTitle className="text-xl font-headline">Distribuição do Faturamento</CardTitle>
           <CardDescription>Como seu dinheiro será fatiado este mês</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
