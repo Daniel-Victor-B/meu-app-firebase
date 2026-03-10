@@ -1,15 +1,16 @@
 
 "use client"
 
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/formatters";
-import { FileSpreadsheet, ShieldCheck, Info, AlertTriangle, CheckCircle2, ChevronLeft, ChevronRight, HelpCircle } from "lucide-react";
+import { FileSpreadsheet, ShieldCheck, Info, AlertTriangle, CheckCircle2, HelpCircle, MoveHorizontal } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
 import {
   Accordion,
@@ -46,6 +47,9 @@ const FAQS_PLANILHA = [
 
 export function CashFlowLedger() {
   const tableContainerRef = useRef<HTMLDivElement>(null);
+  const [scrollPos, setScrollPos] = useState(0);
+  const [maxScroll, setMaxScroll] = useState(100);
+
   const [data, setData] = useState<MonthlyData[]>(
     Array(12).fill(null).map(() => ({ receita: 5000, custos: 500, active: true }))
   );
@@ -56,14 +60,32 @@ export function CashFlowLedger() {
     das: 76
   });
 
-  const scrollTable = (direction: 'left' | 'right') => {
+  // Atualiza o limite máximo de scroll quando a tabela carrega ou redimensiona
+  useEffect(() => {
+    const updateMaxScroll = () => {
+      if (tableContainerRef.current) {
+        const { scrollWidth, clientWidth } = tableContainerRef.current;
+        setMaxScroll(scrollWidth - clientWidth);
+      }
+    };
+
+    updateMaxScroll();
+    window.addEventListener('resize', updateMaxScroll);
+    return () => window.removeEventListener('resize', updateMaxScroll);
+  }, [data]);
+
+  // Sincroniza o slider com o scroll da tabela
+  const handleScroll = () => {
     if (tableContainerRef.current) {
-      const scrollAmount = 350;
-      const currentScroll = tableContainerRef.current.scrollLeft;
-      tableContainerRef.current.scrollTo({
-        left: direction === 'left' ? currentScroll - scrollAmount : currentScroll + scrollAmount,
-        behavior: 'smooth'
-      });
+      setScrollPos(tableContainerRef.current.scrollLeft);
+    }
+  };
+
+  // Sincroniza a tabela com o movimento do slider
+  const handleSliderChange = (value: number[]) => {
+    if (tableContainerRef.current) {
+      tableContainerRef.current.scrollLeft = value[0];
+      setScrollPos(value[0]);
     }
   };
 
@@ -184,48 +206,51 @@ export function CashFlowLedger() {
         </Card>
       </div>
 
+      {/* Navegador Superior */}
+      <div className="px-2 py-1 flex items-center gap-4 bg-secondary/20 rounded-t-xl border border-b-0 border-border/50">
+        <MoveHorizontal className="w-4 h-4 text-muted-foreground shrink-0" />
+        <Slider 
+          value={[scrollPos]} 
+          max={maxScroll} 
+          step={1} 
+          onValueChange={handleSliderChange} 
+          className="flex-1"
+        />
+      </div>
+
       {/* Planilha */}
-      <Card className="overflow-hidden border-border/50">
+      <Card className="overflow-hidden border-border/50 rounded-none border-y">
         <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between bg-secondary/10 pb-4 gap-4">
           <div>
             <CardTitle className="text-lg flex items-center gap-2">
               <FileSpreadsheet className="w-5 h-5 text-primary" />
               Planejamento Anual
             </CardTitle>
-            <CardDescription>Ajuste os valores para simular seu ano</CardDescription>
+            <CardDescription>Arraste a barra para navegar lateralmente</CardDescription>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="text-right mr-2">
-              <div className="text-[10px] font-bold text-muted-foreground uppercase">Receita Total</div>
-              <div className="text-lg font-bold text-primary">{formatCurrency(totals.acumuladoReceita)}</div>
-            </div>
-            {/* Controles no Topo */}
-            <div className="flex gap-1.5 p-1 bg-background/50 rounded-full border">
-              <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full" onClick={() => scrollTable('left')}>
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full" onClick={() => scrollTable('right')}>
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
+          <div className="text-right">
+            <div className="text-[10px] font-bold text-muted-foreground uppercase">Receita Total Projetada</div>
+            <div className="text-xl font-bold text-primary">{formatCurrency(totals.acumuladoReceita)}</div>
           </div>
         </CardHeader>
 
         <CardContent className="p-0">
           <div 
             ref={tableContainerRef}
-            className="overflow-x-auto scroll-smooth scrollbar-hide relative"
+            onScroll={handleScroll}
+            className="overflow-x-auto scroll-smooth scrollbar-hide"
           >
-            <Table className="min-w-[900px]">
+            <Table className="min-w-[1000px]">
               <TableHeader className="bg-secondary/30">
                 <TableRow className="hover:bg-transparent border-b">
-                  <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center sticky left-0 z-20 bg-muted/95 backdrop-blur-sm border-r">Status</TableHead>
-                  <TableHead className="w-[100px] font-bold text-[10px] uppercase sticky left-[80px] z-20 bg-muted/95 backdrop-blur-sm border-r">Mês</TableHead>
-                  <TableHead className="w-[150px] font-bold text-[10px] uppercase px-4">Receita (R$)</TableHead>
-                  <TableHead className="w-[150px] font-bold text-[10px] uppercase px-4">Custos (R$)</TableHead>
+                  <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r">Status</TableHead>
+                  <TableHead className="w-[100px] font-bold text-[10px] uppercase border-r">Mês</TableHead>
+                  <TableHead className="w-[150px] font-bold text-[10px] uppercase px-4 text-blue-500">Receita (R$)</TableHead>
+                  <TableHead className="w-[150px] font-bold text-[10px] uppercase px-4 text-orange-500">Custos (R$)</TableHead>
                   <TableHead className="w-[120px] text-right font-bold text-[10px] uppercase px-4">Sobra</TableHead>
                   <TableHead className="w-[120px] text-right font-bold text-[10px] uppercase text-purple-500 px-4">Reserva</TableHead>
                   <TableHead className="w-[120px] text-right font-bold text-[10px] uppercase text-primary px-4">Lucro Disp.</TableHead>
+                  <TableHead className="w-[150px] text-right font-bold text-[10px] uppercase px-4 opacity-50">Reserva Acum.</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -234,7 +259,7 @@ export function CashFlowLedger() {
                     "transition-colors group",
                     !row.active ? "opacity-30 grayscale" : "hover:bg-primary/5"
                   )}>
-                    <TableCell className="py-3 text-center sticky left-0 z-20 bg-card border-r">
+                    <TableCell className="py-3 text-center border-r">
                       <div className="flex justify-center">
                         <Switch 
                           checked={row.active} 
@@ -243,7 +268,7 @@ export function CashFlowLedger() {
                         />
                       </div>
                     </TableCell>
-                    <TableCell className="font-bold text-xs py-3 sticky left-[80px] z-20 bg-card border-r">
+                    <TableCell className="font-bold text-xs py-3 border-r">
                       {MESES[i]}
                     </TableCell>
                     <TableCell className="py-2 px-4">
@@ -252,7 +277,7 @@ export function CashFlowLedger() {
                         disabled={!row.active}
                         value={row.receita} 
                         onChange={(e) => updateMonth(i, 'receita', e.target.value)}
-                        className="h-8 text-xs font-bold bg-transparent border-transparent hover:border-input focus:border-primary focus:ring-0"
+                        className="h-8 text-xs font-bold bg-transparent border-transparent hover:border-input focus:border-blue-500 focus:ring-0"
                       />
                     </TableCell>
                     <TableCell className="py-2 px-4">
@@ -261,7 +286,7 @@ export function CashFlowLedger() {
                         disabled={!row.active}
                         value={row.custos} 
                         onChange={(e) => updateMonth(i, 'custos', e.target.value)}
-                        className="h-8 text-xs font-bold bg-transparent border-transparent hover:border-input focus:border-blue-500 focus:ring-0"
+                        className="h-8 text-xs font-bold bg-transparent border-transparent hover:border-input focus:border-orange-500 focus:ring-0"
                       />
                     </TableCell>
                     <TableCell className="text-right text-xs font-medium tabular-nums px-4">
@@ -273,41 +298,39 @@ export function CashFlowLedger() {
                     <TableCell className="text-right text-xs font-bold text-primary tabular-nums px-4 bg-primary/5">
                       {formatCurrency(row.lucro)}
                     </TableCell>
+                    <TableCell className="text-right text-xs font-medium tabular-nums px-4 opacity-50">
+                      {formatCurrency(row.acumuladoReserva)}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </div>
-          
-          {/* Controles no Rodapé da Planilha */}
-          <div className="flex items-center justify-between p-3 bg-secondary/10 border-t">
-            <Button variant="ghost" size="sm" className="h-8 gap-2 text-[10px] font-bold uppercase" onClick={() => scrollTable('left')}>
-              <ChevronLeft className="w-4 h-4" />
-              Ver Início
-            </Button>
-            <div className="text-[10px] font-bold text-muted-foreground uppercase opacity-50 tracking-widest hidden sm:block">
-              Controle Mensal Detalhado
-            </div>
-            <Button variant="ghost" size="sm" className="h-8 gap-2 text-[10px] font-bold uppercase" onClick={() => scrollTable('right')}>
-              Ver Resultados
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          </div>
         </CardContent>
       </Card>
+
+      {/* Navegador Inferior */}
+      <div className="px-2 py-1 flex items-center gap-4 bg-secondary/20 rounded-b-xl border border-t-0 border-border/50">
+        <MoveHorizontal className="w-4 h-4 text-muted-foreground shrink-0" />
+        <Slider 
+          value={[scrollPos]} 
+          max={maxScroll} 
+          step={1} 
+          onValueChange={handleSliderChange} 
+          className="flex-1"
+        />
+      </div>
 
       {/* Dicas e Alertas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="p-4 rounded-xl border border-border bg-card/50">
           <h4 className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            Rotina Semanal de Controle
+            Dica de Navegação
           </h4>
-          <ul className="space-y-2 text-xs text-muted-foreground">
-            <li className="flex gap-2 items-start"><span className="text-primary font-bold">1.</span> <span>Sexta-feira à tarde: atualize a receita e os custos da semana.</span></li>
-            <li className="flex gap-2 items-start"><span className="text-primary font-bold">2.</span> <span>Use o interruptor lateral para desativar meses sem operação.</span></li>
-            <li className="flex gap-2 items-start"><span className="text-primary font-bold">3.</span> <span>Confira se o acumulado da reserva bate com seu extrato.</span></li>
-          </ul>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Use as barras de deslizar acima e abaixo da planilha para visualizar todas as colunas de resultado. Em dispositivos móveis, você também pode arrastar a tabela diretamente com o dedo.
+          </p>
         </div>
         <div className="p-4 rounded-xl border border-border bg-card/50">
           <h4 className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2 text-amber-500">
