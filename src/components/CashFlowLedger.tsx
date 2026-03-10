@@ -139,7 +139,7 @@ export function CashFlowLedger() {
           </CardContent>
         </Card>
 
-        {/* Bloco de Parâmetros / Regras do Jogo */}
+        {/* Bloco de Regras do Jogo */}
         <Card className="bg-secondary/20 border-border/60 border-2 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
             <Settings2 className="w-16 h-16" />
@@ -155,6 +155,7 @@ export function CashFlowLedger() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-3 gap-3">
+              {/* Pró-labore */}
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 text-[10px] text-orange-500 font-black uppercase">
                   <UserCircle className="w-3 h-3" />
@@ -172,6 +173,7 @@ export function CashFlowLedger() {
                 </div>
               </div>
 
+              {/* % Reserva */}
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 text-[10px] text-purple-500 font-black uppercase">
                   <Percent className="w-3 h-3" />
@@ -189,12 +191,13 @@ export function CashFlowLedger() {
                 </div>
               </div>
 
+              {/* DAS - Cor Indigo para distinguir do Faturamento Blue */}
               <div className="space-y-1.5">
-                <div className="flex items-center gap-1.5 text-[10px] text-blue-500 font-black uppercase">
+                <div className="flex items-center gap-1.5 text-[10px] text-indigo-500 font-black uppercase">
                   <ShieldCheck className="w-3 h-3" />
                   Imposto DAS
                 </div>
-                <div className="h-9 flex items-center justify-center text-xs font-bold bg-secondary/80 rounded-md border border-blue-500/20 text-blue-500 tabular-nums">
+                <div className="h-9 flex items-center justify-center text-xs font-bold bg-secondary/80 rounded-md border border-indigo-500/30 text-indigo-500 tabular-nums">
                   {formatCurrency(globalParams.das)}
                 </div>
               </div>
