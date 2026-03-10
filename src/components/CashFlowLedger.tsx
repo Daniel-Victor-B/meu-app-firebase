@@ -25,7 +25,8 @@ import {
   ChevronDown,
   CalendarClock,
   Info,
-  ArrowRight
+  ArrowRight,
+  Target
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -84,9 +85,7 @@ export function CashFlowLedger({
   const [mesesReserva, setMesesReserva] = useState(6);
   const das = 76;
 
-  // Sincroniza a planilha se ela estiver vazia ou com valores padrão no início
   useEffect(() => {
-    // Só sincroniza uma vez se os dados estiverem com o valor inicial para facilitar o setup do usuário
     if (monthlyData.every(m => m.receita === 5000 && m.custos === 1500)) {
         setMonthlyData(monthlyData.map(m => ({ ...m, receita: fat, custos: custos })));
     }
@@ -464,26 +463,26 @@ export function CashFlowLedger({
 
       <div className="p-4 rounded-xl border border-primary/20 bg-primary/5 flex flex-col gap-4">
         <div className="flex gap-4 items-start">
-          <Lightbulb className="w-5 h-5 text-primary shrink-0 mt-1" />
+          <Target className="w-5 h-5 text-primary shrink-0 mt-1" />
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-primary">Regra de Ouro: Lucro não é salário.</h4>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-primary">Gestão de Destino: O Ciclo do Capital</h4>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              O Pró-labore é sua retirada mensal fixa. O Lucro deve ser acumulado na <strong>conta PJ Operacional</strong> (não na PF) e distribuído <strong>trimestralmente</strong> conforme a saúde do negócio.
+              Diferente do Pró-labore, que é sua retirada mensal fixa, o <strong>Lucro Real</strong> deve permanecer na <strong>conta PJ Operacional</strong> (não na PF) para ser avaliado estrategicamente a cada 90 dias.
             </p>
             <div className="space-y-3">
               <p className="text-[10px] font-black uppercase text-primary/70 tracking-widest">Você decide o destino do lucro acumulado:</p>
               <div className="grid gap-2">
                 <div className="flex gap-3 items-start bg-background/40 p-2.5 rounded-lg border border-primary/10">
                   <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                  <p className="text-xs text-muted-foreground"><strong>Investir</strong>: Mandar para sua corretora PF</p>
+                  <p className="text-xs text-muted-foreground"><strong>Investir</strong>: Transferir para sua corretora Pessoal (PF/CPF) para longo prazo.</p>
                 </div>
                 <div className="flex gap-3 items-start bg-background/40 p-2.5 rounded-lg border border-primary/10">
                   <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                  <p className="text-xs text-muted-foreground"><strong>Guardar</strong>: Manter na reserva da conta PJ Operacional como segurança extra</p>
+                  <p className="text-xs text-muted-foreground"><strong>Guardar</strong>: Manter na própria conta PJ Operacional como capital de giro extra.</p>
                 </div>
                 <div className="flex gap-3 items-start bg-background/40 p-2.5 rounded-lg border border-primary/10">
                   <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                  <p className="text-xs text-muted-foreground"><strong>Escalar</strong>: Reinvestir na empresa para aumentar sua capacidade, estoque ou marketing</p>
+                  <p className="text-xs text-muted-foreground"><strong>Escalar</strong>: Reinvestir em marketing, ferramentas ou estoque para aumentar seu teto.</p>
                 </div>
               </div>
             </div>
@@ -493,37 +492,37 @@ export function CashFlowLedger({
         {/* Sub-bloco Amarelo com Exemplo Prático */}
         <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 space-y-3">
           <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500">
-            <Info className="w-4 h-4" />
-            <span className="text-[10px] font-black uppercase tracking-widest">Exemplo Prático (O Caminho do Capital)</span>
+            <Info className="w-5 h-5" />
+            <span className="text-[10px] font-black uppercase tracking-widest">Estudo de Caso: Fluxo de R$ 5k</span>
           </div>
           <p className="text-[11px] text-muted-foreground leading-relaxed">
-            O faturamento primeiro pertence à empresa. Antes de pensar em lucros, pague as obrigações: impostos, custos e pró-labore. 
-            O que sobra é lucro. Em vez de retirar tudo, divida: uma parte vai para a <strong>PJ Reserva</strong> e outra fica na <strong>PJ Operacional</strong> (Conta Operação) como lucro acumulado.
+            O dinheiro que entra primeiro pertence à empresa. Antes de qualquer lucro, pague as obrigações fundamentais: impostos, custos e seu próprio salário (pró-labore). 
+            O lucro é o que resta após blindar o negócio.
           </p>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-1">
             <div className="space-y-1">
-              <p className="text-[9px] font-bold text-muted-foreground uppercase">Resultado de 1 Mês</p>
+              <p className="text-[9px] font-bold text-muted-foreground uppercase">Mês de Referência</p>
               <div className="text-[10px] space-y-1">
                 <p>Faturamento: R$ 5.000</p>
                 <p>Custos + DAS + Pró-labore: R$ 2.580</p>
-                <p className="text-amber-600 dark:text-amber-400 font-bold">Sobra Mensal: R$ 2.420</p>
+                <p className="text-amber-600 dark:text-amber-400 font-bold">Sobra Mensal Bruta: R$ 2.420</p>
               </div>
             </div>
             <div className="space-y-1">
-              <p className="text-[9px] font-bold text-muted-foreground uppercase">Destino da Sobra (60/40)</p>
+              <p className="text-[9px] font-bold text-muted-foreground uppercase">Divisão Estratégica (60% / 40%)</p>
               <div className="text-[10px] space-y-1">
-                <p>Para PJ Reserva: R$ 1.452</p>
-                <p>Lucro Acumulado (PJ Operacional): R$ 968</p>
+                <p>Para PJ Reserva: R$ 1.452 (60%)</p>
+                <p>Para Acumulado na PJ Operacional: R$ 968 (40%)</p>
               </div>
             </div>
           </div>
 
           <div className="pt-3 border-t border-amber-500/20">
             <div className="flex gap-3 items-center">
-              <ArrowRight className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <ArrowRight className="w-5 h-5 text-amber-500 shrink-0" />
               <p className="text-[11px] text-muted-foreground leading-snug">
-                <strong>No final de 3 meses</strong>: Você terá <strong>R$ 2.904</strong> de lucro acumulado na <strong>PJ Operacional</strong>. Nesse momento, você pode transferir parte disso (ex: R$ 1.452) para sua <strong>PF</strong> como distribuição trimestral. O restante fica na empresa para fortalecer o caixa.
+                <strong>No Fechamento Trimestral</strong>: Você acumulou <strong>R$ 2.904</strong> na conta <strong>PJ Operacional</strong>. Agora, você pode transferir metade disso <strong>(R$ 1.452 - 50%)</strong> para sua <strong>Conta Corrente Pessoal (PF/CPF)</strong> como distribuição de lucros. O restante permanece na empresa para estabilidade e novos investimentos.
               </p>
             </div>
           </div>

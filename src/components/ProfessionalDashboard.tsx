@@ -296,7 +296,7 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
                 <span className="text-[10px] font-black uppercase tracking-widest">Exemplo Prático (O Caminho do Capital)</span>
               </div>
               <p className="text-[10px] text-muted-foreground leading-relaxed">
-                Quando uma empresa fatura, o dinheiro pertence à empresa. Antes de retirar lucros, ela paga: impostos, custos e seu pró-labore. 
+                Quando uma empresa fatura, o dinheiro que entra primeiro pertence à empresa. Antes de pensar em retirar lucros, ela paga: impostos, custos e seu pró-labore. 
                 O que sobra é o lucro. Uma gestão impecável divide essa sobra: uma parte vai para a <strong>PJ Reserva</strong> e outra fica na <strong>PJ Operacional</strong> como lucro acumulado.
               </p>
               
@@ -306,22 +306,22 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
                   <div className="text-[10px] space-y-0.5">
                     <p>Faturamento: R$ 5.000</p>
                     <p>Despesas Totais: R$ 2.580</p>
-                    <p className="text-amber-600 dark:text-amber-400 font-bold">Sobra: R$ 2.420</p>
+                    <p className="text-amber-600 dark:text-amber-400 font-bold">Sobra Mensal: R$ 2.420</p>
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-[9px] font-bold text-muted-foreground uppercase">Destino (60/40)</p>
+                  <p className="text-[9px] font-bold text-muted-foreground uppercase">Destino da Sobra (60% / 40%)</p>
                   <div className="text-[10px] space-y-0.5">
-                    <p>Reserva PJ: R$ 1.452</p>
-                    <p>Acumulado PJ: R$ 968</p>
+                    <p>PJ Reserva: R$ 1.452 (60%)</p>
+                    <p>Acumulado PJ Op: R$ 968 (40%)</p>
                   </div>
                 </div>
               </div>
 
               <div className="pt-2 border-t border-amber-500/20 flex gap-3 items-center">
-                <ArrowRight className="w-3 h-3 text-amber-500" />
-                <p className="text-[10px] text-muted-foreground">
-                  <strong>Após 3 meses</strong>: Você terá R$ 2.904 acumulados na <strong>PJ Operacional</strong>. Agora sim, você pode transferir uma parte (ex: R$ 1.452) para sua <strong>PF</strong> como lucro trimestral.
+                <ArrowRight className="w-5 h-5 text-amber-500 shrink-0" />
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  <strong>Após 3 meses</strong>: Você terá R$ 2.904 acumulados na <strong>PJ Operacional</strong>. Agora sim, você pode transferir uma parte (ex: R$ 1.452 - 50%) para sua <strong>Conta Corrente Pessoal (PF/CPF)</strong> como distribuição trimestral. O restante permanece na empresa para segurança e escala.
                 </p>
               </div>
             </div>
