@@ -274,7 +274,7 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
                   <div className="grid gap-2">
                     <div className="flex items-center gap-3 bg-background/40 p-2 rounded-lg border border-primary/10">
                       <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                      <p className="text-[10px] text-muted-foreground"><strong>Investir</strong>: Mandar para sua corretora PF</p>
+                      <p className="text-[10px] text-muted-foreground"><strong>Investir</strong>: Mandar para sua corretora Pessoal (PF/CPF)</p>
                     </div>
                     <div className="flex items-center gap-3 bg-background/40 p-2 rounded-lg border border-primary/10">
                       <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
@@ -289,40 +289,56 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
               </div>
             </div>
 
-            {/* Sub-bloco Amarelo com Exemplo Prático */}
-            <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 space-y-3">
+            {/* Bloco Amarelo com Exemplo Prático Lapidado */}
+            <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-5 space-y-4">
               <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500">
-                <Info className="w-4 h-4" />
-                <span className="text-[10px] font-black uppercase tracking-widest">Exemplo Prático (O Caminho do Capital)</span>
+                <Info className="w-5 h-5" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Estudo de Caso: Fluxo de R$ 5k</span>
               </div>
-              <p className="text-[10px] text-muted-foreground leading-relaxed">
-                Quando uma empresa fatura, o dinheiro que entra primeiro pertence à empresa. Antes de pensar em retirar lucros, ela paga: impostos, custos e seu pró-labore. 
-                O que sobra é o lucro. Uma gestão impecável divide essa sobra: uma parte vai para a <strong>PJ Reserva</strong> e outra fica na <strong>PJ Operacional</strong> como lucro acumulado.
-              </p>
               
-              <div className="grid grid-cols-2 gap-4 pt-1">
-                <div className="space-y-1">
-                  <p className="text-[9px] font-bold text-muted-foreground uppercase">Resultado do Mês</p>
-                  <div className="text-[10px] space-y-0.5">
-                    <p>Faturamento: R$ 5.000</p>
-                    <p>Despesas Totais: R$ 2.580</p>
-                    <p className="text-amber-600 dark:text-amber-400 font-bold">Sobra Mensal: R$ 2.420</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest border-b border-amber-500/20 pb-1">Ciclo Mensal</p>
+                  <div className="space-y-2 text-[11px]">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Faturamento</span>
+                      <span className="font-bold">R$ 5.000</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Obrigações Totais</span>
+                      <span className="font-medium">R$ 2.580</span>
+                    </div>
+                    <div className="flex justify-between items-center pt-1 border-t border-amber-500/10">
+                      <span className="font-bold text-amber-600 dark:text-amber-500 uppercase text-[9px]">Sobra Bruta</span>
+                      <span className="font-black text-amber-700 dark:text-amber-400">R$ 2.420</span>
+                    </div>
                   </div>
                 </div>
-                <div className="space-y-1">
-                  <p className="text-[9px] font-bold text-muted-foreground uppercase">Destino da Sobra (60% / 40%)</p>
-                  <div className="text-[10px] space-y-0.5">
-                    <p>PJ Reserva: R$ 1.452 (60%)</p>
-                    <p>Acumulado PJ Op: R$ 968 (40%)</p>
+
+                <div className="space-y-3">
+                  <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest border-b border-amber-500/20 pb-1">Destino Estratégico (60% / 40%)</p>
+                  <div className="space-y-2 text-[11px]">
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">PJ Reserva</span>
+                      <span className="font-bold text-purple-500">R$ 1.452</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Acumulado PJ Operacional</span>
+                      <span className="font-bold text-primary">R$ 968</span>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-amber-500/20 flex gap-3 items-center">
-                <ArrowRight className="w-5 h-5 text-amber-500 shrink-0" />
-                <p className="text-[10px] text-muted-foreground leading-relaxed">
-                  <strong>Após 3 meses</strong>: Você terá R$ 2.904 acumulados na <strong>PJ Operacional</strong>. Agora sim, você pode transferir uma parte (ex: R$ 1.452 - 50%) para sua <strong>Conta Corrente Pessoal (PF/CPF)</strong> como distribuição trimestral. O restante permanece na empresa para segurança e escala.
-                </p>
+              <div className="pt-4 border-t border-amber-500/20">
+                <div className="flex gap-4 items-center">
+                  <ArrowRight className="w-6 h-6 text-amber-500 shrink-0" />
+                  <p className="text-[11px] text-muted-foreground leading-snug">
+                    No <strong>Fechamento Trimestral</strong>, você acumulou <strong>R$ 2.904</strong> na PJ Operacional. 
+                    Você pode transferir a <strong>metade (R$ 1.452 - 50%)</strong> para sua <strong>Conta Corrente Pessoal (PF/CPF)</strong> como distribuição de lucros. 
+                    O restante fica na empresa para escala.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
