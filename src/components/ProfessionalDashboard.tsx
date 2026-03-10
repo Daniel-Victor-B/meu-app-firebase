@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatCurrency } from "@/lib/formatters";
-import { TrendingUp, Wallet, Target, ShieldCheck, BarChart3, MousePointer2, Info, Lightbulb, ArrowRight, Rocket, PiggyBank, Landmark, Sparkles } from "lucide-react";
+import { TrendingUp, Wallet, Target, ShieldCheck, BarChart3, MousePointer2, Info, Lightbulb, ArrowRight, Rocket, PiggyBank, Landmark, Sparkles, ArrowDownRight, ArrowDownLeft, ChevronRight } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Badge } from "@/components/ui/badge";
 
@@ -295,7 +295,7 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
             </div>
 
             {/* Estudo de Caso Trimestral - Nível Unicórnio */}
-            <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 space-y-8">
+            <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 space-y-10 shadow-lg">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-amber-500/20 pb-6 gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500">
@@ -312,103 +312,130 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
                 </div>
               </div>
 
-              {/* Visual da Jornada Mensal */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 items-start">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                    <h5 className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Fluxo Mensal</h5>
+              {/* Jornada Mensal com Conector Explícito */}
+              <div className="relative">
+                <div className="grid grid-cols-1 md:grid-cols-11 gap-4 items-center">
+                  {/* Bloco 1: Sobra */}
+                  <div className="md:col-span-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                      <h5 className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Resultado Mensal</h5>
+                    </div>
+                    <div className="relative p-5 rounded-2xl bg-background border-2 border-amber-500/30 shadow-md group">
+                      <div className="flex justify-between items-center">
+                        <div className="space-y-0.5">
+                          <span className="text-[10px] font-black uppercase text-amber-600/60 leading-none">Sobra Bruta</span>
+                          <div className="text-2xl font-black text-amber-700 dark:text-amber-400">R$ 2.420</div>
+                        </div>
+                        <div className="p-2.5 bg-amber-500/10 rounded-xl text-amber-600">
+                          <Target className="w-6 h-6" />
+                        </div>
+                      </div>
+                      <div className="absolute -right-3 top-1/2 -translate-y-1/2 hidden md:flex">
+                        <div className="bg-background border-2 border-amber-500/30 rounded-full p-1 shadow-sm">
+                          <ChevronRight className="w-4 h-4 text-amber-600" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="p-4 rounded-xl bg-background/40 border border-amber-500/10 space-y-3 shadow-sm">
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-muted-foreground">Faturamento</span>
-                      <span className="font-bold text-amber-600">R$ 5.000</span>
-                    </div>
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-muted-foreground">Obrigações Totais</span>
-                      <span className="font-medium">R$ 2.580</span>
-                    </div>
-                    <div className="h-px bg-amber-500/10" />
-                    <div className="flex justify-between items-center">
-                      <span className="text-[9px] font-black uppercase text-amber-600">Sobra Bruta</span>
-                      <span className="text-sm font-black text-amber-700 dark:text-amber-400">R$ 2.420</span>
-                    </div>
-                  </div>
-                </div>
 
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    <h5 className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Alocação Estratégica</h5>
+                  {/* Bloco 2: Conector Matemático Central */}
+                  <div className="md:col-span-1 flex md:flex-col items-center justify-center gap-4 py-4">
+                    <div className="h-px md:h-12 w-12 md:w-px bg-gradient-to-r md:bg-gradient-to-b from-amber-500/50 to-transparent" />
+                    <div className="text-[9px] font-black text-amber-600/40 uppercase rotate-0 md:rotate-90 whitespace-nowrap tracking-widest">DIVISÃO ESTRATÉGICA</div>
+                    <div className="h-px md:h-12 w-12 md:w-px bg-gradient-to-l md:bg-gradient-to-t from-amber-500/50 to-transparent" />
                   </div>
-                  <div className="p-4 rounded-xl bg-background/40 border border-amber-500/10 space-y-3 shadow-sm">
-                    <div className="flex justify-between items-center text-xs">
-                      <div className="flex items-center gap-2">
-                        <PiggyBank className="w-3.5 h-3.5 text-purple-500" />
-                        <span className="text-muted-foreground">PJ Reserva (60%)</span>
-                      </div>
-                      <span className="font-bold text-purple-500">R$ 1.452</span>
+
+                  {/* Bloco 3: Alocação */}
+                  <div className="md:col-span-6 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                      <h5 className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Alocação (60/40)</h5>
                     </div>
-                    <div className="flex justify-between items-center text-xs">
-                      <div className="flex items-center gap-2">
-                        <Landmark className="w-3.5 h-3.5 text-primary" />
-                        <span className="text-muted-foreground">Acumulado Op. (40%)</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="p-4 rounded-xl bg-background/60 border border-purple-500/20 space-y-2 group hover:border-purple-500/40 transition-all">
+                        <div className="flex items-center justify-between">
+                          <PiggyBank className="w-4 h-4 text-purple-500" />
+                          <span className="text-[10px] font-black text-purple-500/60">60%</span>
+                        </div>
+                        <div className="space-y-0.5">
+                          <div className="text-lg font-black text-purple-600">R$ 1.452</div>
+                          <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none">PJ Reserva</div>
+                        </div>
                       </div>
-                      <span className="font-bold text-primary">R$ 968</span>
+                      <div className="p-4 rounded-xl bg-background/60 border border-primary/20 space-y-2 group hover:border-primary/40 transition-all">
+                        <div className="flex items-center justify-between">
+                          <Landmark className="w-4 h-4 text-primary" />
+                          <span className="text-[10px] font-black text-primary/60">40%</span>
+                        </div>
+                        <div className="space-y-0.5">
+                          <div className="text-lg font-black text-primary">R$ 968</div>
+                          <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none">Acumulado Op.</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Lógica do Fechamento Trimestral */}
-              <div className="pt-8 border-t border-amber-500/20 space-y-6">
-                <div className="text-center space-y-3">
-                  <div className="text-[10px] font-black uppercase text-amber-600 tracking-[0.4em]">Fechamento do Trimestre</div>
-                  <div className="inline-flex items-center gap-3 px-6 py-2 bg-background/50 rounded-full border border-amber-500/20 shadow-inner">
-                    <span className="text-xs text-muted-foreground font-medium">R$ 968 x 3 meses =</span>
-                    <span className="text-2xl font-black text-foreground">R$ 2.904</span>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tight">Acumulados na PJ Operacional</p>
-                </div>
-
-                <div className="relative flex flex-col items-center py-6">
-                  {/* Ponto de Decisão com Conector */}
-                  <div className="absolute top-[-20px] bottom-0 w-px bg-gradient-to-b from-amber-500/50 to-transparent" />
-                  
-                  <div className="w-14 h-14 rounded-2xl bg-amber-500 text-white flex items-center justify-center shadow-xl z-10 animate-pulse border-4 border-background">
-                    <Target className="w-7 h-7" />
-                  </div>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full mt-10">
-                    {/* Destino 1: Liberdade PF */}
+              {/* Lógica do Fechamento Trimestral com Visual Unicórnio */}
+              <div className="pt-10 border-t border-amber-500/20 space-y-8">
+                <div className="text-center space-y-4">
+                  <div className="inline-flex flex-col items-center">
+                    <div className="text-[10px] font-black uppercase text-amber-600 tracking-[0.5em] mb-2">Ciclo de 90 Dias Concluído</div>
                     <div className="relative group">
-                      <div className="p-5 rounded-2xl bg-background border border-amber-500/20 hover:border-amber-500/50 transition-all text-center space-y-3 shadow-md">
-                        <div className="mx-auto w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
-                          <Wallet className="w-5 h-5" />
+                      <div className="absolute -inset-4 bg-amber-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <div className="relative px-8 py-3 bg-background rounded-2xl border-2 border-amber-500/40 shadow-xl flex items-center gap-4">
+                        <div className="text-xs text-muted-foreground font-bold italic">R$ 968 <span className="text-[10px] opacity-40">x3 meses</span> =</div>
+                        <div className="text-3xl font-black text-foreground tracking-tighter">R$ 2.904</div>
+                        <div className="p-2 bg-amber-500/10 rounded-lg">
+                          <Rocket className="w-5 h-5 text-amber-600" />
                         </div>
-                        <div className="space-y-1">
-                          <div className="text-sm font-black text-amber-600">R$ 1.452 (50%)</div>
-                          <div className="text-[10px] text-muted-foreground font-medium leading-tight">
-                            Transferência para sua <strong>Conta Corrente Pessoal (PF/CPF)</strong>
-                          </div>
-                        </div>
-                        <div className="text-[9px] font-black uppercase tracking-widest text-amber-600/50">Distribuição de Lucro</div>
                       </div>
                     </div>
+                    <div className="text-[9px] text-muted-foreground font-black uppercase mt-3 tracking-widest">Patrimônio Acumulado na PJ Operacional</div>
+                  </div>
+                </div>
 
-                    {/* Destino 2: Escala PJ */}
-                    <div className="relative group">
-                      <div className="p-5 rounded-2xl bg-background border border-amber-500/20 hover:border-amber-500/50 transition-all text-center space-y-3 shadow-md">
-                        <div className="mx-auto w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
-                          <Rocket className="w-5 h-5" />
+                <div className="relative grid grid-cols-1 sm:grid-cols-2 gap-8 items-start">
+                  {/* Conectores de Fluxo Finais */}
+                  <div className="absolute top-[-30px] left-1/2 -translate-x-1/2 hidden sm:flex items-center justify-center w-full">
+                    <div className="w-[45%] h-8 border-l-2 border-t-2 border-amber-500/20 rounded-tl-2xl mr-4" />
+                    <div className="w-[45%] h-8 border-r-2 border-t-2 border-amber-500/20 rounded-tr-2xl ml-4" />
+                  </div>
+
+                  {/* Destino 1: Liberdade PF */}
+                  <div className="relative">
+                    <div className="p-6 rounded-3xl bg-background border border-amber-500/20 hover:border-amber-500/50 transition-all text-center space-y-4 shadow-xl group">
+                      <div className="mx-auto w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform">
+                        <Wallet className="w-6 h-6" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="text-xl font-black text-amber-600">R$ 1.452 <span className="text-xs opacity-60">(50%)</span></div>
+                        <div className="text-[11px] text-muted-foreground font-semibold leading-tight px-4">
+                          Transferência para sua <strong>Conta Corrente Pessoal (PF/CPF)</strong>
                         </div>
-                        <div className="space-y-1">
-                          <div className="text-sm font-black text-amber-600">R$ 1.452 (50%)</div>
-                          <div className="text-[10px] text-muted-foreground font-medium leading-tight">
-                            Permanece na <strong>PJ Operacional</strong> para Investimento
-                          </div>
+                      </div>
+                      <div className="pt-2 border-t border-amber-500/10">
+                        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-600/50">Distribuição de Lucro</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Destino 2: Escala PJ */}
+                  <div className="relative">
+                    <div className="p-6 rounded-3xl bg-background border border-amber-500/20 hover:border-amber-500/50 transition-all text-center space-y-4 shadow-xl group">
+                      <div className="mx-auto w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform">
+                        <Sparkles className="w-6 h-6" />
+                      </div>
+                      <div className="space-y-1">
+                        <div className="text-xl font-black text-amber-600">R$ 1.452 <span className="text-xs opacity-60">(50%)</span></div>
+                        <div className="text-[11px] text-muted-foreground font-semibold leading-tight px-4">
+                          Permanece na <strong>PJ Operacional</strong> para Escala/Caixa
                         </div>
-                        <div className="text-[9px] font-black uppercase tracking-widest text-amber-600/50">Crescimento do Negócio</div>
+                      </div>
+                      <div className="pt-2 border-t border-amber-500/10">
+                        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-600/50">Reinvestimento/Reserva</div>
                       </div>
                     </div>
                   </div>
@@ -421,3 +448,4 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
     </div>
   );
 }
+
