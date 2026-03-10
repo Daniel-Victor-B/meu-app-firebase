@@ -4,9 +4,11 @@ import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { formatCurrency } from "@/lib/formatters";
 import { FileSpreadsheet, ShieldCheck, Info, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
 const MESES = [
   "Jan", "Fev", "Mar", "Abr", "Mai", "Jun", 
@@ -16,11 +18,12 @@ const MESES = [
 interface MonthlyData {
   receita: number;
   custos: number;
+  active: boolean;
 }
 
 export function CashFlowLedger() {
   const [data, setData] = useState<MonthlyData[]>(
-    Array(12).fill({ receita: 5000, custos: 500 })
+    Array(12).fill(null).map(() => ({ receita: 5000, custos: 500, active: true }))
   );
   
   const [globalParams, setGlobalParams] = useState({
@@ -29,10 +32,14 @@ export function CashFlowLedger() {
     das: 76
   });
 
-  const updateMonth = (index: number, field: keyof MonthlyData, value: string) => {
-    const newValue = parseFloat(value) || 0;
+  const updateMonth = (index: number, field: keyof MonthlyData, value: any) => {
     const newData = [...data];
-    newData[index] = { ...newData[index], [field]: newValue };
+    if (field === 'active') {
+      newData[index] = { ...newData[index], active: value };
+    } else {
+      const newValue = parseFloat(value) || 0;
+      newData[index] = { ...newData[index], [field]: newValue };
+    }
     setData(newData);
   };
 
@@ -41,6 +48,16 @@ export function CashFlowLedger() {
     let acumuladoReceita = 0;
 
     const rows = data.map((m) => {
+      if (!m.active) {
+        return {
+          ...m,
+          sobra: 0,
+          reserva: 0,
+          lucro: 0,
+          acumuladoReserva
+        };
+      }
+
       const sobra = Math.max(0, m.receita - m.custos - globalParams.das - globalParams.prolabore);
       const reserva = Math.round((sobra * globalParams.reservaPct) / 100);
       const lucro = sobra - reserva;
@@ -61,7 +78,7 @@ export function CashFlowLedger() {
   }, [data, globalParams]);
 
   // Cálculo da Meta de Reserva (6 meses de custos fixos + 6 meses de pró-labore)
-  const custoEmpresaMensal = (data.reduce((acc, curr) => acc + curr.custos, 0) / 12) + globalParams.das;
+  const custoEmpresaMensal = (data.filter(m => m.active).reduce((acc, curr) => acc + curr.custos, 0) / (data.filter(m => m.active).length || 1)) + globalParams.das;
   const metaTotal = (custoEmpresaMensal + globalParams.prolabore) * 6;
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
 
@@ -153,6 +170,7 @@ export function CashFlowLedger() {
             <Table>
               <TableHeader className="bg-secondary/30">
                 <TableRow className="hover:bg-transparent">
+                  <TableHead className="w-[40px] font-bold text-[10px] uppercase"></TableHead>
                   <TableHead className="w-[80px] font-bold text-[10px] uppercase">Mês</TableHead>
                   <TableHead className="min-w-[130px] font-bold text-[10px] uppercase">Receita (R$)</TableHead>
                   <TableHead className="min-w-[130px] font-bold text-[10px] uppercase">Custos (R$)</TableHead>
@@ -163,15 +181,25 @@ export function CashFlowLedger() {
               </TableHeader>
               <TableBody>
                 {totals.rows.map((row, i) => (
-                  <TableRow key={MESES[i]} className="hover:bg-primary/5 transition-colors group">
+                  <TableRow key={MESES[i]} className={cn(
+                    "transition-colors group",
+                    !row.active ? "opacity-40 bg-secondary/10" : "hover:bg-primary/5"
+                  )}>
+                    <TableCell className="py-3">
+                      <Checkbox 
+                        checked={row.active} 
+                        onCheckedChange={(checked) => updateMonth(i, 'active', !!checked)}
+                      />
+                    </TableCell>
                     <TableCell className="font-bold text-xs py-3">{MESES[i]}</TableCell>
                     <TableCell className="py-2">
                       <div className="relative flex items-center">
                         <Input 
                           type="number" 
+                          disabled={!row.active}
                           value={row.receita} 
                           onChange={(e) => updateMonth(i, 'receita', e.target.value)}
-                          className="h-9 text-xs bg-transparent border-transparent hover:border-input focus:border-primary focus-visible:ring-0 p-2 font-bold transition-all"
+                          className="h-9 text-xs bg-transparent border-transparent hover:border-input focus:border-primary focus-visible:ring-0 p-2 font-bold transition-all disabled:opacity-50"
                         />
                       </div>
                     </TableCell>
@@ -179,9 +207,10 @@ export function CashFlowLedger() {
                       <div className="relative flex items-center">
                         <Input 
                           type="number" 
+                          disabled={!row.active}
                           value={row.custos} 
                           onChange={(e) => updateMonth(i, 'custos', e.target.value)}
-                          className="h-9 text-xs bg-transparent border-transparent hover:border-input focus:border-blue-500 focus-visible:ring-0 p-2 font-bold transition-all"
+                          className="h-9 text-xs bg-transparent border-transparent hover:border-input focus:border-blue-500 focus-visible:ring-0 p-2 font-bold transition-all disabled:opacity-50"
                         />
                       </div>
                     </TableCell>
@@ -211,8 +240,8 @@ export function CashFlowLedger() {
           </h4>
           <ul className="space-y-2 text-xs text-muted-foreground">
             <li className="flex gap-2 items-start"><span className="text-primary font-bold">1.</span> <span>Sexta-feira à tarde: atualize a receita e os custos da semana.</span></li>
-            <li className="flex gap-2 items-start"><span className="text-primary font-bold">2.</span> <span>Confira se o acumulado da reserva está batendo com sua conta PJ Reserva.</span></li>
-            <li className="flex gap-2 items-start"><span className="text-primary font-bold">3.</span> <span>Se a meta de 6 meses estiver longe, tente reduzir os custos variáveis.</span></li>
+            <li className="flex gap-2 items-start"><span className="text-primary font-bold">2.</span> <span>Desative os meses onde não haverá operação para não distorcer as metas.</span></li>
+            <li className="flex gap-2 items-start"><span className="text-primary font-bold">3.</span> <span>Confira se o acumulado da reserva está batendo com sua conta PJ Reserva.</span></li>
           </ul>
         </div>
         <div className="p-4 rounded-xl border border-border bg-card/50">
@@ -221,7 +250,7 @@ export function CashFlowLedger() {
             Análise de Sustentabilidade
           </h4>
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Se a "Sobra" mensal for menor que o valor do Pró-labore, você está retirando dinheiro do capital da empresa. Use esta planilha para simular cenários e garantir que o lucro real seja sempre positivo após todas as retiradas.
+            Se a "Sobra" mensal for menor que o valor do Pró-labore, você está retirando dinheiro do capital da empresa. Use os campos de ativação para simular meses de entressafra e planeje seu caixa para esses períodos.
           </p>
         </div>
       </div>
