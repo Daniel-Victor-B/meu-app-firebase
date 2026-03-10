@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Settings, Landmark, CreditCard, TrendingUp, ArrowRight, Info, ShieldCheck, Wallet } from "lucide-react";
+import { Settings, Landmark, CreditCard, TrendingUp, ArrowRight, Info, ShieldCheck, Wallet, HelpCircle } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -90,6 +90,25 @@ const FLUXO = [
   { de: "PJ Operacional", para: "Pró-labore", color: "text-blue-500" },
   { de: "Sobra mensal", para: "PJ Reserva", color: "text-purple-500" },
   { de: "Lucro Real", para: "PF Investimentos", color: "text-primary" },
+];
+
+const FAQS_CONTAS = [
+  {
+    q: "Posso usar minha conta PF para receber de clientes?",
+    a: "Não é recomendado. Para a Receita Federal e para uma boa gestão, o dinheiro do cliente deve entrar na conta do CNPJ. Receber na PF mistura seu patrimônio e dificulta a prova de que aquele valor é faturamento bruto da empresa."
+  },
+  {
+    q: "Paguei uma conta pessoal com a conta PJ. O que acontece?",
+    a: "Isso é chamado de 'confusão patrimonial'. Um ou outro erro não cancela seu MEI, mas torna seu controle financeiro impreciso. Tente reembolsar a conta PJ fazendo uma transferência da sua conta PF de volta para ela para 'anular' o erro."
+  },
+  {
+    q: "Como comprovo renda para aluguel ou empréstimo sendo MEI?",
+    a: "Use o extrato de transferência do seu Pró-labore (da PJ para a PF) como seu holerite. Além disso, a sua Declaração Anual (DASN) e o extrato consolidado da conta PJ servem como documentos oficiais de comprovação de faturamento."
+  },
+  {
+    q: "Onde devo deixar a 'Reserva PJ' investida?",
+    a: "O ideal é um investimento de baixíssimo risco e alta liquidez, como um CDB de liquidez diária que pague pelo menos 100% do CDI. O objetivo aqui não é o maior lucro possível, mas sim ter o dinheiro disponível imediatamente caso o negócio precise."
+  }
 ];
 
 export function AccountGuide() {
@@ -196,6 +215,31 @@ export function AccountGuide() {
           </div>
         </CardContent>
       </Card>
+
+      <section className="space-y-6 pt-6">
+        <div className="flex items-center gap-2">
+          <div className="p-2 bg-secondary rounded-lg">
+            <HelpCircle className="w-5 h-5 text-muted-foreground" />
+          </div>
+          <div>
+            <h3 className="font-headline font-bold text-lg">Dúvidas sobre Contas</h3>
+            <p className="text-xs text-muted-foreground">Organização bancária e segurança do seu capital.</p>
+          </div>
+        </div>
+
+        <Accordion type="single" collapsible className="w-full space-y-2">
+          {FAQS_CONTAS.map((faq, idx) => (
+            <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-xl px-4 bg-card shadow-sm hover:shadow-md transition-shadow">
+              <AccordionTrigger className="text-sm font-bold text-left hover:no-underline py-4">
+                {faq.q}
+              </AccordionTrigger>
+              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-4">
+                {faq.a}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </section>
     </div>
   );
 }
