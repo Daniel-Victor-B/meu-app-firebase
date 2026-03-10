@@ -37,73 +37,72 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-      {/* KPIs com cores sincronizadas */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* KPIs compactos */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <Card className="bg-primary/5 border-primary/20">
-          <CardContent className="pt-6">
+          <CardContent className="pt-4 pb-4 px-4">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Lucro Real Líquido</p>
-                <h3 className="text-2xl font-bold mt-1 text-primary">{formatCurrency(lucroReal)}</h3>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Lucro Real Líquido</p>
+                <h3 className="text-xl font-bold mt-1 text-primary">{formatCurrency(lucroReal)}</h3>
               </div>
-              <div className="p-2 bg-primary/20 rounded-lg text-primary">
-                <Wallet className="w-5 h-5" />
+              <div className="p-1.5 bg-primary/20 rounded-lg text-primary">
+                <Wallet className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-[10px] text-muted-foreground mt-2">Livre para você (além do salário).</p>
+            <p className="text-[9px] text-muted-foreground mt-1.5">Livre para você (extra).</p>
           </CardContent>
         </Card>
 
         <Card className="bg-indigo-500/5 border-indigo-500/20">
-          <CardContent className="pt-6">
+          <CardContent className="pt-4 pb-4 px-4">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Faturamento Mensal</p>
-                <h3 className="text-2xl font-bold mt-1 text-indigo-500">{formatCurrency(fat)}</h3>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Vendas (Faturamento)</p>
+                <h3 className="text-xl font-bold mt-1 text-indigo-500">{formatCurrency(fat)}</h3>
               </div>
-              <div className="p-2 bg-indigo-500/20 rounded-lg text-indigo-500">
-                <TrendingUp className="w-5 h-5" />
+              <div className="p-1.5 bg-indigo-500/20 rounded-lg text-indigo-500">
+                <TrendingUp className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-[10px] text-muted-foreground mt-2">Total bruto de vendas.</p>
+            <p className="text-[9px] text-muted-foreground mt-1.5">Total bruto do mês.</p>
           </CardContent>
         </Card>
 
         <Card className="bg-purple-500/5 border-purple-500/20">
-          <CardContent className="pt-6">
+          <CardContent className="pt-4 pb-4 px-4">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Reserva Mensal</p>
-                <h3 className="text-2xl font-bold mt-1 text-purple-500">{formatCurrency(reservaMensal)}</h3>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Reserva Mensal</p>
+                <h3 className="text-xl font-bold mt-1 text-purple-500">{formatCurrency(reservaMensal)}</h3>
               </div>
-              <div className="p-2 bg-purple-500/20 rounded-lg text-purple-500">
-                <ShieldCheck className="w-5 h-5" />
+              <div className="p-1.5 bg-purple-500/20 rounded-lg text-purple-500">
+                <ShieldCheck className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-[10px] text-muted-foreground mt-2">Patrimônio do seu negócio.</p>
+            <p className="text-[9px] text-muted-foreground mt-1.5">Patrimônio do negócio.</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Gráfico de Projeção com cores sincronizadas */}
+      {/* Gráfico de Projeção */}
       <Card>
-        <CardHeader className="pb-2">
+        <CardHeader className="pb-2 pt-4 px-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <BarChart3 className="w-5 h-5 text-primary" />
-              <CardTitle className="text-lg">Projeção de Acúmulo (6 meses)</CardTitle>
+              <BarChart3 className="w-4 h-4 text-primary" />
+              <CardTitle className="text-base font-bold">Projeção (6 meses)</CardTitle>
             </div>
-            <div className="flex items-center gap-1.5 text-[10px] font-bold text-primary bg-primary/10 px-2 py-1 rounded-full border border-primary/20">
-              <MousePointer2 className="w-3 h-3" />
-              TOQUE PARA VER DETALHES
+            <div className="flex items-center gap-1 text-[9px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">
+              <MousePointer2 className="w-2.5 h-2.5" />
+              TOQUE PARA VER
             </div>
           </div>
-          <CardDescription>Crescimento previsto do seu lucro e reserva ao longo do tempo</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="h-[280px] w-full mt-4">
+        <CardContent className="px-2 pb-2">
+          <div className="h-[220px] w-full mt-2">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={projecaoData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <AreaChart data={projecaoData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorLucro" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
@@ -114,18 +113,17 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
                     <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.3} />
                 <XAxis 
                   dataKey="name" 
                   stroke="hsl(var(--muted-foreground))" 
-                  fontSize={12} 
+                  fontSize={10} 
                   tickLine={false}
                   axisLine={false}
-                  dy={10}
                 />
                 <YAxis 
                   stroke="hsl(var(--muted-foreground))" 
-                  fontSize={10} 
+                  fontSize={9} 
                   tickFormatter={(v) => `R$${v/1000}k`} 
                   tickLine={false}
                   axisLine={false}
@@ -135,32 +133,31 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
                   contentStyle={{ 
                     backgroundColor: 'hsl(var(--card))', 
                     border: '1px solid hsl(var(--border))',
-                    borderRadius: '12px',
-                    padding: '12px',
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                    borderRadius: '8px',
+                    padding: '8px',
+                    fontSize: '11px'
                   }}
                   formatter={(value: number) => [formatCurrency(value), '']}
-                  labelStyle={{ fontWeight: 'bold', marginBottom: '8px', color: 'hsl(var(--foreground))' }}
                 />
                 <Area 
                   type="monotone" 
                   dataKey="lucroAcumulado" 
-                  name="Lucro Acumulado" 
+                  name="Lucro" 
                   stroke="hsl(var(--primary))" 
                   fillOpacity={1} 
                   fill="url(#colorLucro)" 
-                  strokeWidth={3}
-                  activeDot={{ r: 6, strokeWidth: 0 }}
+                  strokeWidth={2}
+                  activeDot={{ r: 4 }}
                 />
                 <Area 
                   type="monotone" 
                   dataKey="reservaAcumulada" 
-                  name="Reserva Acumulada" 
+                  name="Reserva" 
                   stroke="#8b5cf6" 
                   fillOpacity={1} 
                   fill="url(#colorReserva)" 
-                  strokeWidth={3}
-                  activeDot={{ r: 6, strokeWidth: 0 }}
+                  strokeWidth={2}
+                  activeDot={{ r: 4 }}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -168,123 +165,107 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
         </CardContent>
       </Card>
 
-      {/* Tabela com cores sincronizadas */}
+      {/* DRE Simplificada Otimizada */}
       <Card>
-        <CardHeader className="pb-4">
+        <CardHeader className="pb-3 pt-4 px-4">
           <div className="flex items-center gap-2">
-            <Target className="w-5 h-5 text-primary" />
-            <CardTitle className="text-lg">DRE Simplificada (O Caminho do Dinheiro)</CardTitle>
+            <Target className="w-4 h-4 text-primary" />
+            <CardTitle className="text-base font-bold">DRE: O Caminho do Dinheiro</CardTitle>
           </div>
-          <CardDescription className="text-xs">Veja como cada real do seu faturamento é fatiado até chegar ao lucro real.</CardDescription>
+          <CardDescription className="text-[10px]">Visão didática do faturamento até o lucro real.</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="rounded-xl border overflow-hidden">
+        <CardContent className="px-3 pb-3">
+          <div className="rounded-lg border overflow-hidden">
             <Table>
-              <TableHeader className="bg-secondary/30">
-                <TableRow>
-                  <TableHead className="font-black text-[10px] uppercase tracking-widest py-4">Estrutura de Fluxo</TableHead>
-                  <TableHead className="text-right font-black text-[10px] uppercase tracking-widest py-4">Valor Nominal</TableHead>
-                  <TableHead className="text-right font-black text-[10px] uppercase tracking-widest py-4">Peso %</TableHead>
+              <TableHeader className="bg-secondary/20">
+                <TableRow className="h-8">
+                  <TableHead className="font-bold text-[9px] uppercase tracking-wider py-0">Fluxo</TableHead>
+                  <TableHead className="text-right font-bold text-[9px] uppercase tracking-wider py-0">Valor</TableHead>
+                  <TableHead className="text-right font-bold text-[9px] uppercase tracking-wider py-0">%</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {/* FATURAMENTO */}
-                <TableRow className="bg-indigo-500/10 hover:bg-indigo-500/15 border-indigo-500/20 transition-colors">
-                  <TableCell className="py-5">
-                    <div className="flex items-center gap-3">
-                      <span className="text-indigo-500 font-black text-xl w-8 text-center">(=)</span>
+                <TableRow className="bg-indigo-500/5 hover:bg-indigo-500/10 border-indigo-500/20">
+                  <TableCell className="py-2.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-indigo-500 font-black text-sm w-5 text-center">(=)</span>
                       <div>
-                        <div className="font-bold text-indigo-500 text-sm">Faturamento Bruto</div>
-                        <div className="text-[10px] text-indigo-500/70 font-bold uppercase">Total de Vendas</div>
+                        <div className="font-bold text-indigo-500 text-[11px]">Vendas Brutas</div>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-black text-lg text-indigo-500">{formatCurrency(fat)}</TableCell>
-                  <TableCell className="text-right font-bold text-indigo-500/60">100%</TableCell>
+                  <TableCell className="text-right font-bold text-xs text-indigo-500">{formatCurrency(fat)}</TableCell>
+                  <TableCell className="text-right text-[10px] text-indigo-500/60 font-medium">100%</TableCell>
                 </TableRow>
 
                 {/* CUSTOS */}
-                <TableRow className="hover:bg-orange-500/5 transition-colors">
-                  <TableCell className="py-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-orange-500 font-black text-xl w-8 text-center">(-)</span>
-                      <div>
-                        <div className="font-bold text-foreground text-sm">Custos Operacionais</div>
-                        <div className="text-[10px] text-orange-500 font-bold uppercase tracking-tighter">Manutenção do Negócio</div>
-                      </div>
+                <TableRow className="h-10">
+                  <TableCell className="py-1.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-orange-500 font-bold text-sm w-5 text-center">(-)</span>
+                      <span className="text-foreground text-[11px] font-medium">Custos Operacionais</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-bold text-orange-500">{formatCurrency(custos)}</TableCell>
-                  <TableCell className="text-right text-muted-foreground text-xs">-{((custos/fat)*100).toFixed(0)}%</TableCell>
+                  <TableCell className="text-right font-bold text-[11px] text-orange-500">{formatCurrency(custos)}</TableCell>
+                  <TableCell className="text-right text-muted-foreground text-[10px]">-{((custos/fat)*100).toFixed(0)}%</TableCell>
                 </TableRow>
 
                 {/* DAS */}
-                <TableRow className="hover:bg-red-500/5 transition-colors">
-                  <TableCell className="py-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-red-500 font-black text-xl w-8 text-center">(-)</span>
-                      <div>
-                        <div className="font-bold text-foreground text-sm">Imposto DAS</div>
-                        <div className="text-[10px] text-red-500 font-bold uppercase tracking-tighter">Obrigação Previdenciária</div>
-                      </div>
+                <TableRow className="h-10">
+                  <TableCell className="py-1.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-red-500 font-bold text-sm w-5 text-center">(-)</span>
+                      <span className="text-foreground text-[11px] font-medium">Imposto DAS</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-bold text-red-500">{formatCurrency(das)}</TableCell>
-                  <TableCell className="text-right text-muted-foreground text-xs">-{((das/fat)*100).toFixed(1)}%</TableCell>
+                  <TableCell className="text-right font-bold text-[11px] text-red-500">{formatCurrency(das)}</TableCell>
+                  <TableCell className="text-right text-muted-foreground text-[10px]">-{((das/fat)*100).toFixed(1)}%</TableCell>
                 </TableRow>
 
                 {/* PRÓ-LABORE */}
-                <TableRow className="hover:bg-blue-500/5 transition-colors">
-                  <TableCell className="py-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-blue-500 font-black text-xl w-8 text-center">(-)</span>
-                      <div>
-                        <div className="font-bold text-foreground text-sm">Pró-labore (Salário)</div>
-                        <div className="text-[10px] text-blue-500 font-bold uppercase tracking-tighter">Sua Remuneração PF</div>
-                      </div>
+                <TableRow className="h-10">
+                  <TableCell className="py-1.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-blue-500 font-bold text-sm w-5 text-center">(-)</span>
+                      <span className="text-foreground text-[11px] font-medium">Salário (Pró-labore)</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-bold text-blue-500">{formatCurrency(prolabore)}</TableCell>
-                  <TableCell className="text-right text-muted-foreground text-xs">-{((prolabore/fat)*100).toFixed(0)}%</TableCell>
+                  <TableCell className="text-right font-bold text-[11px] text-blue-500">{formatCurrency(prolabore)}</TableCell>
+                  <TableCell className="text-right text-muted-foreground text-[10px]">-{((prolabore/fat)*100).toFixed(0)}%</TableCell>
                 </TableRow>
 
                 {/* RESERVA */}
-                <TableRow className="hover:bg-purple-500/5 transition-colors">
-                  <TableCell className="py-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-purple-500 font-black text-xl w-8 text-center">(-)</span>
-                      <div>
-                        <div className="font-bold text-foreground text-sm">Reserva de Crescimento</div>
-                        <div className="text-[10px] text-purple-500 font-bold uppercase tracking-tighter">Capital de Giro</div>
-                      </div>
+                <TableRow className="h-10">
+                  <TableCell className="py-1.5">
+                    <div className="flex items-center gap-2">
+                      <span className="text-purple-500 font-bold text-sm w-5 text-center">(-)</span>
+                      <span className="text-foreground text-[11px] font-medium">Reserva PJ</span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-bold text-purple-500">{formatCurrency(reservaMensal)}</TableCell>
-                  <TableCell className="text-right text-muted-foreground text-xs">-{((reservaMensal/fat)*100).toFixed(0)}%</TableCell>
+                  <TableCell className="text-right font-bold text-[11px] text-purple-500">{formatCurrency(reservaMensal)}</TableCell>
+                  <TableCell className="text-right text-muted-foreground text-[10px]">-{((reservaMensal/fat)*100).toFixed(0)}%</TableCell>
                 </TableRow>
 
                 {/* LUCRO REAL */}
-                <TableRow className="bg-primary/20 hover:bg-primary/25 border-t-2 border-primary/30 transition-colors">
-                  <TableCell className="py-6">
-                    <div className="flex items-center gap-3">
-                      <span className="text-primary font-black text-2xl w-8 text-center">(=)</span>
-                      <div>
-                        <div className="font-black text-primary text-base uppercase tracking-tight">Lucro Real Disponível</div>
-                        <div className="text-[10px] text-primary/70 font-bold uppercase">Seu ganho extra livre</div>
-                      </div>
+                <TableRow className="bg-primary/10 border-t border-primary/20">
+                  <TableCell className="py-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-primary font-black text-base w-5 text-center">(=)</span>
+                      <div className="font-black text-primary text-[11px] uppercase tracking-tight">Lucro Livre</div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-black text-2xl text-primary">{formatCurrency(lucroReal)}</TableCell>
-                  <TableCell className="text-right font-black text-primary">{margemLucro.toFixed(1)}%</TableCell>
+                  <TableCell className="text-right font-black text-sm text-primary">{formatCurrency(lucroReal)}</TableCell>
+                  <TableCell className="text-right font-bold text-[11px] text-primary">{margemLucro.toFixed(0)}%</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
           </div>
           
-          <div className="mt-6 p-4 bg-secondary/30 rounded-xl border border-dashed flex gap-3 items-center">
-            <Info className="w-5 h-5 text-muted-foreground shrink-0" />
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
-              <strong>Nota Didática:</strong> O lucro real é o que sobra após você já ter recebido seu salário (Pró-labore) e a empresa ter guardado a parte dela (Reserva). É o dinheiro da sua liberdade financeira.
+          <div className="mt-3 p-2 bg-secondary/20 rounded-lg border border-dashed flex gap-2 items-center">
+            <Info className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+            <p className="text-[9px] text-muted-foreground leading-tight">
+              O <strong>Lucro Livre</strong> é o seu ganho extra após pagar salário, impostos e custos.
             </p>
           </div>
         </CardContent>
