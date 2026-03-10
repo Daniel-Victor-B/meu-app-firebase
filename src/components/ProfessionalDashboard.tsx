@@ -5,8 +5,9 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatCurrency } from "@/lib/formatters";
-import { TrendingUp, Wallet, Target, ShieldCheck, BarChart3, MousePointer2, Info, Lightbulb, ArrowRight, Rocket, PiggyBank, Landmark } from "lucide-react";
+import { TrendingUp, Wallet, Target, ShieldCheck, BarChart3, MousePointer2, Info, Lightbulb, ArrowRight, Rocket, PiggyBank, Landmark, Sparkles } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { Badge } from "@/components/ui/badge";
 
 interface ProfessionalDashboardProps {
   fat: number;
@@ -295,13 +296,19 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
 
             {/* Estudo de Caso Trimestral - Nível Unicórnio */}
             <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 space-y-8">
-              <div className="flex items-center justify-between border-b border-amber-500/20 pb-4">
-                <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500">
-                  <Info className="w-5 h-5" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em]">Estudo de Caso: O Ciclo de R$ 5k</span>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-amber-500/20 pb-6 gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-amber-600 dark:text-amber-500">
+                    <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] opacity-70">Estudo de Caso</span>
+                  </div>
+                  <h4 className="text-xl font-black text-foreground tracking-tight">O Ciclo de R$ 5k</h4>
                 </div>
-                <div className="px-3 py-1 bg-amber-500/20 rounded-full border border-amber-500/30 text-[9px] font-black text-amber-600 uppercase tracking-widest">
-                  Modelo Didático
+                <div className="flex items-center gap-2">
+                  <div className="h-px w-8 bg-amber-500/30 hidden sm:block" />
+                  <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/30 font-black text-[9px] uppercase tracking-widest px-3 py-1">
+                    Modelo Educativo Profissional
+                  </Badge>
                 </div>
               </div>
 
@@ -382,7 +389,7 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
                         <div className="space-y-1">
                           <div className="text-sm font-black text-amber-600">R$ 1.452 (50%)</div>
                           <div className="text-[10px] text-muted-foreground font-medium leading-tight">
-                            Transferência para sua <strong>Conta Pessoal (PF/CPF)</strong>
+                            Transferência para sua <strong>Conta Corrente Pessoal (PF/CPF)</strong>
                           </div>
                         </div>
                         <div className="text-[9px] font-black uppercase tracking-widest text-amber-600/50">Distribuição de Lucro</div>
