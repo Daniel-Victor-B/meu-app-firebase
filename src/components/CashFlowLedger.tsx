@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { formatCurrency } from "@/lib/formatters";
-import { FileSpreadsheet, ShieldCheck, AlertTriangle, HelpCircle, ArrowLeftRight, PenLine, Wallet, TrendingUp, PiggyBank, Scale, Settings2, UserCircle, Percent } from "lucide-react";
+import { FileSpreadsheet, ShieldCheck, AlertTriangle, HelpCircle, ArrowLeftRight, PenLine, Wallet, TrendingUp, PiggyBank, Scale, Settings2, UserCircle, Percent, Lightbulb } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import {
@@ -29,6 +29,10 @@ interface MonthlyData {
 }
 
 const FAQS_PLANILHA = [
+  {
+    q: "O lucro deve ser sacado mensalmente?",
+    a: "Não! A regra de ouro é: Pró-labore é mensal, Lucro é trimestral. Use a planilha para ver a sobra mensal, mas só decida o que fazer com esse dinheiro a cada 90 dias. Isso garante que você tenha fôlego financeiro para meses de baixa."
+  },
   {
     q: "Como projetar meses com faturamento incerto?",
     a: "No MEI, a sazonalidade é comum. Use a média dos últimos 3 meses para os meses futuros ou, se for comércio, projete 20-30% a mais em meses como Dezembro (Natal). A planilha serve justamente para você ver o impacto desses picos na sua reserva."
@@ -156,7 +160,6 @@ export function CashFlowLedger() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-3 gap-3">
-              {/* Pró-labore - Azul conforme pedido */}
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 text-[10px] text-blue-500 font-black uppercase">
                   <UserCircle className="w-3 h-3" />
@@ -174,7 +177,6 @@ export function CashFlowLedger() {
                 </div>
               </div>
 
-              {/* % Reserva - Roxo */}
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 text-[10px] text-purple-500 font-black uppercase">
                   <Percent className="w-3 h-3" />
@@ -192,7 +194,6 @@ export function CashFlowLedger() {
                 </div>
               </div>
 
-              {/* DAS - Vermelho */}
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 text-[10px] text-red-500 font-black uppercase">
                   <ShieldCheck className="w-3 h-3" />
@@ -207,7 +208,6 @@ export function CashFlowLedger() {
         </Card>
       </div>
 
-      {/* Cabeçalho de Resumo da Planilha */}
       <Card className="overflow-hidden border-border/50 shadow-xl">
         <CardHeader className="flex flex-col lg:flex-row lg:items-center justify-between bg-card pb-4 gap-4 px-6 pt-6 border-b">
           <div className="flex-shrink-0">
@@ -219,7 +219,6 @@ export function CashFlowLedger() {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl">
-            {/* Bloco 1: Faturamento Anual (Índigo conforme pedido) */}
             <div className="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
               <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Faturamento Anual (Limite MEI)</div>
               <div className="text-lg font-bold text-indigo-500 leading-tight">{formatCurrency(totals.acumuladoReceita || 0)}</div>
@@ -229,7 +228,6 @@ export function CashFlowLedger() {
               </div>
             </div>
 
-            {/* Bloco 2: Lucro Real Extra (Verde) */}
             <div className="p-3 bg-primary/10 rounded-xl border border-primary/20">
               <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Lucro Real (Livre para Você)</div>
               <div className="text-lg font-bold text-primary leading-tight">{formatCurrency(totals.acumuladoLucro || 0)}</div>
@@ -239,7 +237,6 @@ export function CashFlowLedger() {
               </div>
             </div>
 
-            {/* Bloco 3: Reserva Total (Roxo) */}
             <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
               <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Reserva (Caixa da Empresa)</div>
               <div className="text-lg font-bold text-purple-500 leading-tight">{formatCurrency(totals.acumuladoReserva || 0)}</div>
@@ -370,14 +367,14 @@ export function CashFlowLedger() {
         </CardContent>
       </Card>
 
-      <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5">
-        <h4 className="text-xs font-bold uppercase tracking-wider mb-2 flex items-center gap-2 text-amber-500">
-          <AlertTriangle className="w-4 h-4" />
-          Importante
-        </h4>
-        <p className="text-xs text-muted-foreground leading-relaxed">
-          Sempre que um mês ficar com a sobra negativa, o sistema não calculará reserva ou lucro. Desative os meses de férias ou inatividade para ter uma projeção real de fechamento de ano. O Lucro Extra é o que sobra após pagar todos os custos, impostos, reserva e o seu Pró-labore.
-        </p>
+      <div className="p-4 rounded-xl border border-primary/20 bg-primary/5 flex gap-4 items-start">
+        <Lightbulb className="w-5 h-5 text-primary shrink-0 mt-1" />
+        <div className="space-y-1">
+          <h4 className="text-xs font-bold uppercase tracking-wider text-primary">Dica de Gestão Profissional</h4>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            A planilha projeta a sobra mensal para sua visão clara, mas lembre-se: <strong>Lucro Real não é salário</strong>. O Pró-labore é sua retirada mensal. O Lucro deve ser acumulado e distribuído <strong>trimestralmente</strong> conforme a saúde do negócio. Você decide se investe, guarda ou escala.
+          </p>
+        </div>
       </div>
 
       <section className="space-y-6 pt-6">

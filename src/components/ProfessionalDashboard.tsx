@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatCurrency } from "@/lib/formatters";
-import { TrendingUp, Wallet, Target, ShieldCheck, BarChart3, MousePointer2, Info } from "lucide-react";
+import { TrendingUp, Wallet, Target, ShieldCheck, BarChart3, MousePointer2, Info, Lightbulb } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 interface ProfessionalDashboardProps {
@@ -262,11 +262,14 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
             </Table>
           </div>
           
-          <div className="mt-3 p-2 bg-secondary/20 rounded-lg border border-dashed flex gap-2 items-center">
-            <Info className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-            <p className="text-[9px] text-muted-foreground leading-tight">
-              O <strong>Lucro Livre</strong> é o seu ganho extra após pagar salário, impostos e custos.
-            </p>
+          <div className="mt-3 p-3 bg-secondary/20 rounded-lg border border-dashed flex gap-3 items-start">
+            <Lightbulb className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+            <div className="space-y-1">
+              <p className="text-[10px] font-bold uppercase text-primary tracking-wider">Regra de Ouro: Lucro não é salário.</p>
+              <p className="text-[9px] text-muted-foreground leading-tight">
+                O Lucro Livre é sua decisão estratégica. <strong>Distribua trimestralmente</strong> para investimento ou reserva pessoal. Não saca tudo!
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>

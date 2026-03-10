@@ -16,9 +16,9 @@ const CONTAS = [
     id: "pj-op",
     label: "PJ Operacional",
     tipo: "EMPRESA",
-    color: "text-indigo-500",
-    bgColor: "bg-indigo-500/10",
-    borderColor: "border-indigo-500/20",
+    color: "text-orange-500",
+    bgColor: "bg-orange-500/10",
+    borderColor: "border-orange-500/20",
     icon: <Settings className="w-5 h-5" />,
     desc: "Recebe faturamento bruto. Paga custos, DAS e Pró-labore.",
     sugestao: "Nubank PJ / Inter / PagBank",
@@ -74,10 +74,10 @@ const CONTAS = [
     desc: "Lucro Real (Extra). Foco em patrimônio de longo prazo.",
     sugestao: "Corretora (XP, BTG, Rico, NuInvest)",
     detalhes: [
-      "Distribuição de Lucro: O que sobra após reserva e salário.",
-      "Patrimônio PF: Dinheiro livre para seus sonhos e futuro.",
+      "Regra de Ouro: Lucro não é salário. Lucro é decisão.",
+      "Distribuição Trimestral: Não saque todo mês. Acumule e decida a cada 90 dias.",
       "Isenção: Lucros de MEI são isentos de IR sob certas regras.",
-      "Liberdade: Use para aposentadoria ou grandes objetivos pessoais."
+      "Liberdade: Use para investir, guardar ou projetos estratégicos. Você não saca tudo."
     ]
   },
 ];
