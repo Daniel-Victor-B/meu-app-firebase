@@ -1,104 +1,165 @@
+
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Rocket, CalendarDays, CalendarCheck, AlertTriangle, CheckSquare } from "lucide-react";
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Rocket, CalendarDays, CalendarCheck, AlertTriangle, CheckCircle2, ListChecks } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const SECTIONS = [
   {
-    id: "abrir",
-    titulo: "Foguete: Abrir o MEI",
-    icon: <Rocket className="w-5 h-5 text-blue-500" />,
-    cor: "text-blue-500",
+    id: "setup",
+    titulo: "Configuração Inicial",
+    subtitulo: "Faça uma vez para estruturar o negócio",
+    icon: <Rocket className="w-5 h-5" />,
+    color: "text-blue-500",
     bgColor: "bg-blue-500/10",
-    itens: [
-      "Acesse o Portal do Empreendedor (gov.br/empresas-e-negocios)",
-      "Certifique-se de ter conta gov.br Prata ou Ouro",
-      "Escolha o CNAE correto para sua atividade principal",
-      "Defina o endereço da empresa (pode ser residencial)",
-      "Emita o CCMEI e guarde como comprovante do CNPJ",
-      "Abra uma conta digital PJ para começar a receber dos clientes",
+    tasks: [
+      { id: "s1", text: "Emitir CCMEI (Certificado de MEI)", detail: "Guarde o PDF, ele é o seu contrato social." },
+      { id: "s2", text: "Abrir Conta Digital PJ", detail: "Indispensável para não misturar CPF e CNPJ." },
+      { id: "s3", text: "Configurar Emissor de NFS-e Nacional", detail: "Fazer o cadastro e criar 'Serviços Favoritos'." },
+      { id: "s4", text: "Verificar Inscrição Municipal", detail: "Consultar se sua prefeitura exige alvará ou nota manual." },
     ],
   },
   {
     id: "mensal",
-    titulo: "Calendário: Tarefas Mensais",
-    icon: <CalendarDays className="w-5 h-5 text-primary" />,
-    cor: "text-primary",
+    titulo: "Rotina Mensal",
+    subtitulo: "Todo mês para evitar multas e juros",
+    icon: <CalendarDays className="w-5 h-5" />,
+    color: "text-primary",
     bgColor: "bg-primary/10",
-    itens: [
-      "Pague o DAS (Guia do Imposto) até o dia 20 de cada mês",
-      "Preencha o Relatório Mensal de Receitas Brutas",
-      "Transfira o Pró-labore para sua conta PF (pague-se primeiro!)",
-      "Verifique se todas as notas fiscais foram emitidas corretamente",
-      "Separe o percentual da reserva conforme planejado",
+    tasks: [
+      { id: "m1", text: "Pagar o DAS (Imposto)", detail: "Vence todo dia 20. Coloque em débito automático." },
+      { id: "m2", text: "Relatório Mensal de Receitas", detail: "Planilhar todas as vendas (com e sem nota)." },
+      { id: "m3", text: "Transferir Pró-labore", detail: "Da conta PJ para a PF. Pague-se primeiro!" },
+      { id: "m4", text: "Separar Notas de Compra", detail: "Guardar NFs de tudo que a empresa comprou (insumos/equipamentos)." },
     ],
   },
   {
     id: "anual",
-    titulo: "Cheque: Tarefas Anuais",
-    icon: <CalendarCheck className="w-5 h-5 text-orange-500" />,
-    cor: "text-orange-500",
+    titulo: "Obrigações Anuais",
+    subtitulo: "O fechamento do seu ano fiscal",
+    icon: <CalendarCheck className="w-5 h-5" />,
+    color: "text-orange-500",
     bgColor: "bg-orange-500/10",
-    itens: [
-      "Entregue a Declaração Anual (DASN-SIMEI) até 31 de Maio",
-      "Verifique o faturamento acumulado total do ano anterior",
-      "Reavalie seu plano de saúde e benefícios do INSS",
-      "Considere a necessidade de migrar para ME se estiver crescendo",
-      "Distribua os lucros acumulados para sua corretora (PF Investimentos)",
+    tasks: [
+      { id: "a1", text: "Enviar DASN-SIMEI", detail: "Declaração de faturamento bruto (Jan até Maio)." },
+      { id: "a2", text: "Revisar Limite (81k)", detail: "Conferir se o faturamento anual exige migração para ME." },
+      { id: "a3", text: "Imposto de Renda PF", detail: "Declarar os lucros distribuídos (isenção do MEI)." },
     ],
   },
   {
-    id: "cuidados",
-    titulo: "Alerta: Cuidados Vitais",
-    icon: <AlertTriangle className="w-5 h-5 text-destructive" />,
-    cor: "text-destructive",
+    id: "seguranca",
+    titulo: "Blindagem de Caixa",
+    subtitulo: "Boas práticas de sobrevivência",
+    icon: <AlertTriangle className="w-5 h-5" />,
+    color: "text-destructive",
     bgColor: "bg-destructive/10",
-    itens: [
-      "NUNCA use sua conta PF para receber de clientes da empresa",
-      "Não ultrapasse o limite anual (isso gera multas pesadas)",
-      "Não contrate mais de um funcionário como MEI",
-      "Não seja sócio em outra empresa enquanto for MEI",
-      "Guarde todos os comprovantes e notas por 5 anos",
+    tasks: [
+      { id: "sg1", text: "Regra do 100%", detail: "Todo dinheiro de cliente entra na PJ, nunca na PF." },
+      { id: "sg2", text: "Reserva de Emergência", detail: "Manter 6 meses de custos fixos no CDB de liquidez diária." },
+      { id: "sg3", text: "Check de Notas Fiscais", detail: "Emitiu para todo CNPJ? Toda empresa exige nota." },
     ],
   },
 ];
 
 export function Checklist() {
+  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+
+  const toggleTask = (id: string) => {
+    setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const getProgress = (tasks: { id: string }[]) => {
+    const completed = tasks.filter(t => checkedItems[t.id]).length;
+    return (completed / tasks.length) * 100;
+  };
+
   return (
-    <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-      <div className="text-sm text-muted-foreground">
-        Acompanhe o passo a passo necessário para manter sua empresa em dia com o governo e com suas finanças.
+    <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500 pb-10">
+      <header>
+        <h2 className="text-xl font-headline font-bold flex items-center gap-2">
+          <ListChecks className="w-6 h-6 text-primary" />
+          Checklist de Operação MEI
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Gerencie suas tarefas fundamentais. Marque o que já foi feito para acompanhar sua evolução.
+        </p>
+      </header>
+
+      <div className="grid gap-6">
+        {SECTIONS.map((section) => {
+          const progress = getProgress(section.tasks);
+          return (
+            <Card key={section.id} className="overflow-hidden border-border/60">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className={cn("p-2 rounded-lg", section.bgColor, section.color)}>
+                      {section.icon}
+                    </div>
+                    <div>
+                      <CardTitle className="text-base font-bold">{section.titulo}</CardTitle>
+                      <CardDescription className="text-xs">{section.subtitulo}</CardDescription>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className={cn("font-code", progress === 100 ? "bg-primary/20 text-primary border-primary/50" : "")}>
+                    {progress.toFixed(0)}%
+                  </Badge>
+                </div>
+                <Progress value={progress} className="h-1.5" />
+              </CardHeader>
+              <CardContent className="grid gap-4">
+                {section.tasks.map((task) => (
+                  <div 
+                    key={task.id} 
+                    className={cn(
+                      "flex items-start gap-4 p-3 rounded-xl transition-all duration-200 border border-transparent",
+                      checkedItems[task.id] ? "bg-secondary/20 opacity-60" : "hover:bg-secondary/40 hover:border-border/50"
+                    )}
+                  >
+                    <Checkbox 
+                      id={task.id} 
+                      checked={checkedItems[task.id]} 
+                      onCheckedChange={() => toggleTask(task.id)}
+                      className="mt-1"
+                    />
+                    <div className="grid gap-1 cursor-pointer" onClick={() => toggleTask(task.id)}>
+                      <label 
+                        htmlFor={task.id} 
+                        className={cn(
+                          "text-sm font-bold leading-none cursor-pointer",
+                          checkedItems[task.id] && "line-through text-muted-foreground"
+                        )}
+                      >
+                        {task.text}
+                      </label>
+                      <p className="text-[11px] text-muted-foreground leading-relaxed">
+                        {task.detail}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
-      <Accordion type="single" collapsible className="w-full space-y-4">
-        {SECTIONS.map((section) => (
-          <AccordionItem key={section.id} value={section.id} className="border rounded-xl px-4 bg-card/50">
-            <AccordionTrigger className="hover:no-underline py-5">
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${section.bgColor} ${section.cor}`}>
-                  {section.icon}
-                </div>
-                <span className={`font-headline font-bold text-base ${section.cor}`}>
-                  {section.titulo.split(': ')[1]}
-                </span>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="pb-6">
-              <ul className="space-y-3">
-                {section.itens.map((item, idx) => (
-                  <li key={idx} className="flex gap-3 items-start group">
-                    <CheckSquare className="w-4 h-4 mt-1 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
-                    <span className="text-sm text-muted-foreground leading-relaxed">
-                      {item}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
+      <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 flex gap-4 items-center">
+        <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center text-primary shrink-0">
+          <CheckCircle2 className="w-6 h-6" />
+        </div>
+        <div>
+          <h4 className="font-bold text-sm text-primary">Dica de Gestão Profissional</h4>
+          <p className="text-xs text-muted-foreground leading-relaxed mt-1">
+            Mantenha este checklist aberto toda segunda-feira de manhã. 15 minutos de revisão aqui evitam 15 horas de dor de cabeça com a Receita Federal no futuro.
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
