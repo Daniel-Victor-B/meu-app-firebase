@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -30,12 +31,15 @@ export function FinancialDistribution({
   const lucroDisp = sobra - reservaVal;
 
   const items = [
+    { label: "Faturamento", val: fat, color: "bg-indigo-500", text: "text-indigo-500", hidden: true }, // Referência
     { label: "Custos Operacionais", val: custos, color: "bg-orange-500", text: "text-orange-500" },
     { label: "DAS (Imposto MEI)", val: das, color: "bg-red-500", text: "text-red-500" },
-    { label: "Pró-labore", val: prolabore, color: "bg-indigo-500", text: "text-indigo-500" },
+    { label: "Pró-labore (Salário)", val: prolabore, color: "bg-blue-500", text: "text-blue-500" },
     { label: "Reserva Empresa", val: reservaVal, color: "bg-purple-500", text: "text-purple-500" },
     { label: "Lucro Disponível", val: lucroDisp, color: "bg-primary", text: "text-primary" },
   ];
+
+  const displayItems = items.filter(i => !i.hidden);
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
@@ -55,13 +59,13 @@ export function FinancialDistribution({
                     type="number" 
                     value={fat} 
                     onChange={(e) => setFat(parseFloat(e.target.value) || 0)}
-                    className="w-28 h-8 text-right font-code font-bold text-blue-500 bg-blue-500/5 border-blue-500/20 focus-visible:ring-1 focus-visible:ring-blue-500 pr-7"
+                    className="w-28 h-8 text-right font-code font-bold text-indigo-500 bg-indigo-500/5 border-indigo-500/20 focus-visible:ring-1 focus-visible:ring-indigo-500 pr-7"
                   />
-                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-blue-500/30" />
+                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-indigo-500/30" />
                 </div>
               </div>
             </div>
-            <Slider value={[fat]} min={500} max={15000} step={100} onValueChange={([v]) => setFat(v)} />
+            <Slider value={[fat]} min={500} max={15000} step={100} onValueChange={([v]) => setFat(v)} className="[&_.bg-primary]:bg-indigo-500" />
           </div>
 
           <div className="space-y-4">
@@ -80,7 +84,7 @@ export function FinancialDistribution({
                 </div>
               </div>
             </div>
-            <Slider value={[custos]} min={0} max={fat * 0.8} step={50} onValueChange={([v]) => setCustos(v)} />
+            <Slider value={[custos]} min={0} max={fat * 0.8} step={50} onValueChange={([v]) => setCustos(v)} className="[&_.bg-primary]:bg-orange-500" />
           </div>
 
           <div className="space-y-4">
@@ -93,13 +97,13 @@ export function FinancialDistribution({
                     type="number" 
                     value={prolabore} 
                     onChange={(e) => setProlabore(parseFloat(e.target.value) || 0)}
-                    className="w-28 h-8 text-right font-code font-bold text-indigo-500 bg-indigo-500/5 border-indigo-500/20 focus-visible:ring-1 focus-visible:ring-indigo-500 pr-7"
+                    className="w-28 h-8 text-right font-code font-bold text-blue-500 bg-blue-500/5 border-blue-500/20 focus-visible:ring-1 focus-visible:ring-blue-500 pr-7"
                   />
-                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-indigo-500/30" />
+                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-blue-500/30" />
                 </div>
               </div>
             </div>
-            <Slider value={[prolabore]} min={0} max={fat * 0.7} step={50} onValueChange={([v]) => setProlabore(v)} />
+            <Slider value={[prolabore]} min={0} max={fat * 0.7} step={50} onValueChange={([v]) => setProlabore(v)} className="[&_.bg-primary]:bg-blue-500" />
           </div>
 
           <div className="space-y-4">
@@ -118,7 +122,7 @@ export function FinancialDistribution({
                 <span className="text-xs font-bold text-muted-foreground">%</span>
               </div>
             </div>
-            <Slider value={[reservaPct]} min={0} max={100} step={5} onValueChange={([v]) => setReservaPct(v)} />
+            <Slider value={[reservaPct]} min={0} max={100} step={5} onValueChange={([v]) => setReservaPct(v)} className="[&_.bg-primary]:bg-purple-500" />
           </div>
         </CardContent>
       </Card>
@@ -130,7 +134,7 @@ export function FinancialDistribution({
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex h-3 w-full rounded-full overflow-hidden bg-secondary">
-            {items.map((item, idx) => (
+            {displayItems.map((item, idx) => (
               <div 
                 key={idx} 
                 className={`${item.color} transition-all duration-500`} 
@@ -140,7 +144,7 @@ export function FinancialDistribution({
           </div>
 
           <div className="grid gap-3 pt-4">
-            {items.map((item, idx) => (
+            {displayItems.map((item, idx) => (
               <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-secondary/30 border border-border/50 hover:bg-secondary/50 transition-colors">
                 <div className="flex items-center gap-3">
                   <div className={`w-1 h-10 rounded-full ${item.color}`} />

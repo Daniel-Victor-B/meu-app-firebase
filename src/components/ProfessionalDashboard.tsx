@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useMemo } from "react";
@@ -53,14 +54,14 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
           </CardContent>
         </Card>
 
-        <Card className="bg-blue-500/5 border-blue-500/20">
+        <Card className="bg-indigo-500/5 border-indigo-500/20">
           <CardContent className="pt-6">
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Faturamento Mensal</p>
-                <h3 className="text-2xl font-bold mt-1 text-blue-500">{formatCurrency(fat)}</h3>
+                <h3 className="text-2xl font-bold mt-1 text-indigo-500">{formatCurrency(fat)}</h3>
               </div>
-              <div className="p-2 bg-blue-500/20 rounded-lg text-blue-500">
+              <div className="p-2 bg-indigo-500/20 rounded-lg text-indigo-500">
                 <TrendingUp className="w-5 h-5" />
               </div>
             </div>
@@ -138,10 +139,10 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow className="bg-blue-500/5">
-                <TableCell className="font-bold text-blue-500">(=) Receita Bruta (Faturamento)</TableCell>
-                <TableCell className="text-right font-bold text-blue-500">{formatCurrency(fat)}</TableCell>
-                <TableCell className="text-right font-bold text-blue-500">100%</TableCell>
+              <TableRow className="bg-indigo-500/5">
+                <TableCell className="font-bold text-indigo-500">(=) Faturamento (Vendas)</TableCell>
+                <TableCell className="text-right font-bold text-indigo-500">{formatCurrency(fat)}</TableCell>
+                <TableCell className="text-right font-bold text-indigo-500">100%</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>(-) Custos Operacionais</TableCell>
@@ -155,8 +156,8 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
               </TableRow>
               <TableRow>
                 <TableCell>(-) Pró-labore (Salário)</TableCell>
-                <TableCell className="text-right text-indigo-500 font-medium">{formatCurrency(prolabore)}</TableCell>
-                <TableCell className="text-right text-indigo-500">-{((prolabore/fat)*100).toFixed(0)}%</TableCell>
+                <TableCell className="text-right text-blue-500 font-medium">{formatCurrency(prolabore)}</TableCell>
+                <TableCell className="text-right text-blue-500">-{((prolabore/fat)*100).toFixed(0)}%</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>(-) Reserva de Crescimento</TableCell>

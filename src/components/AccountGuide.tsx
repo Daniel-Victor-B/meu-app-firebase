@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,17 +16,17 @@ const CONTAS = [
     id: "pj-op",
     label: "PJ Operacional",
     tipo: "EMPRESA",
-    color: "text-blue-500",
-    bgColor: "bg-blue-500/10",
-    borderColor: "border-blue-500/20",
+    color: "text-indigo-500",
+    bgColor: "bg-indigo-500/10",
+    borderColor: "border-indigo-500/20",
     icon: <Settings className="w-5 h-5" />,
-    desc: "Recebe tudo que entra. Paga custos fixos, DAS e fornecedores.",
+    desc: "Recebe faturamento bruto. Paga custos, DAS e Pró-labore.",
     sugestao: "Nubank PJ / Inter / PagBank",
     detalhes: [
-      "PIX Gratuito: Escolha bancos que não cobram PIX de PJ (essencial para MEI).",
-      "Cartão de Crédito PJ: Use apenas para assinaturas de ferramentas da empresa (Canva, Domínio, Hospedagem).",
-      "Emissão de Boletos: Verifique se o banco oferece boletos gratuitos para cobrança de clientes.",
-      "Extrato Mensal: Baixe o extrato em PDF/OFX todo dia 30 para o seu relatório mensal."
+      "Faturamento Bruto: Todo PIX de cliente deve cair aqui primeiro.",
+      "Imposto DAS: Pague sempre por esta conta para facilitar o controle fiscal.",
+      "Custos Fixos: Assinaturas de ferramentas e materiais saem daqui.",
+      "Extrato Mensal: Essencial para sua Declaração Anual de MEI."
     ]
   },
   {
@@ -36,30 +37,30 @@ const CONTAS = [
     bgColor: "bg-purple-500/10",
     borderColor: "border-purple-500/20",
     icon: <Landmark className="w-5 h-5" />,
-    desc: "Colchão financeiro da empresa. Ideal ter 3-6 meses de custos fixos.",
+    desc: "Colchão financeiro da empresa. Ideal ter 6 meses de custos.",
     sugestao: "CDB de liquidez diária (100% CDI)",
     detalhes: [
-      "Liquidez Diária: O dinheiro deve estar disponível para resgate imediato em emergências.",
-      "Segurança: Procure investimentos com garantia do FGC (Fundo Garantidor de Crédito).",
-      "Separado do Giro: Não deixe a reserva na mesma conta de pagamentos para não gastar sem querer.",
-      "Quando usar: Apenas para quedas bruscas de faturamento ou investimentos em equipamentos."
+      "Patrimônio do Negócio: Dinheiro que pertence ao CNPJ, não à você.",
+      "Segurança: Protege sua operação em meses de baixa ou emergências.",
+      "Separação: Não use para gastos do dia a dia. É um fundo de reserva.",
+      "Crescimento: No futuro, use para investir em novos equipamentos."
     ]
   },
   {
     id: "pf-sal",
     label: "PF Pró-labore",
     tipo: "PESSOAL",
-    color: "text-indigo-500",
-    bgColor: "bg-indigo-500/10",
-    borderColor: "border-indigo-500/20",
+    color: "text-blue-500",
+    bgColor: "bg-blue-500/10",
+    borderColor: "border-blue-500/20",
     icon: <CreditCard className="w-5 h-5" />,
-    desc: "Seu 'salário' mensal. Valor fixo transferido da PJ no dia 5.",
+    desc: "Seu salário fixo mensal. Transferido da PJ todo dia 5.",
     sugestao: "Conta corrente PF (sua preferência)",
     detalhes: [
-      "Data Fixa: Transfira sempre no mesmo dia (ex: dia 05) para criar disciplina financeira.",
-      "Valor Justo: O valor deve cobrir seus gastos básicos pessoais. Não saque tudo que sobra na PJ.",
-      "Comprovação de Renda: O extrato de transferência da PJ para PF serve como prova de rendimento.",
-      "Evite Misturas: Nunca pague o almoço ou o mercado direto na conta PJ. Transfira para cá primeiro."
+      "Disciplina: Transfira sempre o mesmo valor no mesmo dia.",
+      "Comprovação de Renda: O extrato de recebimento serve como seu holerite.",
+      "Paz Mental: Seus gastos pessoais (aluguel, mercado) saem exclusivamente daqui.",
+      "Regra de Ouro: Nunca pague o mercado direto na conta PJ."
     ]
   },
   {
@@ -70,22 +71,22 @@ const CONTAS = [
     bgColor: "bg-primary/10",
     borderColor: "border-primary/20",
     icon: <TrendingUp className="w-5 h-5" />,
-    desc: "Lucros distribuídos trimestralmente. Foco em patrimônio de longo prazo.",
+    desc: "Lucro Real (Extra). Foco em patrimônio de longo prazo.",
     sugestao: "Corretora (XP, BTG, Rico, NuInvest)",
     detalhes: [
-      "Distribuição de Lucro: Transfira a sobra real (pós reserva) a cada 3 meses.",
-      "Isenção de IR: Lucros de MEI são isentos de IR até certo limite. Consulte um contador para declarar certo.",
-      "Foco no Futuro: Use este dinheiro para aposentadoria ou sonhos de longo prazo (casa, viagens).",
-      "Diversificação: Não deixe tudo no banco. Use a corretora para Tesouro Direto, Fundos ou Ações."
+      "Distribuição de Lucro: O que sobra após reserva e salário.",
+      "Patrimônio PF: Dinheiro livre para seus sonhos e futuro.",
+      "Isenção: Lucros de MEI são isentos de IR sob certas regras.",
+      "Liberdade: Use para aposentadoria ou grandes objetivos pessoais."
     ]
   },
 ];
 
 const FLUXO = [
-  { de: "Cliente paga", para: "PJ Operacional", color: "text-blue-500" },
-  { de: "PJ Operacional", para: "Custos + DAS + Salário", color: "text-indigo-500" },
-  { de: "Sobra mensal", para: "PJ Reserva (% fixo)", color: "text-purple-500" },
-  { de: "Lucro trimestral", para: "PF Investimentos", color: "text-primary" },
+  { de: "Cliente paga", para: "PJ Operacional", color: "text-indigo-500" },
+  { de: "PJ Operacional", para: "Custos + DAS + Pró-labore", color: "text-orange-500" },
+  { de: "Sobra mensal", para: "PJ Reserva (Roxo)", color: "text-purple-500" },
+  { de: "Lucro trimestral", para: "PF Investimentos (Verde)", color: "text-primary" },
 ];
 
 const FAQS_CONTAS = [
@@ -100,14 +101,6 @@ const FAQS_CONTAS = [
   {
     q: "Paguei uma conta pessoal na conta PJ. Tem problema?",
     a: "Um erro isolado não é o fim do mundo, mas evite que vire rotina. Fiscalmente, isso é chamado de 'confusão patrimonial'. Se precisar de dinheiro para algo pessoal, transfira da PJ para a PF e pague pela sua conta pessoal."
-  },
-  {
-    q: "O lucro que eu transfiro para a minha conta PF paga Imposto de Renda?",
-    a: "O lucro líquido do MEI pode ser distribuído para a pessoa física de forma isenta, desde que você siga as regras de presunção de lucro (32% para serviços) ou tenha uma contabilidade que comprove o lucro real. Consulte um contador para garantir a isenção total na sua Declaração Anual de IRPF."
-  },
-  {
-    q: "Preciso de conta em banco físico para o MEI?",
-    a: "Geralmente não. Bancos digitais (Inter, Nubank, Cora, C6) oferecem contas PJ gratuitas que atendem 100% das necessidades do MEI, economizando de R$ 30 a R$ 60 mensais em tarifas bancárias inúteis."
   }
 ];
 
@@ -191,32 +184,6 @@ export function AccountGuide() {
           </div>
         </CardContent>
       </Card>
-
-      {/* FAQ Section */}
-      <section className="space-y-6 pt-6">
-        <div className="flex items-center gap-2">
-          <div className="p-2 bg-secondary rounded-lg">
-            <HelpCircle className="w-5 h-5 text-muted-foreground" />
-          </div>
-          <div>
-            <h3 className="font-headline font-bold text-lg">Dúvidas sobre Contas e PF vs PJ</h3>
-            <p className="text-xs text-muted-foreground">Orientações práticas para não ter problemas com a Receita.</p>
-          </div>
-        </div>
-
-        <Accordion type="single" collapsible className="w-full space-y-2">
-          {FAQS_CONTAS.map((faq, idx) => (
-            <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-xl px-4 bg-card/50">
-              <AccordionTrigger className="text-sm font-bold text-left hover:no-underline py-4">
-                {faq.q}
-              </AccordionTrigger>
-              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-4">
-                {faq.a}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </section>
     </div>
   );
 }

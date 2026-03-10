@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo } from "react";
@@ -155,25 +156,25 @@ export function CashFlowLedger() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-3 gap-3">
-              {/* Pró-labore */}
+              {/* Pró-labore - Azul conforme pedido */}
               <div className="space-y-1.5">
-                <div className="flex items-center gap-1.5 text-[10px] text-indigo-500 font-black uppercase">
+                <div className="flex items-center gap-1.5 text-[10px] text-blue-500 font-black uppercase">
                   <UserCircle className="w-3 h-3" />
                   Salário PF
                 </div>
                 <div className="relative group/param">
                   <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">R$</span>
                   <Input 
-                    className="h-9 pl-7 pr-7 text-xs font-bold bg-background/80 border-indigo-500/30 focus:border-indigo-500 focus:ring-indigo-500/20" 
+                    className="h-9 pl-7 pr-7 text-xs font-bold bg-background/80 border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20" 
                     type="number" 
                     value={globalParams.prolabore}
                     onChange={(e) => setGlobalParams({...globalParams, prolabore: parseFloat(e.target.value) || 0})}
                   />
-                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-indigo-500/30 group-hover/param:text-indigo-500 transition-colors pointer-events-none" />
+                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-blue-500/30 group-hover/param:text-blue-500 transition-colors pointer-events-none" />
                 </div>
               </div>
 
-              {/* % Reserva */}
+              {/* % Reserva - Roxo */}
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 text-[10px] text-purple-500 font-black uppercase">
                   <Percent className="w-3 h-3" />
@@ -191,7 +192,7 @@ export function CashFlowLedger() {
                 </div>
               </div>
 
-              {/* DAS - Vermelho conforme pedido */}
+              {/* DAS - Vermelho */}
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 text-[10px] text-red-500 font-black uppercase">
                   <ShieldCheck className="w-3 h-3" />
@@ -218,17 +219,17 @@ export function CashFlowLedger() {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl">
-            {/* Bloco 1: Faturamento Anual / Limite MEI */}
-            <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
+            {/* Bloco 1: Faturamento Anual (Índigo conforme pedido) */}
+            <div className="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
               <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Faturamento Anual (Limite MEI)</div>
-              <div className="text-lg font-bold text-blue-500 leading-tight">{formatCurrency(totals.acumuladoReceita || 0)}</div>
-              <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-blue-500/70">
+              <div className="text-lg font-bold text-indigo-500 leading-tight">{formatCurrency(totals.acumuladoReceita || 0)}</div>
+              <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-indigo-500/70">
                 <ShieldCheck className="w-2.5 h-2.5" />
                 {percentualLimite.toFixed(1)}% do Teto de 81k
               </div>
             </div>
 
-            {/* Bloco 2: Lucro Real Extra (Dinheiro no Bolso) */}
+            {/* Bloco 2: Lucro Real Extra (Verde) */}
             <div className="p-3 bg-primary/10 rounded-xl border border-primary/20">
               <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Lucro Real (Livre para Você)</div>
               <div className="text-lg font-bold text-primary leading-tight">{formatCurrency(totals.acumuladoLucro || 0)}</div>
@@ -238,7 +239,7 @@ export function CashFlowLedger() {
               </div>
             </div>
 
-            {/* Bloco 3: Reserva Total (Caixa da Empresa) */}
+            {/* Bloco 3: Reserva Total (Roxo) */}
             <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
               <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Reserva (Caixa da Empresa)</div>
               <div className="text-lg font-bold text-purple-500 leading-tight">{formatCurrency(totals.acumuladoReserva || 0)}</div>
@@ -279,10 +280,10 @@ export function CashFlowLedger() {
                 <TableRow className="hover:bg-transparent border-b">
                   <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r bg-secondary/10">Status</TableHead>
                   <TableHead className="w-[90px] font-bold text-[10px] uppercase border-r text-center bg-secondary/10">Mês</TableHead>
-                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-blue-500 bg-blue-500/5">
+                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-indigo-500 bg-indigo-500/5">
                     <div className="flex items-center gap-2">
                       <TrendingUp className="w-3 h-3" />
-                      Receita Mensal (R$)
+                      Faturamento Mensal (R$)
                     </div>
                   </TableHead>
                   <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-orange-500 bg-orange-500/5">
@@ -325,16 +326,16 @@ export function CashFlowLedger() {
                     <TableCell className="font-bold text-xs py-3 border-r text-center bg-card">
                       {MESES[i]}
                     </TableCell>
-                    <TableCell className="py-2 px-6 bg-blue-500/5">
+                    <TableCell className="py-2 px-6 bg-indigo-500/5">
                       <div className="relative group/input">
                         <Input 
                           type="number" 
                           disabled={!row.active}
                           value={row.receita} 
                           onChange={(e) => updateMonth(i, 'receita', e.target.value)}
-                          className="h-10 text-xs font-bold bg-background/40 border-blue-500/20 hover:border-blue-500 focus:border-blue-500 focus:bg-background/80 transition-all text-blue-500 pr-8"
+                          className="h-10 text-xs font-bold bg-background/40 border-indigo-500/20 hover:border-indigo-500 focus:border-indigo-500 focus:bg-background/80 transition-all text-indigo-500 pr-8"
                         />
-                        <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-blue-500/30 group-hover/input:text-blue-500 transition-colors pointer-events-none" />
+                        <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-indigo-500/30 group-hover/input:text-indigo-500 transition-colors pointer-events-none" />
                       </div>
                     </TableCell>
                     <TableCell className="py-2 px-6 bg-orange-500/5">
