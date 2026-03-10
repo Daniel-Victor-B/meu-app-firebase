@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
 import { formatCurrency, formatPercent } from "@/lib/formatters";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 
@@ -45,33 +46,65 @@ export function FinancialDistribution({
         </CardHeader>
         <CardContent className="space-y-8">
           <div className="space-y-4">
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <label className="text-sm font-medium">Faturamento Mensal</label>
-              <span className="font-code font-bold text-primary">{formatCurrency(fat)}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-muted-foreground">R$</span>
+                <Input 
+                  type="number" 
+                  value={fat} 
+                  onChange={(e) => setFat(parseFloat(e.target.value) || 0)}
+                  className="w-28 h-8 text-right font-code font-bold text-primary bg-secondary/50 border-none focus-visible:ring-1 focus-visible:ring-primary"
+                />
+              </div>
             </div>
             <Slider value={[fat]} min={500} max={15000} step={100} onValueChange={([v]) => setFat(v)} />
           </div>
 
           <div className="space-y-4">
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <label className="text-sm font-medium">Custos Operacionais</label>
-              <span className="font-code font-bold text-blue-500">{formatCurrency(custos)}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-muted-foreground">R$</span>
+                <Input 
+                  type="number" 
+                  value={custos} 
+                  onChange={(e) => setCustos(parseFloat(e.target.value) || 0)}
+                  className="w-28 h-8 text-right font-code font-bold text-blue-500 bg-secondary/50 border-none focus-visible:ring-1 focus-visible:ring-blue-500"
+                />
+              </div>
             </div>
             <Slider value={[custos]} min={0} max={fat * 0.8} step={50} onValueChange={([v]) => setCustos(v)} />
           </div>
 
           <div className="space-y-4">
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <label className="text-sm font-medium">Pró-labore (Salário)</label>
-              <span className="font-code font-bold text-orange-500">{formatCurrency(prolabore)}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-muted-foreground">R$</span>
+                <Input 
+                  type="number" 
+                  value={prolabore} 
+                  onChange={(e) => setProlabore(parseFloat(e.target.value) || 0)}
+                  className="w-28 h-8 text-right font-code font-bold text-orange-500 bg-secondary/50 border-none focus-visible:ring-1 focus-visible:ring-orange-500"
+                />
+              </div>
             </div>
             <Slider value={[prolabore]} min={0} max={fat * 0.7} step={50} onValueChange={([v]) => setProlabore(v)} />
           </div>
 
           <div className="space-y-4">
-            <div className="flex justify-between">
+            <div className="flex justify-between items-center">
               <label className="text-sm font-medium">Reserva PJ (% da sobra)</label>
-              <span className="font-code font-bold text-purple-500">{reservaPct}%</span>
+              <div className="flex items-center gap-2">
+                <Input 
+                  type="number" 
+                  value={reservaPct} 
+                  onChange={(e) => setReservaPct(parseFloat(e.target.value) || 0)}
+                  className="w-20 h-8 text-right font-code font-bold text-purple-500 bg-secondary/50 border-none focus-visible:ring-1 focus-visible:ring-purple-500"
+                />
+                <span className="text-xs font-bold text-muted-foreground">%</span>
+              </div>
             </div>
             <Slider value={[reservaPct]} min={0} max={100} step={5} onValueChange={([v]) => setReservaPct(v)} />
           </div>
