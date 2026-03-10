@@ -195,13 +195,13 @@ export function CashFlowLedger() {
               </div>
             </div>
 
-            {/* Bloco 2: Lucro Líquido (Dinheiro no Bolso) */}
+            {/* Bloco 2: Lucro Real Extra (Dinheiro no Bolso) */}
             <div className="p-3 bg-primary/10 rounded-xl border border-primary/20">
-              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Lucro Real (Dinheiro no Bolso)</div>
+              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Lucro Real (Livre para Você)</div>
               <div className="text-lg font-bold text-primary leading-tight">{formatCurrency(totals.acumuladoLucro)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-primary/70">
                 <Wallet className="w-2.5 h-2.5" />
-                Valor para uso Pessoal
+                Dinheiro Extra (Além do Pró-labore)
               </div>
             </div>
 
@@ -244,7 +244,7 @@ export function CashFlowLedger() {
                 </TableRow>
                 
                 <TableRow className="hover:bg-transparent border-b">
-                  <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r bg-secondary/10">Ativar</TableHead>
+                  <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r bg-secondary/10">Status</TableHead>
                   <TableHead className="w-[90px] font-bold text-[10px] uppercase border-r text-center bg-secondary/10">Mês</TableHead>
                   <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-blue-500 bg-blue-500/5">
                     <div className="flex items-center gap-2">
@@ -268,7 +268,7 @@ export function CashFlowLedger() {
                   <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-primary px-6">
                     <div className="flex items-center justify-end gap-2">
                       <Wallet className="w-3 h-3" />
-                      Lucro Disp.
+                      Lucro Extra
                     </div>
                   </TableHead>
                   <TableHead className="w-[180px] text-right font-bold text-[10px] uppercase px-6 opacity-30">Reserva Acum.</TableHead>
@@ -342,7 +342,7 @@ export function CashFlowLedger() {
           Importante
         </h4>
         <p className="text-xs text-muted-foreground leading-relaxed">
-          Sempre que um mês ficar com a sobra negativa, o sistema não calculará reserva ou lucro. Desative os meses de férias ou inatividade para ter uma projeção real de fechamento de ano.
+          Sempre que um mês ficar com a sobra negativa, o sistema não calculará reserva ou lucro. Desative os meses de férias ou inatividade para ter uma projeção real de fechamento de ano. O Lucro Extra é o que sobra após pagar todos os custos, impostos, reserva e o seu Pró-labore.
         </p>
       </div>
 
