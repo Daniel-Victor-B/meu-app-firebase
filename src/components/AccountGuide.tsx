@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Settings, Landmark, CreditCard, TrendingUp, ArrowRight, HelpCircle, Info, ShieldCheck, Wallet } from "lucide-react";
+import { Settings, Landmark, CreditCard, TrendingUp, ArrowRight, Info, ShieldCheck, Wallet } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -85,11 +85,11 @@ const CONTAS = [
 
 const FLUXO = [
   { de: "Cliente paga", para: "PJ Operacional", color: "text-indigo-500" },
-  { de: "PJ Operacional", para: "Custos (Laranja)", color: "text-orange-500" },
-  { de: "PJ Operacional", para: "DAS (Vermelho)", color: "text-red-500" },
-  { de: "PJ Operacional", para: "Pró-labore (Azul)", color: "text-blue-500" },
-  { de: "Sobra mensal", para: "PJ Reserva (Roxo)", color: "text-purple-500" },
-  { de: "Lucro Real", para: "PF Investimentos (Verde)", color: "text-primary" },
+  { de: "PJ Operacional", para: "Custos", color: "text-orange-500" },
+  { de: "PJ Operacional", para: "DAS", color: "text-red-500" },
+  { de: "PJ Operacional", para: "Pró-labore", color: "text-blue-500" },
+  { de: "Sobra mensal", para: "PJ Reserva", color: "text-purple-500" },
+  { de: "Lucro Real", para: "PF Investimentos", color: "text-primary" },
 ];
 
 export function AccountGuide() {
@@ -106,10 +106,11 @@ export function AccountGuide() {
         
         <div className="space-y-3">
           <Separator className="bg-border/50" />
-          <div className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground/80 tracking-wide uppercase px-1">
+          <div className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground/80 tracking-wide uppercase px-1 py-1">
             <Info className="w-3.5 h-3.5" />
             Clique em cada conta para ver as dicas práticas
           </div>
+          <Separator className="bg-border/50" />
         </div>
       </div>
 
