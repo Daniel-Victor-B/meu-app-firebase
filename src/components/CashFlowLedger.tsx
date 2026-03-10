@@ -170,7 +170,7 @@ export function CashFlowLedger({
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {/* Bloco de Reserva */}
         <Card className="bg-primary/5 border-primary/20 shadow-md">
           <CardHeader className="pb-2">
@@ -465,32 +465,32 @@ export function CashFlowLedger({
       </Card>
 
       <div className="grid grid-cols-1 gap-6">
-        <div className="p-6 rounded-2xl border border-primary/20 bg-primary/5 flex flex-col gap-6 shadow-sm">
+        <div className="p-6 rounded-2xl border border-amber-500/20 bg-amber-500/5 flex flex-col gap-6 shadow-sm">
           <div className="flex gap-4 items-start">
-            <Target className="w-6 h-6 text-primary shrink-0 mt-1" />
+            <Lightbulb className="w-6 h-6 text-amber-600 dark:text-amber-500 shrink-0 mt-1" />
             <div className="space-y-4">
-              <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-primary">Gestão de Destino: O Ciclo do Capital</h4>
+              <h4 className="text-sm font-bold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-500">Gestão de Destino: O Ciclo do Capital</h4>
               <p className="text-xs text-muted-foreground leading-relaxed max-w-2xl">
                 Diferente do Pró-labore, que é sua retirada mensal fixa, o <strong>Lucro Real</strong> deve permanecer na <strong>conta PJ Operacional</strong> (não na PF) para ser avaliado estrategicamente a cada 90 dias.
               </p>
               
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                <div className="flex flex-col gap-2 bg-background/60 p-4 rounded-xl border border-primary/10 transition-all hover:border-primary/30">
-                  <div className="flex items-center gap-2 text-primary font-bold text-[10px] uppercase">
+                <div className="flex flex-col gap-2 bg-background/60 p-4 rounded-xl border border-amber-500/10 transition-all hover:border-amber-500/30">
+                  <div className="flex items-center gap-2 text-amber-600 font-bold text-[10px] uppercase">
                     <Wallet className="w-3.5 h-3.5" />
                     Investir
                   </div>
                   <p className="text-[10px] text-muted-foreground leading-tight">Mandar para sua corretora <strong>Pessoal (PF/CPF)</strong> para patrimônio de longo prazo.</p>
                 </div>
-                <div className="flex flex-col gap-2 bg-background/60 p-4 rounded-xl border border-primary/10 transition-all hover:border-primary/30">
-                  <div className="flex items-center gap-2 text-primary font-bold text-[10px] uppercase">
+                <div className="flex flex-col gap-2 bg-background/60 p-4 rounded-xl border border-amber-500/10 transition-all hover:border-amber-500/30">
+                  <div className="flex items-center gap-2 text-amber-600 font-bold text-[10px] uppercase">
                     <ShieldCheck className="w-3.5 h-3.5" />
                     Guardar
                   </div>
                   <p className="text-[10px] text-muted-foreground leading-tight">Manter na própria <strong>conta PJ Operacional</strong> como capital de giro extra para meses de baixa.</p>
                 </div>
-                <div className="flex flex-col gap-2 bg-background/60 p-4 rounded-xl border border-primary/10 transition-all hover:border-primary/30">
-                  <div className="flex items-center gap-2 text-primary font-bold text-[10px] uppercase">
+                <div className="flex flex-col gap-2 bg-background/60 p-4 rounded-xl border border-amber-500/10 transition-all hover:border-amber-500/30">
+                  <div className="flex items-center gap-2 text-amber-600 font-bold text-[10px] uppercase">
                     <Rocket className="w-3.5 h-3.5" />
                     Escalar
                   </div>

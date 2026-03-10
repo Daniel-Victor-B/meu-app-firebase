@@ -263,28 +263,28 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
           </div>
           
           <div className="mt-6 space-y-6">
-            <div className="p-4 rounded-xl border border-primary/20 bg-primary/5">
+            <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5">
               <div className="flex gap-3 items-start">
-                <Lightbulb className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                <Lightbulb className="w-5 h-5 text-amber-600 dark:text-amber-500 shrink-0 mt-0.5" />
                 <div className="space-y-4">
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-primary">Regra de Ouro: Lucro não é salário.</h4>
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-500">Regra de Ouro: Lucro não é salário.</h4>
                   <p className="text-[11px] text-muted-foreground leading-relaxed">
                     O Pró-labore é sua retirada mensal fixa. O Lucro deve ser acumulado na <strong>conta PJ Operacional</strong> (não na PF) e distribuído <strong>trimestralmente</strong> conforme a saúde do negócio.
                   </p>
                   
                   <div className="space-y-2">
-                    <p className="text-[10px] font-black uppercase text-primary/70 tracking-widest">Você decide o destino do lucro acumulado:</p>
+                    <p className="text-[10px] font-black uppercase text-amber-600/70 tracking-widest">Você decide o destino do lucro acumulado:</p>
                     <div className="grid gap-2">
-                      <div className="flex items-center gap-3 bg-background/40 p-2.5 rounded-lg border border-primary/10 transition-all hover:bg-background/60">
-                        <Wallet className="w-3.5 h-3.5 text-primary" />
+                      <div className="flex items-center gap-3 bg-background/40 p-2.5 rounded-lg border border-amber-500/10 transition-all hover:bg-background/60">
+                        <Wallet className="w-3.5 h-3.5 text-amber-600" />
                         <p className="text-[10px] text-muted-foreground"><strong>Investir</strong>: Mandar para sua corretora <strong>Pessoal (PF/CPF)</strong></p>
                       </div>
-                      <div className="flex items-center gap-3 bg-background/40 p-2.5 rounded-lg border border-primary/10 transition-all hover:bg-background/60">
-                        <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+                      <div className="flex items-center gap-3 bg-background/40 p-2.5 rounded-lg border border-amber-500/10 transition-all hover:bg-background/60">
+                        <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
                         <p className="text-[10px] text-muted-foreground"><strong>Guardar</strong>: Manter na reserva da <strong>conta PJ Operacional</strong> como segurança extra</p>
                       </div>
-                      <div className="flex items-center gap-3 bg-background/40 p-2.5 rounded-lg border border-primary/10 transition-all hover:bg-background/60">
-                        <Rocket className="w-3.5 h-3.5 text-primary" />
+                      <div className="flex items-center gap-3 bg-background/40 p-2.5 rounded-lg border border-amber-500/10 transition-all hover:bg-background/60">
+                        <Rocket className="w-3.5 h-3.5 text-amber-600" />
                         <p className="text-[10px] text-muted-foreground"><strong>Escalar</strong>: Reinvestir na empresa para aumentar sua capacidade, estoque ou marketing</p>
                       </div>
                     </div>
