@@ -1,10 +1,11 @@
+
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { formatCurrency, formatPercent } from "@/lib/formatters";
-import { CheckCircle2, AlertCircle } from "lucide-react";
+import { CheckCircle2, AlertCircle, PenLine } from "lucide-react";
 
 interface FinancialDistributionProps {
   fat: number;
@@ -30,11 +31,11 @@ export function FinancialDistribution({
   const lucroDisp = sobra - reservaVal;
 
   const items = [
-    { label: "Custos Operacionais", val: custos, color: "bg-blue-500", icon: <CheckCircle2 className="w-4 h-4 text-blue-500" /> },
-    { label: "DAS (Imposto MEI)", val: das, color: "bg-red-500", icon: <CheckCircle2 className="w-4 h-4 text-red-500" /> },
-    { label: "Pró-labore", val: prolabore, color: "bg-orange-500", icon: <CheckCircle2 className="w-4 h-4 text-orange-500" /> },
-    { label: "Reserva Empresa", val: reservaVal, color: "bg-purple-500", icon: <CheckCircle2 className="w-4 h-4 text-purple-500" /> },
-    { label: "Lucro Disponível", val: lucroDisp, color: "bg-primary", icon: <CheckCircle2 className="w-4 h-4 text-primary" /> },
+    { label: "Custos Operacionais", val: custos, color: "bg-red-500", text: "text-red-500" },
+    { label: "DAS (Imposto MEI)", val: das, color: "bg-indigo-500", text: "text-indigo-500" },
+    { label: "Pró-labore", val: prolabore, color: "bg-orange-500", text: "text-orange-500" },
+    { label: "Reserva Empresa", val: reservaVal, color: "bg-purple-500", text: "text-purple-500" },
+    { label: "Lucro Disponível", val: lucroDisp, color: "bg-primary", text: "text-primary" },
   ];
 
   return (
@@ -50,12 +51,15 @@ export function FinancialDistribution({
               <label className="text-sm font-medium">Faturamento Mensal</label>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-muted-foreground">R$</span>
-                <Input 
-                  type="number" 
-                  value={fat} 
-                  onChange={(e) => setFat(parseFloat(e.target.value) || 0)}
-                  className="w-28 h-8 text-right font-code font-bold text-primary bg-secondary/50 border-none focus-visible:ring-1 focus-visible:ring-primary"
-                />
+                <div className="relative group/input">
+                  <Input 
+                    type="number" 
+                    value={fat} 
+                    onChange={(e) => setFat(parseFloat(e.target.value) || 0)}
+                    className="w-28 h-8 text-right font-code font-bold text-blue-500 bg-blue-500/5 border-blue-500/20 focus-visible:ring-1 focus-visible:ring-blue-500 pr-7"
+                  />
+                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-blue-500/30" />
+                </div>
               </div>
             </div>
             <Slider value={[fat]} min={500} max={15000} step={100} onValueChange={([v]) => setFat(v)} />
@@ -66,12 +70,15 @@ export function FinancialDistribution({
               <label className="text-sm font-medium">Custos Operacionais</label>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-muted-foreground">R$</span>
-                <Input 
-                  type="number" 
-                  value={custos} 
-                  onChange={(e) => setCustos(parseFloat(e.target.value) || 0)}
-                  className="w-28 h-8 text-right font-code font-bold text-blue-500 bg-secondary/50 border-none focus-visible:ring-1 focus-visible:ring-blue-500"
-                />
+                <div className="relative group/input">
+                  <Input 
+                    type="number" 
+                    value={custos} 
+                    onChange={(e) => setCustos(parseFloat(e.target.value) || 0)}
+                    className="w-28 h-8 text-right font-code font-bold text-red-500 bg-red-500/5 border-red-500/20 focus-visible:ring-1 focus-visible:ring-red-500 pr-7"
+                  />
+                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-red-500/30" />
+                </div>
               </div>
             </div>
             <Slider value={[custos]} min={0} max={fat * 0.8} step={50} onValueChange={([v]) => setCustos(v)} />
@@ -82,12 +89,15 @@ export function FinancialDistribution({
               <label className="text-sm font-medium">Pró-labore (Salário)</label>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-bold text-muted-foreground">R$</span>
-                <Input 
-                  type="number" 
-                  value={prolabore} 
-                  onChange={(e) => setProlabore(parseFloat(e.target.value) || 0)}
-                  className="w-28 h-8 text-right font-code font-bold text-orange-500 bg-secondary/50 border-none focus-visible:ring-1 focus-visible:ring-orange-500"
-                />
+                <div className="relative group/input">
+                  <Input 
+                    type="number" 
+                    value={prolabore} 
+                    onChange={(e) => setProlabore(parseFloat(e.target.value) || 0)}
+                    className="w-28 h-8 text-right font-code font-bold text-orange-500 bg-orange-500/5 border-orange-500/20 focus-visible:ring-1 focus-visible:ring-orange-500 pr-7"
+                  />
+                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-orange-500/30" />
+                </div>
               </div>
             </div>
             <Slider value={[prolabore]} min={0} max={fat * 0.7} step={50} onValueChange={([v]) => setProlabore(v)} />
@@ -97,12 +107,15 @@ export function FinancialDistribution({
             <div className="flex justify-between items-center">
               <label className="text-sm font-medium">Reserva PJ (% da sobra)</label>
               <div className="flex items-center gap-2">
-                <Input 
-                  type="number" 
-                  value={reservaPct} 
-                  onChange={(e) => setReservaPct(parseFloat(e.target.value) || 0)}
-                  className="w-20 h-8 text-right font-code font-bold text-purple-500 bg-secondary/50 border-none focus-visible:ring-1 focus-visible:ring-purple-500"
-                />
+                <div className="relative group/input">
+                  <Input 
+                    type="number" 
+                    value={reservaPct} 
+                    onChange={(e) => setReservaPct(parseFloat(e.target.value) || 0)}
+                    className="w-20 h-8 text-right font-code font-bold text-purple-500 bg-purple-500/5 border-purple-500/20 focus-visible:ring-1 focus-visible:ring-purple-500 pr-7"
+                  />
+                  <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-purple-500/30" />
+                </div>
                 <span className="text-xs font-bold text-muted-foreground">%</span>
               </div>
             </div>
@@ -138,7 +151,7 @@ export function FinancialDistribution({
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-code font-bold text-lg">{formatCurrency(item.val)}</div>
+                  <div className={`font-code font-bold text-lg ${item.text}`}>{formatCurrency(item.val)}</div>
                 </div>
               </div>
             ))}
