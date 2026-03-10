@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react";
@@ -67,7 +66,24 @@ export function MeiLimitTracker({
   const projecaoAnual = totalSimulado;
   const alertaMEI = projecaoAnual > limiteAnual * 0.8;
 
-  const statusText = percentualAcum > 80 ? "Risco de Desenquadramento" : percentualAcum > 60 ? "Atenção ao Limite" : "Margem Segura";
+  // Determina a cor e o status baseado no percentual acumulado
+  const getStatusColor = (pct: number) => {
+    if (pct > 80) return "bg-destructive";
+    if (pct > 60) return "bg-amber-500";
+    return "bg-primary";
+  };
+
+  const getStatusText = (pct: number) => {
+    if (pct > 80) return "Risco de Desenquadramento";
+    if (pct > 60) return "Atenção ao Limite";
+    return "Margem Segura";
+  };
+
+  const getStatusTextColor = (pct: number) => {
+    if (pct > 80) return "text-destructive";
+    if (pct > 60) return "text-amber-500";
+    return "text-primary";
+  };
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-10">
@@ -165,7 +181,9 @@ export function MeiLimitTracker({
           <div className="space-y-3 pt-4">
             <div className="flex justify-between items-end">
               <div className="space-y-1">
-                <span className="text-xs text-muted-foreground font-bold uppercase tracking-wider">{statusText}</span>
+                <span className={`text-xs font-bold uppercase tracking-wider ${getStatusTextColor(percentualAcum)}`}>
+                  {getStatusText(percentualAcum)}
+                </span>
                 <div className="text-2xl font-bold font-headline">
                   {percentualAcum.toFixed(1)}% <span className="text-xs font-normal text-muted-foreground">do limite utilizado</span>
                 </div>
@@ -177,9 +195,13 @@ export function MeiLimitTracker({
                 </div>
               </div>
             </div>
-            <Progress value={percentualAcum} className="h-3" />
+            <Progress 
+              value={percentualAcum} 
+              className="h-3" 
+              indicatorClassName={getStatusColor(percentualAcum)}
+            />
             <div className="flex justify-between text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">
-              <span className="text-primary">{formatCurrency(acumuladoAteAgora)} ACUMULADO</span>
+              <span className={getStatusTextColor(percentualAcum)}>{formatCurrency(acumuladoAteAgora)} ACUMULADO</span>
               <span>{formatCurrency(restante)} RESTANTE NO LIMITE</span>
             </div>
           </div>
