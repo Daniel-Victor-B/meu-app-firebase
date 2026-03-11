@@ -504,4 +504,3 @@ export function Checklist({ fat, custos, prolabore }: ChecklistProps) {
     </div>
   );
 }
-
