@@ -148,7 +148,7 @@ export default function Home() {
           </TabsContent>
 
           <TabsContent value="guia">
-            <Checklist />
+            <Checklist fat={fat} custos={custos} prolabore={prolabore} />
           </TabsContent>
 
           <TabsContent value="ia">

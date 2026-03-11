@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
@@ -19,16 +19,26 @@ import {
   ShieldCheck,
   Landmark,
   Wallet,
-  Sparkles
+  Sparkles,
+  ChevronRight,
+  Target
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
+import { formatCurrency } from "@/lib/formatters";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, Tooltip } from 'recharts';
+import { BarChart, Bar, XAxis, ResponsiveContainer, Cell, Tooltip } from 'recharts';
+
+interface ChecklistProps {
+  fat: number;
+  custos: number;
+  prolabore: number;
+}
 
 const SECTIONS = [
   {
@@ -110,14 +120,9 @@ const FAQS_GUIDE = [
   }
 ];
 
-const CHART_DATA = [
-  { name: 'PJ Operacional', value: 85, color: '#60a5fa', desc: 'Sustentação' },
-  { name: 'PF Pró-labore', value: 65, color: '#fbbf24', desc: 'Sobrevivência' },
-  { name: 'PF Investimentos', value: 95, color: '#f472b6', desc: 'Liberdade' }
-];
-
-export function Checklist() {
+export function Checklist({ fat, custos, prolabore }: ChecklistProps) {
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  const [isEliteMode, setIsEliteMode] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem("mei-flow-checklist");
@@ -152,6 +157,43 @@ export function Checklist() {
   const totalTasks = SECTIONS.reduce((acc, s) => acc + s.tasks.length, 0);
   const totalCompleted = Object.values(checkedItems).filter(Boolean).length;
   const globalProgress = (totalCompleted / totalTasks) * 100;
+
+  const chartData = useMemo(() => {
+    const das = 76;
+    
+    // Cenário Atual
+    const currentCostsPct = fat > 0 ? (custos / fat) * 100 : 0;
+    const currentProfit = Math.max(0, fat - custos - das - prolabore);
+    const currentProfitPct = fat > 0 ? (currentProfit / fat) * 100 : 0;
+    const currentSalaryPct = fat > 0 ? (prolabore / fat) * 100 : 0;
+
+    // Cenário Elite (Unicórnio)
+    const eliteCosts = fat * 0.1; // 10%
+    const eliteProfit = Math.max(0, fat - eliteCosts - das - prolabore);
+    const eliteProfitPct = fat > 0 ? (eliteProfit / fat) * 100 : 0;
+
+    if (isEliteMode) {
+      return [
+        { name: 'PJ Operacional', value: 10 + (das/fat*100), color: '#60a5fa', desc: 'Sustentação' },
+        { name: 'PF Pró-labore', value: currentSalaryPct, color: '#fbbf24', desc: 'Sobrevivência' },
+        { name: 'PF Investimentos', value: eliteProfitPct, color: '#f472b6', desc: 'Liberdade' }
+      ];
+    }
+
+    return [
+      { name: 'PJ Operacional', value: currentCostsPct + (das/fat*100), color: '#60a5fa', desc: 'Sustentação' },
+      { name: 'PF Pró-labore', value: currentSalaryPct, color: '#fbbf24', desc: 'Sobrevivência' },
+      { name: 'PF Investimentos', value: currentProfitPct, color: '#f472b6', desc: 'Liberdade' }
+    ];
+  }, [fat, custos, prolabore, isEliteMode]);
+
+  const profitGap = useMemo(() => {
+    const das = 76;
+    const currentProfit = Math.max(0, fat - custos - das - prolabore);
+    const eliteCosts = fat * 0.1;
+    const eliteProfit = Math.max(0, fat - eliteCosts - das - prolabore);
+    return Math.max(0, eliteProfit - currentProfit);
+  }, [fat, custos, prolabore]);
 
   return (
     <div className="space-y-10 animate-in slide-in-from-bottom-4 duration-500 pb-20">
@@ -303,12 +345,10 @@ export function Checklist() {
       <section className="relative group p-1 rounded-[48px] bg-gradient-to-br from-indigo-900 via-primary/40 to-pink-900 shadow-2xl overflow-hidden mt-16">
         <div className="bg-slate-950/95 backdrop-blur-3xl rounded-[47px] p-8 md:p-16 space-y-16 relative overflow-hidden">
           
-          {/* Background Aura */}
           <div className="absolute top-0 right-0 -mr-40 -mt-40 w-[800px] h-[800px] bg-primary/10 blur-[150px] rounded-full opacity-60 group-hover:opacity-100 transition-opacity duration-1000" />
           
           <div className="relative z-10 flex flex-col items-center text-center space-y-12">
             
-            {/* Header Heróico */}
             <div className="space-y-8 max-w-4xl mx-auto">
               <div className="inline-flex items-center gap-3 px-6 py-2 bg-primary/10 border border-primary/20 rounded-full animate-pulse">
                 <Sparkles className="w-4 h-4 text-primary" />
@@ -324,46 +364,64 @@ export function Checklist() {
               </p>
             </div>
 
-            {/* Seção Gráfica Didática e Intuitiva */}
+            {/* Audit Unicórnio: Funcionalidade Brilhante */}
             <div className="w-full max-w-5xl mx-auto space-y-12">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 
-                {/* Legendas Educativas (Didática) */}
                 <div className="lg:col-span-4 space-y-4 text-left order-2 lg:order-1">
+                  <div className="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md space-y-6">
+                    <div className="space-y-2">
+                       <h5 className="text-xs font-black text-white uppercase tracking-[0.2em]">Audit de Eficiência</h5>
+                       <p className="text-[10px] text-slate-400 leading-relaxed">Simule o impacto de uma estrutura de custos de 10% (Padrão Unicórnio) sobre o seu faturamento atual.</p>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-900/50 border border-white/10">
+                       <div className="flex items-center gap-2">
+                          <Zap className={cn("w-4 h-4 transition-colors", isEliteMode ? "text-amber-400" : "text-slate-500")} />
+                          <span className="text-[10px] font-black text-white uppercase tracking-widest">Modo Elite</span>
+                       </div>
+                       <Switch 
+                         checked={isEliteMode}
+                         onCheckedChange={setIsEliteMode}
+                         className="data-[state=checked]:bg-amber-400"
+                       />
+                    </div>
+
+                    {isEliteMode && (
+                      <div className="p-4 rounded-xl bg-amber-400/10 border border-amber-400/20 animate-in zoom-in duration-300">
+                         <div className="text-[9px] font-black text-amber-400 uppercase tracking-widest mb-1">Riqueza Escondida</div>
+                         <div className="text-lg font-black text-white">{formatCurrency(profitGap)}</div>
+                         <p className="text-[8px] text-slate-400 mt-1 uppercase font-bold">Extra mensal ao otimizar custos</p>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md space-y-2">
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 rounded-full bg-blue-400 shadow-[0_0_8px_#60a5fa]" />
                       <span className="text-xs font-black text-white uppercase tracking-widest">PJ Operacional</span>
                     </div>
-                    <p className="text-[10px] text-slate-400 leading-relaxed font-medium">
-                      O oxigênio do seu negócio. Onde o faturamento entra e a blindagem acontece.
-                    </p>
+                    <p className="text-[10px] text-slate-400 leading-relaxed font-medium">Sustentação do negócio.</p>
                   </div>
                   <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md space-y-2">
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24]" />
                       <span className="text-xs font-black text-white uppercase tracking-widest">PF Pró-labore</span>
                     </div>
-                    <p className="text-[10px] text-slate-400 leading-relaxed font-medium">
-                      Seu sustento pessoal. O salário fixo que garante sua paz mental e sobrevivência.
-                    </p>
+                    <p className="text-[10px] text-slate-400 leading-relaxed font-medium">Sua sobrevivência mensal.</p>
                   </div>
                   <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md space-y-2">
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 rounded-full bg-pink-400 shadow-[0_0_8px_#f472b6]" />
                       <span className="text-xs font-black text-white uppercase tracking-widest">PF Investimentos</span>
                     </div>
-                    <p className="text-[10px] text-slate-400 leading-relaxed font-medium">
-                      Sua Riqueza Real. Onde o lucro do MEI vira patrimônio isento e liberdade.
-                    </p>
+                    <p className="text-[10px] text-slate-400 leading-relaxed font-medium">Sua riqueza e liberdade.</p>
                   </div>
                 </div>
 
-                {/* Gráfico Impecável (Intuivo) */}
                 <div className="lg:col-span-8 h-[400px] relative group/chart order-1 lg:order-2">
                   <div className="absolute inset-0 bg-white/5 rounded-[40px] border border-white/10 shadow-inner backdrop-blur-sm -z-10" />
                   
-                  {/* Grid de Nível (Didático) */}
                   <div className="absolute inset-x-8 top-10 bottom-20 flex flex-col justify-between pointer-events-none opacity-20">
                     {[100, 75, 50, 25, 0].map((val) => (
                       <div key={val} className="flex items-center gap-4">
@@ -374,7 +432,7 @@ export function Checklist() {
                   </div>
 
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={CHART_DATA} margin={{ top: 40, right: 60, left: 60, bottom: 40 }}>
+                    <BarChart data={chartData} margin={{ top: 40, right: 60, left: 60, bottom: 40 }}>
                       <defs>
                         <linearGradient id="gradBlue" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.8}/>
@@ -402,15 +460,15 @@ export function Checklist() {
                               <div className="bg-slate-900/95 border border-white/20 p-5 rounded-3xl shadow-2xl backdrop-blur-2xl">
                                 <div className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-2">{payload[0].payload.desc}</div>
                                 <div className="text-xl font-black text-white">{payload[0].name}</div>
-                                <div className="mt-2 text-2xl font-black text-primary">{payload[0].value}% <span className="text-[10px] font-medium text-muted-foreground uppercase">Eficiência</span></div>
+                                <div className="mt-2 text-2xl font-black text-primary">{payload[0].value.toFixed(1)}% <span className="text-[10px] font-medium text-muted-foreground uppercase">Participação</span></div>
                               </div>
                             );
                           }
                           return null;
                         }}
                       />
-                      <Bar dataKey="value" radius={[30, 30, 0, 0]} barSize={90}>
-                        {CHART_DATA.map((entry, index) => (
+                      <Bar dataKey="value" radius={[30, 30, 0, 0]} barSize={90} animationDuration={1000} animationEasing="ease-in-out">
+                        {chartData.map((entry, index) => (
                           <Cell 
                             key={`cell-${index}`} 
                             fill={index === 0 ? 'url(#gradBlue)' : index === 1 ? 'url(#gradYellow)' : 'url(#gradPink)'} 
@@ -421,9 +479,8 @@ export function Checklist() {
                     </BarChart>
                   </ResponsiveContainer>
                   
-                  {/* Labels Flutuantes (Didático e Sofisticado) */}
                   <div className="absolute bottom-10 inset-x-0 flex justify-around px-12 pointer-events-none">
-                    {CHART_DATA.map((item, i) => (
+                    {chartData.map((item, i) => (
                       <div key={i} className="text-center space-y-1">
                         <div className="text-[10px] font-black text-white uppercase tracking-widest opacity-80">{item.name}</div>
                         <div className="text-[8px] font-bold text-slate-500 uppercase tracking-[0.3em]">{item.desc}</div>
@@ -433,7 +490,6 @@ export function Checklist() {
                 </div>
               </div>
 
-              {/* Conclusão Poderosa */}
               <div className="pt-12 border-t border-white/10 space-y-4">
                 <div className="text-2xl md:text-3xl font-black text-white tracking-widest uppercase">
                   Disciplina fiscal é a <span className="text-primary italic">liberdade</span> do amanhã.
@@ -445,7 +501,6 @@ export function Checklist() {
             </div>
           </div>
           
-          {/* Luxury Watermark */}
           <div className="absolute bottom-0 right-0 p-16 opacity-[0.02] pointer-events-none scale-150">
              <Landmark className="w-96 h-96 text-white" />
           </div>
