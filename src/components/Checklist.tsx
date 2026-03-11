@@ -172,22 +172,21 @@ export function Checklist({ fat, custos, prolabore }: ChecklistProps) {
     const currentProfitPct = fat > 0 ? (currentProfit / fat) * 100 : 30;
 
     // Cenário Elite (Benchmark 10% de custo)
-    const eliteCosts = fat * 0.1;
     const eliteCostsPct = 10; 
     const eliteSalaryPct = currentSalaryPct;
     const eliteProfitPct = 100 - eliteCostsPct - eliteSalaryPct;
 
     if (isEliteMode) {
       return [
-        { name: 'Operacional', value: eliteCostsPct, color: '#60a5fa', desc: 'Sustentação' },
-        { name: 'Pró-labore', value: eliteSalaryPct, color: '#fbbf24', desc: 'Sobrevivência' },
+        { name: 'Operação', value: eliteCostsPct, color: '#60a5fa', desc: 'Sustentação' },
+        { name: 'Salário', value: eliteSalaryPct, color: '#fbbf24', desc: 'Sobrevivência' },
         { name: 'Riqueza', value: eliteProfitPct, color: '#f472b6', desc: 'Liberdade' }
       ];
     }
 
     return [
-      { name: 'Operacional', value: currentCostsPct, color: '#60a5fa', desc: 'Sustentação' },
-      { name: 'Pró-labore', value: currentSalaryPct, color: '#fbbf24', desc: 'Sobrevivência' },
+      { name: 'Operação', value: currentCostsPct, color: '#60a5fa', desc: 'Sustentação' },
+      { name: 'Salário', value: currentSalaryPct, color: '#fbbf24', desc: 'Sobrevivência' },
       { name: 'Riqueza', value: currentProfitPct, color: '#f472b6', desc: 'Liberdade' }
     ];
   }, [fat, custos, prolabore, isEliteMode]);
