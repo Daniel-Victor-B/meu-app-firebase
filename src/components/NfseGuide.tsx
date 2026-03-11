@@ -187,7 +187,7 @@ export function NfseGuide() {
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
-      <div className="text-sm text-muted-foreground font-medium">
+      <div className="text-sm text-muted-foreground font-medium text-center">
         Guia definitivo para emissão de Nota Fiscal de Serviço (NFS-e) no Portal Nacional, blindando sua operação como infoprodutor ou prestador de serviços.
       </div>
 
