@@ -16,7 +16,11 @@ import {
   HelpCircle,
   Zap,
   Target,
-  ArrowRight
+  ArrowRight,
+  TrendingUp,
+  ShieldCheck,
+  Landmark,
+  Wallet
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -289,39 +293,80 @@ export function Checklist() {
         })}
       </div>
 
-      {/* Protocolo Unicórnio - Manifesto de Excelência */}
-      <section className="relative group p-1 rounded-[32px] bg-gradient-to-br from-primary/40 via-primary/10 to-transparent shadow-2xl">
-        <div className="bg-background/95 backdrop-blur-xl rounded-[31px] p-8 md:p-10 space-y-8 overflow-hidden relative">
-          <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-primary/5 blur-[100px] rounded-full group-hover:bg-primary/10 transition-colors duration-700" />
+      {/* Protocolo Unicórnio - Manifesto de Excelência Reimagined */}
+      <section className="relative group p-1 rounded-[40px] bg-gradient-to-br from-primary via-accent/50 to-indigo-600 shadow-2xl shadow-primary/20 overflow-hidden">
+        <div className="bg-slate-950/90 backdrop-blur-3xl rounded-[39px] p-8 md:p-16 space-y-12 relative overflow-hidden">
           
-          <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left">
-            <div className="w-24 h-24 rounded-[32px] bg-primary flex items-center justify-center text-primary-foreground shadow-2xl shadow-primary/40 shrink-0 transform group-hover:scale-105 transition-transform duration-500">
-               <Zap className="w-12 h-12" />
+          {/* Background FX */}
+          <div className="absolute top-0 right-0 -mr-32 -mt-32 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full opacity-50 group-hover:opacity-100 transition-opacity duration-1000" />
+          <div className="absolute bottom-0 left-0 -ml-32 -mb-32 w-96 h-96 bg-accent/20 blur-[100px] rounded-full opacity-30" />
+          
+          <div className="relative z-10 flex flex-col items-center text-center space-y-10">
+            {/* Hero Icon */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-primary blur-3xl opacity-40 animate-pulse" />
+              <div className="relative w-28 h-28 rounded-[36px] bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground shadow-[0_0_50px_rgba(var(--primary),0.5)] transform group-hover:rotate-6 group-hover:scale-110 transition-all duration-500">
+                <Zap className="w-14 h-14 fill-current" />
+              </div>
             </div>
-            
-            <div className="space-y-5">
-               <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Protocolo de Operação Unicórnio</span>
-               </div>
-               
-               <h4 className="text-3xl font-black tracking-tight text-foreground leading-none">
-                 A Maestria da <span className="text-primary">Gestão Blindada</span>
-               </h4>
-               
-               <p className="text-base text-muted-foreground leading-relaxed max-w-4xl font-medium">
-                 A verdadeira escala não nasce apenas do faturamento bruto, mas da **Eficiência da Blindagem**. Operar com processos de elite separa o amador do empresário que constrói riqueza real. Ao dominar a separação entre **PJ Operacional** e **PF Pró-labore**, você não está apenas cumprindo tarefas; está forjando a infraestrutura que permitirá sua migração para ME com caixa robusto e **PF Investimentos** em constante crescimento. Disciplina fiscal é a liberdade do amanhã.
-               </p>
 
-               <div className="pt-4 flex flex-wrap gap-4 justify-center md:justify-start">
-                  <Badge variant="outline" className="border-primary/30 text-[10px] font-bold py-1 px-4 uppercase tracking-widest">PJ Operacional</Badge>
-                  <Badge variant="outline" className="border-primary/30 text-[10px] font-bold py-1 px-4 uppercase tracking-widest">PF Pró-labore</Badge>
-                  <Badge variant="outline" className="border-primary/30 text-[10px] font-bold py-1 px-4 uppercase tracking-widest">PF Investimentos</Badge>
-               </div>
+            {/* Header Content */}
+            <div className="space-y-6 max-w-4xl">
+              <div className="inline-flex items-center gap-3 px-6 py-2 bg-primary/10 border border-primary/20 rounded-full">
+                <ShieldCheck className="w-4 h-4 text-primary" />
+                <span className="text-[11px] font-black uppercase tracking-[0.4em] text-primary">Operação de Elite Unicórnio</span>
+              </div>
+              
+              <h4 className="text-4xl md:text-6xl font-black tracking-tight text-white leading-tight">
+                A Maestria da <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Gestão Blindada</span>
+              </h4>
+              
+              <p className="text-lg md:text-xl text-slate-300 leading-relaxed font-medium">
+                A verdadeira escala não nasce apenas do faturamento bruto, mas da <strong>Eficiência da Blindagem</strong>. Operar com processos de elite separa o amador do empresário que constrói riqueza real. 
+              </p>
+            </div>
+
+            {/* Key Pillars Visualization */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
+              <div className="group/card p-8 rounded-[32px] bg-white/5 border border-white/10 hover:bg-white/10 hover:border-primary/50 transition-all duration-500 space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary mb-4 group-hover/card:scale-110 transition-transform">
+                  <Landmark className="w-6 h-6" />
+                </div>
+                <h5 className="text-lg font-black text-white">PJ Operacional</h5>
+                <p className="text-sm text-slate-400 leading-relaxed">Onde o oxigênio entra e a operação respira. Proteja-a como o coração do seu império.</p>
+              </div>
+
+              <div className="group/card p-8 rounded-[32px] bg-white/5 border border-white/10 hover:bg-white/10 hover:border-accent/50 transition-all duration-500 space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-accent/20 flex items-center justify-center text-accent mb-4 group-hover/card:scale-110 transition-transform">
+                  <Wallet className="w-6 h-6" />
+                </div>
+                <h5 className="text-lg font-black text-white">PF Pró-labore</h5>
+                <p className="text-sm text-slate-400 leading-relaxed">Seu combustível pessoal. A separação que garante que o empresário nunca asfixie a empresa.</p>
+              </div>
+
+              <div className="group/card p-8 rounded-[32px] bg-white/5 border border-white/10 hover:bg-white/10 hover:border-indigo-500/50 transition-all duration-500 space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 mb-4 group-hover/card:scale-110 transition-transform">
+                  <TrendingUp className="w-6 h-6" />
+                </div>
+                <h5 className="text-lg font-black text-white">PF Investimentos</h5>
+                <p className="text-sm text-slate-400 leading-relaxed">O destino final. Onde o lucro vira liberdade e a escala se transforma em riqueza perene.</p>
+              </div>
+            </div>
+
+            {/* Final Call to Action */}
+            <div className="pt-8 space-y-6">
+              <p className="text-base text-slate-400 max-w-3xl mx-auto italic">
+                Ao dominar esta infraestrutura, você não está apenas cumprindo tarefas; está forjando o caminho para sua migração para ME com caixa robusto e patrimônio em constante crescimento.
+              </p>
+              <div className="text-2xl font-black text-white tracking-widest uppercase">
+                Disciplina fiscal é a <span className="text-primary">liberdade</span> do amanhã.
+              </div>
             </div>
           </div>
           
-          <div className="absolute bottom-0 right-0 p-10 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-700">
-             <Target className="w-48 h-48" />
+          {/* Subtle Watermark */}
+          <div className="absolute bottom-0 right-0 p-12 opacity-[0.05] pointer-events-none">
+             <Target className="w-64 h-64 text-white" />
           </div>
         </div>
       </section>
