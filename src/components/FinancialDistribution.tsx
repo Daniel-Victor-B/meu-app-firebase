@@ -303,7 +303,7 @@ export function FinancialDistribution({
          <div className="space-y-3 relative z-10 max-w-2xl text-center md:text-left">
             <h4 className="text-lg font-bold tracking-tight">O Poder da Distribuição Disciplinada</h4>
             <p className="text-sm text-muted-foreground leading-relaxed">
-               No MEI Flow, o faturamento não é seu salário. Ele é a energia que sustenta a sua **Blindagem Patrimonial**. 
+               No MEI Flow, o faturamento não é seu salário. Ele é a energia que sustenta a sua <strong>Blindagem Patrimonial</strong>. 
                Mantenha a disciplina mensal e veja o seu lucro trimestral se transformar em liberdade inegociável.
             </p>
          </div>
@@ -317,4 +317,3 @@ export function FinancialDistribution({
     </div>
   );
 }
-
