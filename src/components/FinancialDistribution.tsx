@@ -297,28 +297,46 @@ export function FinancialDistribution({
         </div>
       </div>
 
-      {/* Manifesto Educativo de Rodapé */}
-      <section className="p-8 rounded-[32px] bg-secondary/20 border border-border/50 flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden group">
-         <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
-            <Info className="w-24 h-24" />
-         </div>
-         <div className="space-y-3 relative z-10 max-w-2xl text-center md:text-left">
-            <h4 className="text-lg font-bold tracking-tight">O Poder da Distribuição Disciplinada</h4>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-               No MEI Flow, o faturamento não é seu salário. Ele é a energia que sustenta a sua <strong>Blindagem Patrimonial</strong>. 
-               Mantenha a disciplina mensal e veja o seu lucro trimestral se transformar em liberdade inegociável.
-            </p>
-         </div>
-         <div className="relative z-10">
-            <Button 
-              onClick={() => setActiveTab?.('contas')}
-              variant="outline" 
-              className="rounded-xl font-bold gap-2 group/btn h-11 px-8 border-primary/30 hover:bg-primary/10 transition-all"
-            >
-               Saiba mais sobre a Blindagem
-               <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-            </Button>
-         </div>
+      {/* Manifesto Educativo de Rodapé - Design Elegante e Sofisticado */}
+      <section className="relative p-1 rounded-[40px] bg-gradient-to-br from-primary/20 via-border/50 to-indigo-500/10 shadow-2xl overflow-hidden group transition-all duration-700 hover:shadow-primary/10">
+        <div className="bg-card/40 backdrop-blur-xl rounded-[39px] p-8 md:p-10 flex flex-col lg:flex-row items-center justify-between gap-10 relative">
+          
+          {/* Decorativo de fundo sutil */}
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 blur-[100px] rounded-full group-hover:bg-primary/20 transition-all duration-1000" />
+          
+          <div className="flex flex-col md:flex-row items-center gap-8 relative z-10 max-w-3xl">
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner border border-primary/20 shrink-0">
+               <ShieldCheck className="w-8 h-8" />
+            </div>
+            
+            <div className="space-y-3 text-center md:text-left">
+               <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full mb-1">
+                 <Zap className="w-3.5 h-3.5 text-primary animate-pulse" />
+                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Protocolo de Autoridade</span>
+               </div>
+               <h4 className="text-2xl font-black tracking-tight text-foreground leading-none">
+                 O Poder da Distribuição <span className="text-primary">Disciplinada</span>
+               </h4>
+               <p className="text-sm text-muted-foreground leading-relaxed font-medium">
+                  No MEI Flow, o faturamento não é seu salário. Ele é a energia que sustenta a sua <strong className="text-foreground">Blindagem Patrimonial</strong>. 
+                  Mantenha a disciplina mensal e veja o seu lucro trimestral se transformar em <span className="text-primary italic font-bold">liberdade inegociável</span>.
+               </p>
+            </div>
+          </div>
+
+          <div className="relative z-10 shrink-0">
+             <Button 
+               onClick={() => setActiveTab?.('contas')}
+               variant="default" 
+               className="rounded-2xl font-black uppercase tracking-widest text-[10px] gap-3 group/btn h-14 px-10 shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:scale-105 transition-all duration-500"
+             >
+                Descobrir Blindagem
+                <div className="w-6 h-6 rounded-full bg-primary-foreground/20 flex items-center justify-center group-hover/btn:translate-x-1 transition-transform">
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </div>
+             </Button>
+          </div>
+        </div>
       </section>
     </div>
   );
