@@ -162,28 +162,29 @@ export function Checklist({ fat, custos, prolabore }: ChecklistProps) {
     const das = 76;
     
     // Cenário Atual
-    const currentCostsPct = fat > 0 ? (custos / fat) * 100 : 0;
+    const currentCostsPct = fat > 0 ? ((custos + das) / fat) * 100 : 0;
+    const currentSalaryPct = fat > 0 ? (prolabore / fat) * 100 : 0;
     const currentProfit = Math.max(0, fat - custos - das - prolabore);
     const currentProfitPct = fat > 0 ? (currentProfit / fat) * 100 : 0;
-    const currentSalaryPct = fat > 0 ? (prolabore / fat) * 100 : 0;
 
-    // Cenário Elite (Unicórnio)
-    const eliteCosts = fat * 0.1; // 10%
+    // Cenário Elite (Benchmark 10% de custo)
+    const eliteCosts = fat * 0.1;
+    const eliteCostsPct = fat > 0 ? ((eliteCosts + das) / fat) * 100 : 10;
     const eliteProfit = Math.max(0, fat - eliteCosts - das - prolabore);
     const eliteProfitPct = fat > 0 ? (eliteProfit / fat) * 100 : 0;
 
     if (isEliteMode) {
       return [
-        { name: 'PJ Operacional', value: 10 + (das/fat*100), color: '#60a5fa', desc: 'Sustentação' },
-        { name: 'PF Pró-labore', value: currentSalaryPct, color: '#fbbf24', desc: 'Sobrevivência' },
-        { name: 'PF Investimentos', value: eliteProfitPct, color: '#f472b6', desc: 'Liberdade' }
+        { name: 'PJ Operacional', value: eliteCostsPct, color: '#60a5fa', desc: 'Sustentação (Benchmark 10%)' },
+        { name: 'PF Pró-labore', value: currentSalaryPct, color: '#fbbf24', desc: 'Sobrevivência (Seu Salário)' },
+        { name: 'PF Investimentos', value: eliteProfitPct, color: '#f472b6', desc: 'Liberdade (Riqueza Real)' }
       ];
     }
 
     return [
-      { name: 'PJ Operacional', value: currentCostsPct + (das/fat*100), color: '#60a5fa', desc: 'Sustentação' },
-      { name: 'PF Pró-labore', value: currentSalaryPct, color: '#fbbf24', desc: 'Sobrevivência' },
-      { name: 'PF Investimentos', value: currentProfitPct, color: '#f472b6', desc: 'Liberdade' }
+      { name: 'PJ Operacional', value: currentCostsPct, color: '#60a5fa', desc: 'Sustentação (Seus Custos)' },
+      { name: 'PF Pró-labore', value: currentSalaryPct, color: '#fbbf24', desc: 'Sobrevivência (Seu Salário)' },
+      { name: 'PF Investimentos', value: currentProfitPct, color: '#f472b6', desc: 'Liberdade (Seu Lucro)' }
     ];
   }, [fat, custos, prolabore, isEliteMode]);
 
