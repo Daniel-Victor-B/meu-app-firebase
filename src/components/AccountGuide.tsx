@@ -38,7 +38,7 @@ const CONTAS = [
     sugestao: "Nubank PJ, Inter, PagBank ou Cora",
     detalhes: [
       "Faturamento Bruto: Receba 100% dos seus pagamentos aqui (PIX, Cartão, Boleto).",
-      "Obrigações Fiscais: O pagamento do DAS deve ser agendado exclusivamente por esta conta.",
+      "Obrigações Fiscais: O pagamento do DAS deve ser feito exclusivamente por esta conta.",
       "Custos de Escala: Ferramentas, anúncios e insumos são pagos aqui.",
       "Base de Dados: Seu extrato aqui é a prova real do seu faturamento para o governo."
     ],
@@ -103,9 +103,9 @@ const CONTAS = [
 const FLUXO_VISUAL = [
   { de: "Clientes", para: "PJ Operacional", desc: "Faturamento Bruto", status: "Entrada" },
   { de: "PJ Operacional", para: "Custos & DAS", desc: "Obrigações", status: "Saída" },
-  { de: "PJ Operacional", para: "Conta Corrente Pessoal (PF/CPF)", desc: "Seu Salário (Pró-labore)", status: "Retirada" },
+  { de: "PJ Operacional", para: "Conta Corrente Pessoal (PF/CPF) (SALÁRIO)", desc: "Seu Salário (Pró-labore)", status: "Retirada" },
   { de: "PJ Operacional", para: "PJ Reserva", desc: "Segurança", status: "Reserva" },
-  { de: "PJ Operacional", para: "Conta Corrente Pessoal (PF/CPF)", desc: "Riqueza (Trimestral)", status: "Lucro" },
+  { de: "PJ Operacional", para: "Conta Corrente Pessoal (PF/CPF) (INVESTIMENTOS)", desc: "Riqueza (Trimestral)", status: "Lucro" },
 ];
 
 const FAQS_CONTAS = [
@@ -115,11 +115,11 @@ const FAQS_CONTAS = [
   },
   {
     q: "Posso usar a PJ Operacional para pagar o boleto do meu cartão pessoal?",
-    a: "Jamais. O caminho correto é: transferir o Pró-labore da PJ Operacional para sua Conta Corrente Pessoal (PF/CPF), e aí sim pagar seu cartão pessoal. Mantenha os trilhos separados."
+    a: "Jamais. O caminho correto é: transferir o Pró-labore da PJ Operacional para sua Conta Corrente Pessoal (PF/CPF) (SALÁRIO), e aí sim pagar seu cartão pessoal. Mantenha os trilhos separados."
   },
   {
     q: "Como comprovar renda sendo MEI?",
-    a: "Os melhores documentos são: 1. Sua Declaração Anual (DASN-SIMEI). 2. Extratos mensais da PJ Operacional que mostram o faturamento regular. 3. Extratos da Conta Corrente Pessoal (PF/CPF) mostrando os recebimentos constantes de Pró-labore."
+    a: "Os melhores documentos são: 1. Sua Declaração Anual (DASN-SIMEI). 2. Extratos mensais da PJ Operacional que mostram o faturamento regular. 3. Extratos da Conta Corrente Pessoal (PF/CPF) (SALÁRIO) mostrando os recebimentos constantes de Pró-labore."
   }
 ];
 
@@ -274,7 +274,7 @@ export function AccountGuide() {
                       <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 leading-none">{f.de}</span>
                       <div className="flex items-center gap-2 mt-1">
                          <ArrowDownRight className="w-3 h-3 text-primary" />
-                         <span className="text-xs font-bold text-foreground">{f.para}</span>
+                         <span className="text-xs font-bold text-foreground line-clamp-2 sm:line-clamp-1">{f.para}</span>
                       </div>
                     </div>
                     <div className="flex-1 flex items-center gap-4">
