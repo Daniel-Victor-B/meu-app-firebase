@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react";
@@ -17,7 +16,6 @@ import {
   Zap,
   Info,
   ArrowRight,
-  Lock,
   Target
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -55,7 +53,7 @@ const SECTIONS = [
     tasks: [
       { id: "m1", text: "Liquidação do DAS (Guia Mensal)", detail: "Vencimento todo dia 20. O custo fixo que garante seus benefícios." },
       { id: "m2", text: "Relatório Mensal de Faturamento Bruto", detail: "Planilhar todas as vendas (com e sem nota) para a Declaração Anual." },
-      { id: "m3", text: "Transferência de PF Pró-labore", detail: "O pagamento do seu salário executivo. Da conta PJ para a PF Salário." },
+      { id: "m3", text: "Transferência de PF Pró-labore", detail: "O pagamento do seu salário executivo. Da conta PJ para a PF Pró-labore." },
       { id: "m4", text: "Organização de Notas de Compra", detail: "Arquivar NFs de insumos e ferramentas adquiridas pelo CNPJ." },
     ],
   },
@@ -82,7 +80,7 @@ const SECTIONS = [
     bgColor: "bg-purple-500/10",
     borderColor: "border-purple-500/20",
     tasks: [
-      { id: "sg1", text: "Respeito à Regra do 100%", detail: "Todo faturamento entra na PJ. Nenhuma exceção para o CPF." },
+      { id: "sg1", text: "Respeito à Regra do 100%", detail: "Todo faturamento entra na PJ Operacional. Nenhuma exceção para o CPF." },
       { id: "sg2", text: "Manutenção da PJ Reserva", detail: "Garantir que o 'Pulmão Financeiro' tenha 6 meses de custos totais." },
       { id: "sg3", text: "Check de Emissão Obrigatória (CNPJ)", detail: "Garantir nota fiscal para toda venda realizada para outras empresas." },
     ],
@@ -127,17 +125,31 @@ export function Checklist() {
     return (completed / tasks.length) * 100;
   };
 
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(`section-${id}`);
+    if (element) {
+      const elementRect = element.getBoundingClientRect();
+      const absoluteElementTop = elementRect.top + window.pageYOffset;
+      const menuOffset = 110;
+
+      window.scrollTo({
+        top: absoluteElementTop - menuOffset,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   const totalTasks = SECTIONS.reduce((acc, s) => acc + s.tasks.length, 0);
   const totalCompleted = Object.values(checkedItems).filter(Boolean).length;
   const globalProgress = (totalCompleted / totalTasks) * 100;
 
   return (
     <div className="space-y-10 animate-in slide-in-from-bottom-4 duration-500 pb-20">
-      {/* Header Premium */}
+      {/* Header Premium com Comando de Scroll */}
       <div className="relative group">
         <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 blur-xl opacity-50"></div>
         <Card className="relative bg-card/60 backdrop-blur-xl border-primary/20 overflow-hidden shadow-2xl">
-          <CardContent className="pt-8 pb-8 px-6 space-y-6">
+          <CardContent className="pt-8 pb-8 px-6 space-y-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-primary rounded-2xl shadow-lg shadow-primary/30 text-primary-foreground">
@@ -145,7 +157,7 @@ export function Checklist() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-headline font-bold tracking-tight">Protocolo de Operação</h3>
-                  <p className="text-sm text-muted-foreground font-medium mt-1">O mapa de tarefas para manter sua empresa no topo da regularidade.</p>
+                  <p className="text-sm text-muted-foreground font-medium mt-1">O mapa tático para uma gestão de elite.</p>
                 </div>
               </div>
               <div className="text-right space-y-2 min-w-[150px]">
@@ -157,9 +169,38 @@ export function Checklist() {
               </div>
             </div>
             
+            {/* Indicadores Rápidos de Pilar */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {SECTIONS.map((section) => {
+                const progress = getProgress(section.tasks);
+                return (
+                  <div 
+                    key={section.id} 
+                    onClick={() => scrollToSection(section.id)}
+                    className="group cursor-pointer p-3 rounded-2xl bg-secondary/30 border border-border/50 hover:bg-secondary/60 hover:border-primary/30 transition-all space-y-2"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                       <div className={cn("p-1.5 rounded-lg shrink-0", section.bgColor, section.color)}>
+                         {section.icon}
+                       </div>
+                       <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest text-right leading-none line-clamp-2">
+                         {section.titulo}
+                       </span>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-[8px] font-bold">
+                        <span className={cn(section.color)}>{progress.toFixed(0)}%</span>
+                      </div>
+                      <Progress value={progress} className="h-1" indicatorClassName={cn(section.bgColor.replace("/10", ""), "bg-current", section.color)} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
             <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-xl border border-border/50 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
               <Zap className="w-4 h-4 text-primary animate-pulse" />
-              Checklist dinâmico: Seus progressos são salvos automaticamente.
+              Gestão de Fluxo: Clique nos pilares acima para navegar instantaneamente.
             </div>
           </CardContent>
         </Card>
@@ -172,10 +213,14 @@ export function Checklist() {
           const isDone = progress === 100;
 
           return (
-            <Card key={section.id} className={cn(
-              "overflow-hidden transition-all duration-300 border-2",
-              isDone ? "border-primary/30 bg-primary/5" : "border-border/40 bg-card/40"
-            )}>
+            <Card 
+              key={section.id} 
+              id={`section-${section.id}`}
+              className={cn(
+                "overflow-hidden transition-all duration-300 border-2",
+                isDone ? "border-primary/30 bg-primary/5" : "border-border/40 bg-card/40"
+              )}
+            >
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-4">
@@ -214,7 +259,7 @@ export function Checklist() {
                         <Checkbox 
                           id={task.id} 
                           checked={checked}
-                          onCheckedChange={() => {}} // Handle via parent div click for better UX
+                          onCheckedChange={() => {}} 
                           className="w-5 h-5 rounded-md data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                         />
                       </div>
