@@ -20,7 +20,8 @@ import {
   TrendingUp,
   ShieldCheck,
   Landmark,
-  Wallet
+  Wallet,
+  Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -29,6 +30,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell, Tooltip } from 'recharts';
 
 const SECTIONS = [
   {
@@ -108,6 +110,12 @@ const FAQS_GUIDE = [
     q: "Preciso de contador para fechar o ano?",
     a: "Não é obrigatório, mas é altamente recomendado para calcular o 'Lucro Isento' no seu Imposto de Renda PF, evitando que você pague impostos desnecessários no seu CPF."
   }
+];
+
+const CHART_DATA = [
+  { name: 'PJ Operacional', value: 85, color: '#60a5fa' }, // Blue
+  { name: 'PF Pró-labore', value: 65, color: '#fbbf24' },  // Yellow
+  { name: 'PF Investimentos', value: 95, color: '#f472b6' } // Pink
 ];
 
 export function Checklist() {
@@ -293,86 +301,123 @@ export function Checklist() {
         })}
       </div>
 
-      {/* Protocolo Unicórnio - Manifesto de Excelência Reimagined */}
-      <section className="relative group p-1 rounded-[40px] bg-gradient-to-br from-primary via-accent/50 to-indigo-600 shadow-2xl shadow-primary/20 overflow-hidden">
-        <div className="bg-slate-950/90 backdrop-blur-3xl rounded-[39px] p-8 md:p-16 space-y-12 relative overflow-hidden">
+      {/* Protocolo Unicórnio - Manifesto Visual de Elite */}
+      <section className="relative group p-1 rounded-[48px] bg-gradient-to-br from-indigo-900 via-primary/40 to-pink-900 shadow-2xl overflow-hidden mt-16">
+        <div className="bg-slate-950/95 backdrop-blur-3xl rounded-[47px] p-8 md:p-16 space-y-16 relative overflow-hidden">
           
-          {/* Background FX */}
-          <div className="absolute top-0 right-0 -mr-32 -mt-32 w-[600px] h-[600px] bg-primary/20 blur-[120px] rounded-full opacity-50 group-hover:opacity-100 transition-opacity duration-1000" />
-          <div className="absolute bottom-0 left-0 -ml-32 -mb-32 w-96 h-96 bg-accent/20 blur-[100px] rounded-full opacity-30" />
+          {/* Background Aura */}
+          <div className="absolute top-0 right-0 -mr-40 -mt-40 w-[800px] h-[800px] bg-primary/10 blur-[150px] rounded-full opacity-60 group-hover:opacity-100 transition-opacity duration-1000" />
+          <div className="absolute bottom-0 left-0 -ml-40 -mb-40 w-[600px] h-[600px] bg-pink-500/10 blur-[120px] rounded-full opacity-40" />
           
-          <div className="relative z-10 flex flex-col items-center text-center space-y-10">
-            {/* Hero Icon */}
-            <div className="relative">
-              <div className="absolute inset-0 bg-primary blur-3xl opacity-40 animate-pulse" />
-              <div className="relative w-28 h-28 rounded-[36px] bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground shadow-[0_0_50px_rgba(var(--primary),0.5)] transform group-hover:rotate-6 group-hover:scale-110 transition-all duration-500">
-                <Zap className="w-14 h-14 fill-current" />
-              </div>
-            </div>
-
-            {/* Header Content */}
-            <div className="space-y-6 max-w-4xl">
-              <div className="inline-flex items-center gap-3 px-6 py-2 bg-primary/10 border border-primary/20 rounded-full">
-                <ShieldCheck className="w-4 h-4 text-primary" />
-                <span className="text-[11px] font-black uppercase tracking-[0.4em] text-primary">Operação de Elite Unicórnio</span>
+          <div className="relative z-10 flex flex-col items-center text-center space-y-12">
+            
+            {/* Header com Negrito Semântico */}
+            <div className="space-y-8 max-w-4xl mx-auto">
+              <div className="inline-flex items-center gap-3 px-6 py-2 bg-primary/10 border border-primary/20 rounded-full animate-pulse">
+                <Sparkles className="w-4 h-4 text-primary" />
+                <span className="text-[11px] font-black uppercase tracking-[0.5em] text-primary">Operação de Elite Profissional</span>
               </div>
               
-              <h4 className="text-4xl md:text-6xl font-black tracking-tight text-white leading-tight">
-                A Maestria da <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Gestão Blindada</span>
+              <h4 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
+                A verdadeira escala não nasce apenas do faturamento bruto, mas da <span className="bg-gradient-to-r from-blue-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">Eficiência da Blindagem</span>.
               </h4>
               
               <p className="text-lg md:text-xl text-slate-300 leading-relaxed font-medium">
-                A verdadeira escala não nasce apenas do faturamento bruto, mas da <strong>Eficiência da Blindagem</strong>. Operar com processos de elite separa o amador do empresário que constrói riqueza real. 
+                Operar com processos de elite separa o amador do empresário que constrói riqueza real. Ao dominar a separação entre <strong>PJ Operacional</strong> e <strong>PF Pró-labore</strong>, você não está apenas cumprindo tarefas; está forjando a infraestrutura que permitirá sua migração para ME com caixa robusto e <strong>PF Investimentos</strong> em constante crescimento. 
               </p>
             </div>
 
-            {/* Key Pillars Visualization */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
-              <div className="group/card p-8 rounded-[32px] bg-white/5 border border-white/10 hover:bg-white/10 hover:border-primary/50 transition-all duration-500 space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center text-primary mb-4 group-hover/card:scale-110 transition-transform">
-                  <Landmark className="w-6 h-6" />
-                </div>
-                <h5 className="text-lg font-black text-white">PJ Operacional</h5>
-                <p className="text-sm text-slate-400 leading-relaxed">Onde o oxigênio entra e a operação respira. Proteja-a como o coração do seu império.</p>
-              </div>
-
-              <div className="group/card p-8 rounded-[32px] bg-white/5 border border-white/10 hover:bg-white/10 hover:border-accent/50 transition-all duration-500 space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-accent/20 flex items-center justify-center text-accent mb-4 group-hover/card:scale-110 transition-transform">
-                  <Wallet className="w-6 h-6" />
-                </div>
-                <h5 className="text-lg font-black text-white">PF Pró-labore</h5>
-                <p className="text-sm text-slate-400 leading-relaxed">Seu combustível pessoal. A separação que garante que o empresário nunca asfixie a empresa.</p>
-              </div>
-
-              <div className="group/card p-8 rounded-[32px] bg-white/5 border border-white/10 hover:bg-white/10 hover:border-indigo-500/50 transition-all duration-500 space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 mb-4 group-hover/card:scale-110 transition-transform">
-                  <TrendingUp className="w-6 h-6" />
-                </div>
-                <h5 className="text-lg font-black text-white">PF Investimentos</h5>
-                <p className="text-sm text-slate-400 leading-relaxed">O destino final. Onde o lucro vira liberdade e a escala se transforma em riqueza perene.</p>
+            {/* Gráfico de Barras Unicórnio - Doce e Transparente */}
+            <div className="w-full max-w-4xl mx-auto h-[350px] relative group/chart py-8">
+              <div className="absolute inset-0 bg-white/5 rounded-[40px] border border-white/10 shadow-inner backdrop-blur-sm -z-10" />
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={CHART_DATA} margin={{ top: 20, right: 40, left: 40, bottom: 20 }}>
+                  <defs>
+                    <linearGradient id="barGradientBlue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.8}/>
+                      <stop offset="100%" stopColor="#60a5fa" stopOpacity={0.2}/>
+                    </linearGradient>
+                    <linearGradient id="barGradientYellow" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#fbbf24" stopOpacity={0.8}/>
+                      <stop offset="100%" stopColor="#fbbf24" stopOpacity={0.2}/>
+                    </linearGradient>
+                    <linearGradient id="barGradientPink" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#f472b6" stopOpacity={0.8}/>
+                      <stop offset="100%" stopColor="#f472b6" stopOpacity={0.2}/>
+                    </linearGradient>
+                  </defs>
+                  <XAxis 
+                    dataKey="name" 
+                    stroke="#94a3b8" 
+                    fontSize={11} 
+                    fontWeight="900" 
+                    tickLine={false} 
+                    axisLine={false} 
+                    dy={15}
+                  />
+                  <Tooltip 
+                    cursor={{ fill: 'rgba(255,255,255,0.05)', radius: 20 }}
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="bg-slate-900/90 border border-white/20 p-4 rounded-2xl shadow-2xl backdrop-blur-xl">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">{payload[0].name}</p>
+                            <p className="text-lg font-black text-white">Domínio: {payload[0].value}%</p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Bar dataKey="value" radius={[20, 20, 0, 0]} barSize={80}>
+                    {CHART_DATA.map((entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={index === 0 ? 'url(#barGradientBlue)' : index === 1 ? 'url(#barGradientYellow)' : 'url(#barGradientPink)'} 
+                        className="filter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-700 hover:opacity-100 opacity-60"
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+              
+              {/* Floating Labels Extra Sophistication */}
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 flex gap-8">
+                 <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_8px_#60a5fa]" />
+                    <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">PJ Operacional</span>
+                 </div>
+                 <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24]" />
+                    <span className="text-[10px] font-black text-amber-400 uppercase tracking-widest">PF Pró-labore</span>
+                 </div>
+                 <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-pink-400 shadow-[0_0_8px_#f472b6]" />
+                    <span className="text-[10px] font-black text-pink-400 uppercase tracking-widest">PF Investimentos</span>
+                 </div>
               </div>
             </div>
 
-            {/* Final Call to Action */}
-            <div className="pt-8 space-y-6">
-              <p className="text-base text-slate-400 max-w-3xl mx-auto italic">
-                Ao dominar esta infraestrutura, você não está apenas cumprindo tarefas; está forjando o caminho para sua migração para ME com caixa robusto e patrimônio em constante crescimento.
-              </p>
-              <div className="text-2xl font-black text-white tracking-widest uppercase">
-                Disciplina fiscal é a <span className="text-primary">liberdade</span> do amanhã.
+            {/* Final Conclusion */}
+            <div className="pt-12 space-y-8 relative">
+              <div className="text-3xl font-black text-white tracking-widest uppercase">
+                Disciplina fiscal é a <span className="text-primary italic">liberdade</span> do amanhã.
               </div>
+              <p className="text-sm text-slate-400 max-w-2xl mx-auto font-medium opacity-80 italic">
+                Este gráfico representa a tríade do seu sucesso. Mantenha as barras em ascensão através da blindagem rigorosa.
+              </p>
             </div>
           </div>
           
-          {/* Subtle Watermark */}
-          <div className="absolute bottom-0 right-0 p-12 opacity-[0.05] pointer-events-none">
-             <Target className="w-64 h-64 text-white" />
+          {/* Luxury Watermark */}
+          <div className="absolute bottom-0 right-0 p-16 opacity-[0.03] pointer-events-none scale-150">
+             <Landmark className="w-96 h-96 text-white" />
           </div>
         </div>
       </section>
 
       {/* FAQ de Autoridade */}
-      <section className="space-y-6 pt-6">
+      <section className="space-y-6 pt-16">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-primary/10 rounded-xl text-primary shadow-inner">
             <HelpCircle className="w-6 h-6" />
