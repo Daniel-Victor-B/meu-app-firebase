@@ -20,10 +20,8 @@ import {
   Landmark,
   Wallet,
   Sparkles,
-  ChevronRight,
   Target,
   Trophy,
-  TrendingUp,
   Flame,
   MousePointer2
 } from "lucide-react";
