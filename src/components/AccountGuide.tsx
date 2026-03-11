@@ -1,9 +1,22 @@
 
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Settings, Landmark, CreditCard, TrendingUp, ArrowRight, Info, ShieldCheck, Wallet, HelpCircle, Zap, Lock, ArrowDownRight, Share2 } from "lucide-react";
+import { 
+  Settings, 
+  Landmark, 
+  CreditCard, 
+  TrendingUp, 
+  Info, 
+  ShieldCheck, 
+  Wallet, 
+  HelpCircle, 
+  Zap, 
+  Lock, 
+  ArrowDownRight, 
+  Share2 
+} from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -51,7 +64,7 @@ const CONTAS = [
   },
   {
     id: "pf-sal",
-    label: "PF Pró-labore",
+    label: "Pró-labore (PF/CPF)",
     tipo: "CONTA PESSOAL (CPF)",
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
@@ -69,7 +82,7 @@ const CONTAS = [
   },
   {
     id: "pf-inv",
-    label: "PF Investimentos",
+    label: "Investimentos (PF/CPF)",
     tipo: "PATRIMÔNIO INDIVIDUAL (CPF)",
     color: "text-primary",
     bgColor: "bg-primary/10",
@@ -90,27 +103,41 @@ const CONTAS = [
 const FLUXO_VISUAL = [
   { de: "Clientes", para: "PJ Operacional", desc: "Faturamento Bruto", status: "Entrada" },
   { de: "PJ Operacional", para: "Custos & DAS", desc: "Obrigações", status: "Saída" },
-  { de: "PJ Operacional", para: "PF Pró-labore", desc: "Seu Salário", status: "Retirada" },
+  { de: "PJ Operacional", para: "PF/CPF (Pró-labore)", desc: "Seu Salário", status: "Retirada" },
   { de: "PJ Operacional", para: "PJ Reserva", desc: "Segurança", status: "Reserva" },
-  { de: "PJ Operacional", para: "PF Investimentos", desc: "Riqueza (Trimestral)", status: "Lucro" },
+  { de: "PJ Operacional", para: "PF/CPF (Investimento)", desc: "Riqueza (Trimestral)", status: "Lucro" },
 ];
 
 const FAQS_CONTAS = [
   {
     q: "O que é 'Confusão Patrimonial'?",
-    a: "É quando você usa a conta da empresa para gastos pessoais. Isso é o maior erro do MEI. Além de dificultar o controle, em casos judiciais, você perde a proteção do CNPJ e seus bens pessoais podem ser tomados para pagar dívidas do negócio."
+    a: "É quando você usa a PJ Operacional para gastos pessoais. Isso é o maior erro do MEI. Além de dificultar o controle, em casos judiciais, você perde a proteção do CNPJ e seus bens pessoais podem ser tomados para pagar dívidas do negócio."
   },
   {
-    q: "Posso usar a conta PJ para pagar o boleto do meu cartão PF?",
-    a: "Jamais. O caminho correto é: transferir o Pró-labore (salário) da conta PJ para sua conta PF, e aí sim pagar seu cartão pessoal pela conta pessoal. Mantenha os trilhos separados."
+    q: "Posso usar a PJ Operacional para pagar o boleto do meu cartão pessoal?",
+    a: "Jamais. O caminho correto é: transferir o Pró-labore da PJ Operacional para sua Conta Corrente Pessoal (PF/CPF), e aí sim pagar seu cartão pessoal. Mantenha os trilhos separados."
   },
   {
     q: "Como comprovar renda sendo MEI?",
-    a: "Os melhores documentos são: 1. Sua Declaração Anual (DASN-SIMEI). 2. Extratos mensais da conta PJ que mostram o faturamento regular. 3. Extratos da conta PF mostrando os recebimentos constantes de Pró-labore."
+    a: "Os melhores documentos são: 1. Sua Declaração Anual (DASN-SIMEI). 2. Extratos mensais da PJ Operacional que mostram o faturamento regular. 3. Extratos da Conta Corrente Pessoal (PF/CPF) mostrando os recebimentos constantes de Pró-labore."
   }
 ];
 
 export function AccountGuide() {
+  const handleAccordionChange = (value: string) => {
+    if (value) {
+      // Pequeno timeout para garantir que o elemento esteja pronto para scroll após a animação iniciar
+      setTimeout(() => {
+        const element = document.getElementById(`item-${value}`);
+        if (element) {
+          const yOffset = -120; // Espaço para não ficar colado no topo (devido ao sticky header)
+          const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }, 50);
+    }
+  };
+
   return (
     <div className="space-y-10 animate-in slide-in-from-bottom-4 duration-500 pb-16">
       {/* Header Unicórnio */}
@@ -123,7 +150,7 @@ export function AccountGuide() {
                 <ShieldCheck className="w-8 h-8" />
               </div>
               <div>
-                <h3 className="text-2xl font-black tracking-tight text-foreground">Arquitetura de Blindagem</h3>
+                <h3 className="text-2xl font-black tracking-tight text-foreground uppercase italic">Arquitetura de Blindagem</h3>
                 <p className="text-sm text-muted-foreground font-medium">O guia definitivo para separar sua vida pessoal do seu império.</p>
               </div>
             </div>
@@ -143,12 +170,18 @@ export function AccountGuide() {
           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">O Ecossistema de 4 Contas</span>
         </div>
 
-        <Accordion type="single" collapsible className="w-full space-y-4">
+        <Accordion 
+          type="single" 
+          collapsible 
+          className="w-full space-y-4"
+          onValueChange={handleAccordionChange}
+        >
           {CONTAS.map((c) => (
             <AccordionItem 
               key={c.id} 
               value={c.id} 
-              className={`border rounded-2xl px-1 bg-card/40 transition-all hover:bg-card/80 shadow-sm ${c.borderColor}`}
+              id={`item-${c.id}`}
+              className={`border rounded-2xl px-1 bg-card/40 transition-all hover:bg-card/80 shadow-sm ${c.borderColor} scroll-mt-24`}
             >
               <AccordionTrigger className="hover:no-underline py-6 px-5 group">
                 <div className="flex gap-4 items-start text-left">
@@ -217,7 +250,7 @@ export function AccountGuide() {
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
             <Share2 className="w-5 h-5 text-primary" />
-            <h3 className="font-black text-lg tracking-tight">Fluxo Mestre do Capital</h3>
+            <h3 className="font-black text-lg tracking-tight uppercase italic">Fluxo Mestre do Capital</h3>
           </div>
           <Badge className="bg-primary/20 text-primary border-none text-[9px] font-black uppercase">Automated Path</Badge>
         </div>
@@ -232,7 +265,7 @@ export function AccountGuide() {
                     <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30 group-hover/item:bg-primary group-hover/item:scale-150 transition-all" />
                   </div>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 flex-1 py-1">
-                    <div className="min-w-[120px]">
+                    <div className="min-w-[150px]">
                       <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 leading-none">{f.de}</span>
                       <div className="flex items-center gap-2 mt-1">
                          <ArrowDownRight className="w-3 h-3 text-primary" />
@@ -261,7 +294,7 @@ export function AccountGuide() {
             <HelpCircle className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="font-black text-xl tracking-tight">Blindagem Antirruído</h3>
+            <h3 className="font-black text-xl tracking-tight uppercase italic">Blindagem Antirruído</h3>
             <p className="text-xs text-muted-foreground font-medium">As respostas que protegem seu patrimônio contra erros fiscais.</p>
           </div>
         </div>
