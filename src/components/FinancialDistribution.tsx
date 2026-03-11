@@ -273,12 +273,12 @@ export function FinancialDistribution({
               {sobra > 0 && (
                 <div className="pt-6 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-6">
                    <div className="flex items-center gap-3">
-                      <div className="p-2.5 bg-primary/10 rounded-xl text-primary shadow-inner">
+                      <div className="p-2.5 bg-amber-500/10 rounded-xl text-amber-500 shadow-inner">
                         <Zap className="w-5 h-5" />
                       </div>
                       <div>
                         <div className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Sobra Real</div>
-                        <div className="text-lg font-black text-foreground">{formatCurrency(sobra)} <span className="text-[10px] text-primary">Disponível</span></div>
+                        <div className="text-lg font-black text-foreground">{formatCurrency(sobra)} <span className="text-[10px] text-amber-500">Disponível</span></div>
                       </div>
                    </div>
                    <div className="flex items-center gap-3">
@@ -330,7 +330,7 @@ export function FinancialDistribution({
                variant="default" 
                className="rounded-2xl font-black uppercase tracking-widest text-[10px] gap-3 group/btn h-14 px-10 shadow-xl shadow-primary/20 hover:shadow-primary/40 hover:scale-105 transition-all duration-500"
              >
-                Descobrir Blindagem
+                Saiba mais sobre a Blindagem
                 <div className="w-6 h-6 rounded-full bg-primary-foreground/20 flex items-center justify-center group-hover/btn:translate-x-1 transition-transform">
                   <ArrowRight className="w-3.5 h-3.5" />
                 </div>
