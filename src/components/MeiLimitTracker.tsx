@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect, useMemo } from "react";
@@ -42,6 +43,24 @@ export function MeiLimitTracker({
 }: MeiLimitTrackerProps) {
   const [mode, setMode] = useState<TrackerMode>('average');
   const [monthlyValues, setMonthlyValues] = useState<number[]>(Array(12).fill(fatMensal));
+
+  // Persistência local para o estado do rastreador
+  useEffect(() => {
+    const saved = localStorage.getItem("mei-flow-tracker-state");
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        if (data.mode) setMode(data.mode);
+        if (data.monthlyValues) setMonthlyValues(data.monthlyValues);
+      } catch (e) {
+        console.error("Erro ao carregar tracker state", e);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("mei-flow-tracker-state", JSON.stringify({ mode, monthlyValues }));
+  }, [mode, monthlyValues]);
 
   // Sincroniza os valores mensais quando o modo médio muda, mas apenas se estiver no modo médio
   useEffect(() => {

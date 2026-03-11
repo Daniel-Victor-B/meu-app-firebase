@@ -176,6 +176,16 @@ export function NfseGuide() {
   const [step, setStep] = useState(0);
   const current = STEPS_CONFIG[step];
 
+  // Persistência local para o passo do guia
+  useEffect(() => {
+    const saved = localStorage.getItem("mei-flow-nfse-step");
+    if (saved) setStep(parseInt(saved, 10) || 0);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("mei-flow-nfse-step", step.toString());
+  }, [step]);
+
   useEffect(() => {
     window.scrollTo({ 
       top: 0, 

@@ -34,6 +34,32 @@ export default function Home() {
 
   const LIMITE_MEI_ANUAL = 81000;
 
+  // Persistência de Dados: Carregar ao montar
+  useEffect(() => {
+    const saved = localStorage.getItem("mei-flow-main-state");
+    if (saved) {
+      try {
+        const data = JSON.parse(saved);
+        if (data.fat !== undefined) setFat(data.fat);
+        if (data.custos !== undefined) setCustos(data.custos);
+        if (data.prolabore !== undefined) setProlabore(data.prolabore);
+        if (data.reservaPct !== undefined) setReservaPct(data.reservaPct);
+        if (data.mesesFat !== undefined) setMesesFat(data.mesesFat);
+        if (data.activeTab !== undefined) setActiveTab(data.activeTab);
+        if (data.monthlyData !== undefined) setMonthlyData(data.monthlyData);
+      } catch (e) {
+        console.error("Erro ao carregar dados persistidos", e);
+      }
+    }
+  }, []);
+
+  // Persistência de Dados: Salvar ao mudar
+  useEffect(() => {
+    localStorage.setItem("mei-flow-main-state", JSON.stringify({
+      fat, custos, prolabore, reservaPct, mesesFat, activeTab, monthlyData
+    }));
+  }, [fat, custos, prolabore, reservaPct, mesesFat, activeTab, monthlyData]);
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);

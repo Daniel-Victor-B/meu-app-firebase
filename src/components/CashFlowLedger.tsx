@@ -92,6 +92,16 @@ export function CashFlowLedger({
   const [mesesReserva, setMesesReserva] = useState(6);
   const das = 76;
 
+  // Persistência local para configurações da planilha
+  useEffect(() => {
+    const saved = localStorage.getItem("mei-flow-ledger-meses-reserva");
+    if (saved) setMesesReserva(parseInt(saved, 10) || 6);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("mei-flow-ledger-meses-reserva", mesesReserva.toString());
+  }, [mesesReserva]);
+
   useEffect(() => {
     if (monthlyData.every(m => m.receita === 5000 && m.custos === 1500)) {
         setMonthlyData(monthlyData.map(m => ({ ...m, receita: fat, custos: custos })));

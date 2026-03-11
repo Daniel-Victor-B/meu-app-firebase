@@ -1,6 +1,7 @@
+
 "use client"
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Sparkles, Loader2, MessageSquare, Target, ShieldAlert } from "lucide-react";
@@ -17,6 +18,24 @@ interface AiAdvisorProps {
 export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAdvisorProps) {
   const [loading, setLoading] = useState(false);
   const [advice, setAdvice] = useState<PersonalizedMeiAdviceOutput | null>(null);
+
+  // Persistência local para o conselho da IA
+  useEffect(() => {
+    const saved = localStorage.getItem("mei-flow-ai-advice");
+    if (saved) {
+      try {
+        setAdvice(JSON.parse(saved));
+      } catch (e) {
+        console.error("Erro ao carregar conselho da IA", e);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (advice) {
+      localStorage.setItem("mei-flow-ai-advice", JSON.stringify(advice));
+    }
+  }, [advice]);
 
   const getAdvice = async () => {
     setLoading(true);
