@@ -169,7 +169,7 @@ export function Checklist() {
               </div>
             </div>
             
-            {/* Indicadores Rápidos de Pilar - Dashboard Tático */}
+            {/* Dashboard Tático de Pilares */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {SECTIONS.map((section) => {
                 const progress = getProgress(section.tasks);
@@ -177,30 +177,34 @@ export function Checklist() {
                   <div 
                     key={section.id} 
                     onClick={() => scrollToSection(section.id)}
-                    className="group cursor-pointer p-3 rounded-2xl bg-secondary/30 border border-border/50 hover:bg-secondary/60 hover:border-primary/30 transition-all space-y-2"
+                    className="group cursor-pointer p-4 rounded-2xl bg-secondary/30 border border-border/50 hover:bg-secondary/60 hover:border-primary/30 transition-all space-y-3"
                   >
                     <div className="flex items-center justify-between gap-2">
-                       <div className={cn("p-1.5 rounded-lg shrink-0", section.bgColor, section.color)}>
+                       <div className={cn("p-2 rounded-lg shrink-0", section.bgColor, section.color)}>
                          {section.icon}
                        </div>
-                       <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest text-right leading-none line-clamp-2">
+                       <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest text-right leading-none line-clamp-2">
                          {section.titulo}
                        </span>
                     </div>
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-[8px] font-bold">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-[10px] font-bold">
                         <span className={cn(section.color)}>{progress.toFixed(0)}%</span>
                       </div>
-                      <Progress value={progress} className="h-1" indicatorClassName={cn(section.bgColor.replace("/10", ""), "bg-current", section.color)} />
+                      <Progress 
+                        value={progress} 
+                        className="h-1.5" 
+                        indicatorClassName={cn(section.bgColor.replace("/10", ""), "bg-current", section.color)} 
+                      />
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-xl border border-border/50 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
+            <div className="flex items-center gap-3 p-4 bg-secondary/50 rounded-xl border border-border/50 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
               <Zap className="w-4 h-4 text-primary animate-pulse" />
-              Gestão de Fluxo: Clique nos pilares acima para navegar instantaneamente.
+              Gestão Ágil: Clique nos pilares acima para navegar instantaneamente entre as seções.
             </div>
           </CardContent>
         </Card>
@@ -218,7 +222,7 @@ export function Checklist() {
               id={`section-${section.id}`}
               className={cn(
                 "overflow-hidden transition-all duration-300 border-2",
-                isDone ? "border-primary/30 bg-primary/5" : "border-border/40 bg-card/40"
+                isDone ? "border-primary/30 bg-primary/5 shadow-primary/5" : "border-border/40 bg-card/40"
               )}
             >
               <CardHeader className="pb-4">
@@ -285,21 +289,39 @@ export function Checklist() {
         })}
       </div>
 
-      {/* Insight de Operação Unicórnio - Núcleo Blindado */}
-      <section className="relative overflow-hidden p-8 rounded-[32px] bg-secondary/30 border-2 border-dashed border-border/60">
-        <div className="absolute top-0 right-0 p-10 opacity-5">
-           <Target className="w-32 h-32" />
-        </div>
-        <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center">
-          <div className="w-20 h-20 rounded-3xl bg-primary/20 flex items-center justify-center text-primary shadow-xl shrink-0">
-             <Zap className="w-10 h-10" />
+      {/* Protocolo Unicórnio - Manifesto de Excelência */}
+      <section className="relative group p-1 rounded-[32px] bg-gradient-to-br from-primary/40 via-primary/10 to-transparent shadow-2xl">
+        <div className="bg-background/95 backdrop-blur-xl rounded-[31px] p-8 md:p-10 space-y-8 overflow-hidden relative">
+          <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-primary/5 blur-[100px] rounded-full group-hover:bg-primary/10 transition-colors duration-700" />
+          
+          <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left">
+            <div className="w-24 h-24 rounded-[32px] bg-primary flex items-center justify-center text-primary-foreground shadow-2xl shadow-primary/40 shrink-0 transform group-hover:scale-105 transition-transform duration-500">
+               <Zap className="w-12 h-12" />
+            </div>
+            
+            <div className="space-y-5">
+               <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full">
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Protocolo de Operação Unicórnio</span>
+               </div>
+               
+               <h4 className="text-3xl font-black tracking-tight text-foreground leading-none">
+                 A Maestria da <span className="text-primary">Gestão Blindada</span>
+               </h4>
+               
+               <p className="text-base text-muted-foreground leading-relaxed max-w-4xl font-medium">
+                 A verdadeira escala não nasce apenas do faturamento bruto, mas da **Eficiência da Blindagem**. Operar com processos de elite separa o amador do empresário que constrói riqueza real. Ao dominar a separação entre **PJ Operacional** e **PF Pró-labore**, você não está apenas cumprindo tarefas; está forjando a infraestrutura que permitirá sua migração para ME com caixa robusto e **PF Investimentos** em constante crescimento. Disciplina fiscal é a liberdade do amanhã.
+               </p>
+
+               <div className="pt-4 flex flex-wrap gap-4 justify-center md:justify-start">
+                  <Badge variant="outline" className="border-primary/30 text-[10px] font-bold py-1 px-4 uppercase tracking-widest">PJ Operacional</Badge>
+                  <Badge variant="outline" className="border-primary/30 text-[10px] font-bold py-1 px-4 uppercase tracking-widest">PF Pró-labore</Badge>
+                  <Badge variant="outline" className="border-primary/30 text-[10px] font-bold py-1 px-4 uppercase tracking-widest">PF Investimentos</Badge>
+               </div>
+            </div>
           </div>
-          <div className="space-y-3">
-             <div className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Protocolo Unicórnio</div>
-             <h4 className="text-xl font-bold tracking-tight">O Segredo da Gestão Estratégica</h4>
-             <p className="text-sm text-muted-foreground leading-relaxed max-w-4xl font-medium">
-               A verdadeira escala não nasce apenas do faturamento bruto, mas da **Eficiência da Blindagem**. Operar com processos de elite separa o amador do empresário que constrói riqueza real. Ao dominar a separação entre **PJ Operacional** e **PF Pró-labore**, você não está apenas cumprindo tarefas; está forjando a infraestrutura que permitirá sua migração para ME com caixa robusto e **PF Investimentos** em constante crescimento. Disciplina fiscal é a liberdade do amanhã.
-             </p>
+          
+          <div className="absolute bottom-0 right-0 p-10 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity duration-700">
+             <Target className="w-48 h-48" />
           </div>
         </div>
       </section>
@@ -311,7 +333,7 @@ export function Checklist() {
             <HelpCircle className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="font-headline font-bold text-xl tracking-tight">Blindagem Antirruído</h3>
+            <h3 className="font-headline font-bold text-xl tracking-tight">Perguntas de Blindagem</h3>
             <p className="text-xs text-muted-foreground font-medium mt-1">Respostas diretas para as dúvidas que travam o crescimento do MEI.</p>
           </div>
         </div>
