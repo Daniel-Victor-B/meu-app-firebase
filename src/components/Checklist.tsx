@@ -348,120 +348,121 @@ export function Checklist({ fat, custos, prolabore }: ChecklistProps) {
       </div>
 
       {/* Audit de Riqueza Unicórnio Consolidade */}
-      <section className="relative group p-1 rounded-[48px] bg-gradient-to-br from-indigo-950 via-primary/30 to-pink-950 shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden mt-16 border border-white/5">
+      <section className="relative p-1 rounded-[48px] bg-gradient-to-br from-indigo-950 via-primary/30 to-pink-950 shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden mt-16 border border-white/5">
         <div className="bg-black/90 backdrop-blur-3xl rounded-[47px] p-8 md:p-12 space-y-12 relative overflow-hidden">
           
           <div className="absolute top-0 right-0 -mr-40 -mt-40 w-[800px] h-[800px] bg-primary/10 blur-[180px] rounded-full opacity-40 animate-pulse" />
           
           <div className="relative z-10 space-y-10">
-            
             {/* Header Conciso e Persuasivo */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-              <div className="text-left space-y-4 max-w-xl">
-                <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-white/5 border border-white/10 rounded-full">
-                  <Flame className="w-3.5 h-3.5 text-orange-500 animate-bounce" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/80">Audit de Riqueza Unicórnio</span>
-                </div>
-                <h4 className="text-3xl md:text-5xl font-black tracking-tight text-white leading-tight">
-                  A verdadeira escala nasce da <span className="bg-gradient-to-r from-blue-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">Eficiência</span>.
-                </h4>
-                <p className="text-sm text-slate-400 leading-relaxed font-medium">
-                  Sua estagnação não é falta de esforço, é falta de um sistema. <strong>Atire pedras na confusão patrimonial</strong> e blinde sua <strong>PJ Operacional</strong> para explodir sua liberdade.
-                </p>
+            <div className="max-w-3xl mx-auto text-center space-y-6">
+              <div className="inline-flex items-center gap-3 px-4 py-1.5 bg-white/5 border border-white/10 rounded-full">
+                <Flame className="w-3.5 h-3.5 text-orange-500 animate-bounce" />
+                <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/80">Audit de Riqueza Unicórnio</span>
               </div>
+              <h4 className="text-3xl md:text-5xl font-black tracking-tight text-white leading-tight">
+                A verdadeira escala nasce da <span className="bg-gradient-to-r from-blue-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">Eficiência</span>.
+              </h4>
+              <p className="text-sm text-slate-400 leading-relaxed font-medium max-w-2xl mx-auto">
+                Sua estagnação não é falta de esforço, é falta de um sistema. <strong>Atire pedras na confusão patrimonial</strong> e blinde sua <strong>PJ Operacional</strong> para explodir sua liberdade.
+              </p>
+            </div>
 
-              <Card className="bg-white/5 border-white/10 backdrop-blur-2xl p-6 rounded-[32px] space-y-6 shadow-2xl min-w-[300px] border-t-white/20">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 rounded-2xl bg-black/50 border border-white/10">
-                    <div className="flex items-center gap-3">
-                      <Zap className={cn("w-5 h-5 transition-all duration-500", isEliteMode ? "text-amber-400 scale-125 drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]" : "text-slate-600")} />
-                      <span className="text-[10px] font-black text-white uppercase tracking-widest">Modo Unicórnio</span>
+            {/* O Bloco Único: Simulador + Gráfico */}
+            <Card className="max-w-4xl mx-auto bg-white/5 border-white/10 backdrop-blur-2xl rounded-[40px] shadow-2xl border-t-white/20 overflow-hidden">
+              <CardContent className="p-8 md:p-12">
+                <div className="flex flex-col lg:flex-row gap-12 items-center">
+                  
+                  {/* Lado Esquerdo: Controles e Stats */}
+                  <div className="w-full lg:w-1/3 space-y-8">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-4 rounded-3xl bg-black/50 border border-white/10 group hover:border-amber-400/50 transition-all duration-500">
+                        <div className="flex items-center gap-3">
+                          <Zap className={cn("w-6 h-6 transition-all duration-500", isEliteMode ? "text-amber-400 scale-125 drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]" : "text-slate-600")} />
+                          <span className="text-xs font-black text-white uppercase tracking-widest">Modo Unicórnio</span>
+                        </div>
+                        <Switch 
+                          checked={isEliteMode}
+                          onCheckedChange={setIsEliteMode}
+                          className="data-[state=checked]:bg-amber-400 scale-125"
+                        />
+                      </div>
                     </div>
-                    <Switch 
-                      checked={isEliteMode}
-                      onCheckedChange={setIsEliteMode}
-                      className="data-[state=checked]:bg-amber-400 scale-110"
-                    />
+
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="p-6 rounded-[32px] bg-pink-500/10 border border-pink-500/20 group hover:bg-pink-500/20 transition-all">
+                         <div className="text-[10px] font-black text-pink-400 uppercase tracking-widest mb-1">Poder de Escala</div>
+                         <div className="text-3xl font-black text-white tabular-nums">{isEliteMode ? wealthExplosion.multiplier + "x" : "1.0x"}</div>
+                      </div>
+                      <div className="p-6 rounded-[32px] bg-blue-500/10 border border-blue-500/20 group hover:bg-blue-500/20 transition-all">
+                         <div className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Gap Anual Perdido</div>
+                         <div className="text-2xl font-black text-white leading-none tabular-nums">{isEliteMode ? formatCurrency(wealthExplosion.annualGap) : "R$ 0"}</div>
+                      </div>
+                    </div>
                   </div>
+
+                  {/* Lado Direito: O Gráfico Doce e Transparente */}
+                  <div className="w-full lg:w-2/3 h-[300px] relative bg-white/5 rounded-[32px] border border-white/10 p-6 flex flex-col items-center">
+                    <ResponsiveContainer width="100%" height="80%">
+                      <BarChart data={chartData} margin={{ top: 20, right: 30, left: 30, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="gradBlue" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.6}/>
+                            <stop offset="100%" stopColor="#60a5fa" stopOpacity={0.1}/>
+                          </linearGradient>
+                          <linearGradient id="gradYellow" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#fbbf24" stopOpacity={0.6}/>
+                            <stop offset="100%" stopColor="#fbbf24" stopOpacity={0.1}/>
+                          </linearGradient>
+                          <linearGradient id="gradPink" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#f472b6" stopOpacity={0.6}/>
+                            <stop offset="100%" stopColor="#f472b6" stopOpacity={0.1}/>
+                          </linearGradient>
+                        </defs>
+                        <Tooltip 
+                          cursor={{ fill: 'rgba(255,255,255,0.02)', radius: 20 }}
+                          content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              return (
+                                <div className="bg-black/90 border border-white/20 p-4 rounded-2xl shadow-2xl backdrop-blur-3xl">
+                                  <div className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-1">{payload[0].payload.desc}</div>
+                                  <div className="text-sm font-black text-white">{payload[0].name}</div>
+                                  <div className="text-xl font-black text-primary mt-1">{payload[0].value.toFixed(1)}%</div>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Bar dataKey="value" radius={[20, 20, 20, 20]} barSize={50} animationDuration={1500}>
+                          {chartData.map((entry, index) => (
+                            <Cell 
+                              key={`cell-${index}`} 
+                              fill={index === 0 ? 'url(#gradBlue)' : index === 1 ? 'url(#gradYellow)' : 'url(#gradPink)'} 
+                              className="transition-all duration-1000 opacity-90"
+                            />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                    
+                    <div className="grid grid-cols-3 w-full gap-4 mt-4">
+                      {chartData.map((item, i) => (
+                        <div key={i} className="text-center space-y-1">
+                          <div className="h-1 w-full rounded-full mx-auto" style={{ backgroundColor: item.color, opacity: 0.4 }} />
+                          <div className="text-[9px] font-black text-white uppercase tracking-widest leading-none">{item.name}</div>
+                          <div className="text-[8px] font-bold text-slate-500 uppercase leading-tight">{item.desc}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                 </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-4 rounded-2xl bg-pink-500/10 border border-pink-500/20">
-                     <div className="text-[8px] font-black text-pink-400 uppercase tracking-widest mb-1">Riqueza</div>
-                     <div className="text-xl font-black text-white">{isEliteMode ? wealthExplosion.multiplier + "x" : "1.0x"}</div>
-                  </div>
-                  <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20">
-                     <div className="text-[8px] font-black text-blue-400 uppercase tracking-widest mb-1">Gap Anual</div>
-                     <div className="text-lg font-black text-white leading-none">{isEliteMode ? formatCurrency(wealthExplosion.annualGap) : "R$ 0"}</div>
-                  </div>
-                </div>
-              </Card>
-            </div>
-
-            {/* Gráfico e Didática Consolidados */}
-            <div className="h-[400px] relative bg-white/5 rounded-[40px] border border-white/10 shadow-inner backdrop-blur-md flex flex-col items-center justify-center p-8">
-              <div className="absolute inset-x-12 top-12 bottom-20 flex flex-col justify-between pointer-events-none opacity-5">
-                {[100, 75, 50, 25, 0].map((val) => (
-                  <div key={val} className="h-px w-full bg-white" />
-                ))}
-              </div>
-
-              <ResponsiveContainer width="100%" height="85%">
-                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 30, bottom: 20 }}>
-                  <defs>
-                    <linearGradient id="gradBlue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.5}/>
-                      <stop offset="100%" stopColor="#60a5fa" stopOpacity={0.1}/>
-                    </linearGradient>
-                    <linearGradient id="gradYellow" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#fbbf24" stopOpacity={0.5}/>
-                      <stop offset="100%" stopColor="#fbbf24" stopOpacity={0.1}/>
-                    </linearGradient>
-                    <linearGradient id="gradPink" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#f472b6" stopOpacity={0.5}/>
-                      <stop offset="100%" stopColor="#f472b6" stopOpacity={0.1}/>
-                    </linearGradient>
-                  </defs>
-                  <Tooltip 
-                    cursor={{ fill: 'rgba(255,255,255,0.02)', radius: 30 }}
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        return (
-                          <div className="bg-black/90 border border-white/20 p-4 rounded-2xl shadow-2xl backdrop-blur-3xl">
-                            <div className="text-[9px] font-black uppercase tracking-widest text-slate-500 mb-2">{payload[0].payload.desc}</div>
-                            <div className="text-lg font-black text-white">{payload[0].name}</div>
-                            <div className="text-2xl font-black text-primary mt-2">{payload[0].value.toFixed(1)}%</div>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                  <Bar dataKey="value" radius={[30, 30, 30, 30]} barSize={80} animationDuration={1000}>
-                    {chartData.map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={index === 0 ? 'url(#gradBlue)' : index === 1 ? 'url(#gradYellow)' : 'url(#gradPink)'} 
-                        className="transition-all duration-1000 opacity-80"
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-              
-              <div className="grid grid-cols-3 w-full max-w-2xl gap-8 mt-4">
-                {chartData.map((item, i) => (
-                  <div key={i} className="text-center space-y-1">
-                    <div className="h-1 w-full rounded-full mx-auto" style={{ backgroundColor: item.color, opacity: 0.3 }} />
-                    <div className="text-[10px] font-black text-white uppercase tracking-widest">{item.name}</div>
-                    <div className="text-[8px] font-bold text-slate-500 uppercase leading-tight">{item.desc}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
             {/* Manifesto Final de Autoridade */}
-            <div className="text-center pt-10 border-t border-white/5 space-y-6">
+            <div className="text-center pt-8 space-y-6">
               <h4 className="text-xl md:text-2xl font-black text-white tracking-widest uppercase">
                 O MEI é apenas o casulo. A <span className="text-primary italic">Eficiência</span> é o que libera o seu voo.
               </h4>
@@ -504,3 +505,4 @@ export function Checklist({ fat, custos, prolabore }: ChecklistProps) {
     </div>
   );
 }
+
