@@ -126,14 +126,22 @@ const FAQS_CONTAS = [
 export function AccountGuide() {
   const handleAccordionChange = (value: string) => {
     if (value) {
-      // Timeout ligeiramente maior para aguardar o início da animação de fechamento da anterior
+      // Aguardamos 250ms para que a animação de fechamento do item anterior não cause "pulos" no cálculo da posição
       setTimeout(() => {
         const element = document.getElementById(`item-${value}`);
         if (element) {
-          // scrollIntoView respeita o scroll-margin-top definido no CSS da AccordionItem
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // Calculamos a posição exata para ficar logo abaixo do menu sticky (TabsList)
+          // O menu está no topo + offset do TabsList
+          const elementRect = element.getBoundingClientRect();
+          const absoluteElementTop = elementRect.top + window.pageYOffset;
+          const menuOffset = 110; // Ajuste para ficar logo abaixo do menu sticky
+
+          window.scrollTo({
+            top: absoluteElementTop - menuOffset,
+            behavior: 'smooth'
+          });
         }
-      }, 150);
+      }, 250);
     }
   };
 
@@ -180,7 +188,7 @@ export function AccountGuide() {
               key={c.id} 
               value={c.id} 
               id={`item-${c.id}`}
-              className={`border rounded-2xl px-1 bg-card/40 transition-all hover:bg-card/80 shadow-sm ${c.borderColor} scroll-mt-32`}
+              className={`border rounded-2xl px-1 bg-card/40 transition-all hover:bg-card/80 shadow-sm ${c.borderColor}`}
             >
               <AccordionTrigger className="hover:no-underline py-6 px-5 group">
                 <div className="flex gap-4 items-start text-left">
