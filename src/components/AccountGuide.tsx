@@ -65,7 +65,7 @@ const CONTAS = [
   {
     id: "pf-sal",
     label: "Pró-labore (PF/CPF)",
-    tipo: "CONTA PESSOAL (CPF)",
+    tipo: "CONTA CORRENTE PESSOAL (PF/CPF)",
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
     borderColor: "border-blue-500/20",
@@ -83,7 +83,7 @@ const CONTAS = [
   {
     id: "pf-inv",
     label: "Investimentos (PF/CPF)",
-    tipo: "PATRIMÔNIO INDIVIDUAL (CPF)",
+    tipo: "PATRIMÔNIO INDIVIDUAL (PF/CPF)",
     color: "text-primary",
     bgColor: "bg-primary/10",
     borderColor: "border-primary/20",
@@ -103,9 +103,9 @@ const CONTAS = [
 const FLUXO_VISUAL = [
   { de: "Clientes", para: "PJ Operacional", desc: "Faturamento Bruto", status: "Entrada" },
   { de: "PJ Operacional", para: "Custos & DAS", desc: "Obrigações", status: "Saída" },
-  { de: "PJ Operacional", para: "PF/CPF (Pró-labore)", desc: "Seu Salário", status: "Retirada" },
+  { de: "PJ Operacional", para: "Conta Corrente Pessoal (PF/CPF)", desc: "Seu Salário (Pró-labore)", status: "Retirada" },
   { de: "PJ Operacional", para: "PJ Reserva", desc: "Segurança", status: "Reserva" },
-  { de: "PJ Operacional", para: "PF/CPF (Investimento)", desc: "Riqueza (Trimestral)", status: "Lucro" },
+  { de: "PJ Operacional", para: "Conta Corrente Pessoal (PF/CPF)", desc: "Riqueza (Trimestral)", status: "Lucro" },
 ];
 
 const FAQS_CONTAS = [
@@ -126,32 +126,31 @@ const FAQS_CONTAS = [
 export function AccountGuide() {
   const handleAccordionChange = (value: string) => {
     if (value) {
-      // Pequeno timeout para garantir que o elemento esteja pronto para scroll após a animação iniciar
+      // Timeout ligeiramente maior para aguardar o início da animação de fechamento da anterior
       setTimeout(() => {
         const element = document.getElementById(`item-${value}`);
         if (element) {
-          const yOffset = -120; // Espaço para não ficar colado no topo (devido ao sticky header)
-          const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-          window.scrollTo({ top: y, behavior: 'smooth' });
+          // scrollIntoView respeita o scroll-margin-top definido no CSS da AccordionItem
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-      }, 50);
+      }, 150);
     }
   };
 
   return (
     <div className="space-y-10 animate-in slide-in-from-bottom-4 duration-500 pb-16">
-      {/* Header Unicórnio */}
+      {/* Header Premium de Blindagem */}
       <div className="relative group">
         <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 to-indigo-500/30 blur-xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
-        <Card className="relative bg-card/60 backdrop-blur-xl border-primary/20 overflow-hidden">
+        <Card className="relative bg-card/60 backdrop-blur-xl border-primary/20 overflow-hidden shadow-2xl">
           <CardContent className="pt-8 pb-8 px-6 space-y-4">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-primary rounded-2xl shadow-lg shadow-primary/30 text-primary-foreground">
                 <ShieldCheck className="w-8 h-8" />
               </div>
               <div>
-                <h3 className="text-2xl font-black tracking-tight text-foreground uppercase italic">Arquitetura de Blindagem</h3>
-                <p className="text-sm text-muted-foreground font-medium">O guia definitivo para separar sua vida pessoal do seu império.</p>
+                <h3 className="text-2xl font-black tracking-tight text-foreground uppercase italic leading-none">Arquitetura de Blindagem</h3>
+                <p className="text-sm text-muted-foreground font-medium mt-1">O protocolo definitivo para separar o CPF do seu império PJ.</p>
               </div>
             </div>
             
@@ -163,11 +162,11 @@ export function AccountGuide() {
         </Card>
       </div>
 
-      {/* Grid de Contas */}
+      {/* Grid de Contas Estratégicas */}
       <div className="grid gap-6">
         <div className="flex items-center gap-2 px-1">
           <Info className="w-4 h-4 text-primary" />
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">O Ecossistema de 4 Contas</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Ecossistema de Gestão de 4 Contas</span>
         </div>
 
         <Accordion 
@@ -181,7 +180,7 @@ export function AccountGuide() {
               key={c.id} 
               value={c.id} 
               id={`item-${c.id}`}
-              className={`border rounded-2xl px-1 bg-card/40 transition-all hover:bg-card/80 shadow-sm ${c.borderColor} scroll-mt-24`}
+              className={`border rounded-2xl px-1 bg-card/40 transition-all hover:bg-card/80 shadow-sm ${c.borderColor} scroll-mt-32`}
             >
               <AccordionTrigger className="hover:no-underline py-6 px-5 group">
                 <div className="flex gap-4 items-start text-left">
@@ -190,7 +189,7 @@ export function AccountGuide() {
                   </div>
                   <div className="space-y-1.5 pt-1">
                     <div className="flex flex-wrap items-center gap-3">
-                      <h4 className="font-black text-lg tracking-tight leading-none">{c.label}</h4>
+                      <h4 className="font-black text-lg tracking-tight leading-none italic uppercase">{c.label}</h4>
                       <Badge variant="outline" className={`${c.color} ${c.bgColor} border-transparent text-[8px] font-black px-2.5 py-0.5 tracking-wider`}>
                         {c.tipo}
                       </Badge>
@@ -245,17 +244,17 @@ export function AccountGuide() {
         </Accordion>
       </div>
 
-      {/* Fluxo de Capital Unicórnio */}
+      {/* Fluxo de Capital Horizontal Premium */}
       <section className="space-y-6">
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
             <Share2 className="w-5 h-5 text-primary" />
             <h3 className="font-black text-lg tracking-tight uppercase italic">Fluxo Mestre do Capital</h3>
           </div>
-          <Badge className="bg-primary/20 text-primary border-none text-[9px] font-black uppercase">Automated Path</Badge>
+          <Badge className="bg-primary/20 text-primary border-none text-[9px] font-black uppercase">Path Optimization</Badge>
         </div>
 
-        <Card className="bg-secondary/10 border-2 border-dashed border-border/60 overflow-hidden relative group">
+        <Card className="bg-secondary/10 border-2 border-dashed border-border/60 overflow-hidden relative group shadow-inner">
           <CardContent className="p-8">
             <div className="relative space-y-8">
               <div className="absolute left-[11px] top-4 bottom-4 w-0.5 bg-gradient-to-b from-primary via-indigo-500 to-purple-500 opacity-20" />
@@ -287,15 +286,15 @@ export function AccountGuide() {
         </Card>
       </section>
 
-      {/* FAQ Profissional */}
+      {/* FAQ de Autoridade */}
       <section className="space-y-6 pt-6">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-primary/10 rounded-xl text-primary shadow-inner">
             <HelpCircle className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="font-black text-xl tracking-tight uppercase italic">Blindagem Antirruído</h3>
-            <p className="text-xs text-muted-foreground font-medium">As respostas que protegem seu patrimônio contra erros fiscais.</p>
+            <h3 className="font-black text-xl tracking-tight uppercase italic leading-none">Blindagem Antirruído</h3>
+            <p className="text-xs text-muted-foreground font-medium mt-1">As respostas que protegem seu patrimônio contra erros fiscais e contábeis.</p>
           </div>
         </div>
 
