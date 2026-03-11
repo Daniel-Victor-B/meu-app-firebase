@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react";
@@ -14,9 +15,8 @@ import {
   ListChecks, 
   HelpCircle,
   Zap,
-  Info,
-  ArrowRight,
-  Target
+  Target,
+  ArrowRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -145,7 +145,7 @@ export function Checklist() {
 
   return (
     <div className="space-y-10 animate-in slide-in-from-bottom-4 duration-500 pb-20">
-      {/* Header Premium com Comando de Scroll */}
+      {/* Header Premium com Painel de Comando */}
       <div className="relative group">
         <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 blur-xl opacity-50"></div>
         <Card className="relative bg-card/60 backdrop-blur-xl border-primary/20 overflow-hidden shadow-2xl">
@@ -169,7 +169,7 @@ export function Checklist() {
               </div>
             </div>
             
-            {/* Indicadores Rápidos de Pilar */}
+            {/* Indicadores Rápidos de Pilar - Dashboard Tático */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {SECTIONS.map((section) => {
                 const progress = getProgress(section.tasks);
@@ -285,7 +285,7 @@ export function Checklist() {
         })}
       </div>
 
-      {/* Insight de Operação de Elite */}
+      {/* Insight de Operação Unicórnio - Núcleo Blindado */}
       <section className="relative overflow-hidden p-8 rounded-[32px] bg-secondary/30 border-2 border-dashed border-border/60">
         <div className="absolute top-0 right-0 p-10 opacity-5">
            <Target className="w-32 h-32" />
@@ -296,11 +296,9 @@ export function Checklist() {
           </div>
           <div className="space-y-3">
              <div className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Protocolo Unicórnio</div>
-             <h4 className="text-xl font-bold tracking-tight">O Segredo da Operação Profissional</h4>
-             <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl font-medium">
-               Grandes empresas não são construídas apenas com grandes vendas, mas com **processos impecáveis**. 
-               Seguir este checklist mensalmente não é apenas burocracia, é a construção da sua **autoridade empresarial**. 
-               Um MEI organizado é o único que consegue migrar para Microempresa (ME) com lucro e sem dívidas.
+             <h4 className="text-xl font-bold tracking-tight">O Segredo da Gestão Estratégica</h4>
+             <p className="text-sm text-muted-foreground leading-relaxed max-w-4xl font-medium">
+               A verdadeira escala não nasce apenas do faturamento bruto, mas da **Eficiência da Blindagem**. Operar com processos de elite separa o amador do empresário que constrói riqueza real. Ao dominar a separação entre **PJ Operacional** e **PF Pró-labore**, você não está apenas cumprindo tarefas; está forjando a infraestrutura que permitirá sua migração para ME com caixa robusto e **PF Investimentos** em constante crescimento. Disciplina fiscal é a liberdade do amanhã.
              </p>
           </div>
         </div>

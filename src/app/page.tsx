@@ -95,7 +95,7 @@ export default function Home() {
 
         <div className="mt-8">
           <TabsContent value="distribuicao">
-            <div className="max-w-3xl mx-auto">
+            <div className="w-full">
               <FinancialDistribution 
                 fat={fat} setFat={setFat}
                 custos={custos} setCustos={setCustos}
@@ -125,7 +125,7 @@ export default function Home() {
           </TabsContent>
 
           <TabsContent value="limite">
-            <div className="max-w-4xl mx-auto">
+            <div className="w-full">
               <MeiLimitTracker 
                 fatAcum={fatAcum}
                 fatMensal={fat}
