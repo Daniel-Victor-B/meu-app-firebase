@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Settings, Landmark, CreditCard, TrendingUp, ArrowRight, Info, ShieldCheck, Wallet, HelpCircle } from "lucide-react";
+import { Settings, Landmark, CreditCard, TrendingUp, ArrowRight, Info, ShieldCheck, Wallet, HelpCircle, Zap, Lock, ArrowDownRight, Share2 } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -16,225 +16,267 @@ const CONTAS = [
   {
     id: "pj-op",
     label: "PJ Operacional",
-    tipo: "EMPRESA (CNPJ)",
+    tipo: "CONTA CORRENTE (CNPJ)",
     color: "text-indigo-500",
     bgColor: "bg-indigo-500/10",
     borderColor: "border-indigo-500/20",
     icon: <Settings className="w-5 h-5" />,
-    desc: "A porta de entrada. Recebe faturamento bruto e paga as contas.",
-    sugestao: "Nubank PJ / Inter / PagBank",
+    desc: "A Central de Comando. É por aqui que o oxigênio (dinheiro) entra no negócio.",
+    sugestao: "Nubank PJ, Inter, PagBank ou Cora",
     detalhes: [
-      "Faturamento Bruto: Todo PIX de cliente deve cair aqui primeiro.",
-      "Imposto DAS: Pague sempre por esta conta para facilitar o controle fiscal.",
-      "Custos Fixos: Ferramentas, internet e materiais saem daqui.",
-      "Extrato Mensal: É a base para sua Declaração Anual de MEI."
-    ]
+      "Faturamento Bruto: Receba 100% dos seus pagamentos aqui (PIX, Cartão, Boleto).",
+      "Obrigações Fiscais: O pagamento do DAS deve ser agendado exclusivamente por esta conta.",
+      "Custos de Escala: Ferramentas, anúncios e insumos são pagos aqui.",
+      "Base de Dados: Seu extrato aqui é a prova real do seu faturamento para o governo."
+    ],
+    proTip: "Nunca use o cartão de débito desta conta para gastos de mercado ou lazer. Blindagem total."
   },
   {
     id: "pj-res",
     label: "PJ Reserva",
-    tipo: "EMPRESA (CNPJ)",
+    tipo: "RESERVA ESTRATÉGICA (CNPJ)",
     color: "text-purple-500",
     bgColor: "bg-purple-500/10",
     borderColor: "border-purple-500/20",
-    icon: <ShieldCheck className="w-5 h-5" />,
-    desc: "O pulmão financeiro. Mantém o negócio vivo em meses ruins.",
-    sugestao: "CDB de liquidez diária (100% CDI)",
+    icon: <Lock className="w-5 h-5" />,
+    desc: "O Pulmão Financeiro. Garante que o CNPJ sobreviva a qualquer tempestade.",
+    sugestao: "CDB de Liquidez Diária (100% CDI)",
     detalhes: [
-      "Patrimônio do Negócio: Dinheiro que pertence ao CNPJ, não à você.",
-      "Segurança: Ideal acumular 6 meses de custos operacionais aqui.",
-      "Separação: Não use para gastos do dia a dia. É um fluxo de reserva.",
-      "Crescimento: No futuro, use para investir em novos equipamentos ou escala."
-    ]
+      "Capital de Giro: Dinheiro que pertence à empresa para emergências ou baixas sazonais.",
+      "Meta de Segurança: Acumule o equivalente a 6 meses dos seus custos operacionais totais.",
+      "Autonomia: Ter reserva permite que você negocie melhor com fornecedores.",
+      "Crescimento: É o fundo que financiará novos equipamentos sem necessidade de empréstimos."
+    ],
+    proTip: "A reserva deve estar em um local de fácil resgate, mas separado da conta do dia a dia."
   },
   {
     id: "pf-sal",
     label: "PF Pró-labore",
-    tipo: "PESSOAL (CPF)",
+    tipo: "CONTA PESSOAL (CPF)",
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
     borderColor: "border-blue-500/20",
     icon: <CreditCard className="w-5 h-5" />,
-    desc: "Seu salário fixo mensal. Dinheiro para sua vida pessoal.",
-    sugestao: "Sua conta PF principal",
+    desc: "Seu Salário Executivo. O valor fixo que recompensa o seu esforço mensal.",
+    sugestao: "Sua conta bancária pessoal favorita",
     detalhes: [
-      "Disciplina: Transfira sempre o mesmo valor no mesmo dia (ex: dia 05).",
-      "Comprovação de Renda: O extrato de recebimento serve como seu holerite.",
-      "Paz Mental: Gastos pessoais (aluguel, lazer) saem exclusivamente daqui.",
-      "Regra de Ouro: Nunca pague despesas de mercado direto na conta PJ."
-    ]
+      "Disciplina Mensal: Transfira o mesmo valor no mesmo dia (Ex: Todo dia 05).",
+      "Comprovação de Renda: O comprovante desta transferência é o seu holerite oficial.",
+      "Lazer e Aluguel: Seus gastos de vida saem exclusivamente desta conta.",
+      "Foco: Com salário fixo, você para de 'assaltar' o caixa da empresa para pagar boletos."
+    ],
+    proTip: "Defina um valor que cubra seu custo de vida básico. Aumente-o apenas quando a empresa escalar."
   },
   {
     id: "pf-inv",
     label: "PF Investimentos",
-    tipo: "PESSOAL (CPF)",
+    tipo: "PATRIMÔNIO INDIVIDUAL (CPF)",
     color: "text-primary",
     bgColor: "bg-primary/10",
     borderColor: "border-primary/20",
     icon: <TrendingUp className="w-5 h-5" />,
-    desc: "Distribuição de Lucro Real. Foco em patrimônio longo prazo.",
-    sugestao: "Corretora (XP, BTG, NuInvest, etc.)",
+    desc: "A Fábrica de Liberdade. Onde o lucro do MEI vira riqueza pessoal.",
+    sugestao: "Corretoras de Valores (XP, BTG, Rico)",
     detalhes: [
-      "Lucro não é Salário: É o prêmio trimestral por sua boa gestão.",
-      "Distribuição Trimestral: Acumule na PJ e decida o que fazer a cada 90 dias.",
-      "Isenção: Lucros de MEI são isentos de IR sob certas regras.",
-      "Liberdade: Use para investir, realizar sonhos ou projetos estratégicos."
-    ]
+      "Distribuição de Lucro: O prêmio trimestral por gerir bem o seu negócio.",
+      "Isenção de IR: O lucro distribuído do MEI é isento de imposto sob regras específicas.",
+      "Independência: Use para investir em ações, FIIs ou previdência privada.",
+      "Fruição: É daqui que sai o dinheiro para realizar sonhos e grandes aquisições."
+    ],
+    proTip: "Considere transferir 50% do lucro acumulado para esta conta a cada 90 dias."
   },
 ];
 
-const FLUXO = [
-  { de: "Cliente paga", para: "PJ Operacional", color: "text-indigo-500" },
-  { de: "PJ Operacional", para: "Custos", color: "text-orange-500" },
-  { de: "PJ Operacional", para: "DAS", color: "text-red-500" },
-  { de: "PJ Operacional", para: "Pró-labore", color: "text-blue-500" },
-  { de: "Sobra mensal", para: "PJ Reserva", color: "text-purple-500" },
-  { de: "Lucro Real", para: "PF Investimentos", color: "text-primary" },
+const FLUXO_VISUAL = [
+  { de: "Clientes", para: "PJ Operacional", desc: "Faturamento Bruto", status: "Entrada" },
+  { de: "PJ Operacional", para: "Custos & DAS", desc: "Obrigações", status: "Saída" },
+  { de: "PJ Operacional", para: "PF Pró-labore", desc: "Seu Salário", status: "Retirada" },
+  { de: "PJ Operacional", para: "PJ Reserva", desc: "Segurança", status: "Reserva" },
+  { de: "PJ Operacional", para: "PF Investimentos", desc: "Riqueza (Trimestral)", status: "Lucro" },
 ];
 
 const FAQS_CONTAS = [
   {
-    q: "Posso usar minha conta PF para receber de clientes?",
-    a: "Não é recomendado. Para a Receita Federal e para uma boa gestão, o dinheiro do cliente deve entrar na conta do CNPJ. Receber na PF mistura seu patrimônio e dificulta a prova de que aquele valor é faturamento bruto da empresa."
+    q: "O que é 'Confusão Patrimonial'?",
+    a: "É quando você usa a conta da empresa para gastos pessoais. Isso é o maior erro do MEI. Além de dificultar o controle, em casos judiciais, você perde a proteção do CNPJ e seus bens pessoais podem ser tomados para pagar dívidas do negócio."
   },
   {
-    q: "Paguei uma conta pessoal com a conta PJ. O que acontece?",
-    a: "Isso é chamado de 'confusão patrimonial'. Um ou outro erro não cancela seu MEI, mas torna seu controle financeiro impreciso. Tente reembolsar a conta PJ fazendo uma transferência da sua conta PF de volta para ela para 'anular' o erro."
+    q: "Posso usar a conta PJ para pagar o boleto do meu cartão PF?",
+    a: "Jamais. O caminho correto é: transferir o Pró-labore (salário) da conta PJ para sua conta PF, e aí sim pagar seu cartão pessoal pela conta pessoal. Mantenha os trilhos separados."
   },
   {
-    q: "Como comprovo renda para aluguel ou empréstimo sendo MEI?",
-    a: "Use o extrato de transferência do seu Pró-labore (da PJ para a PF) como seu holerite. Além disso, a sua Declaração Anual (DASN) e o extrato consolidado da conta PJ servem como documentos oficiais de comprovação de faturamento."
-  },
-  {
-    q: "Onde devo deixar a 'Reserva PJ' investida?",
-    a: "O ideal é um investimento de baixíssimo risco e alta liquidez, como um CDB de liquidez diária que pague pelo menos 100% do CDI. O objetivo aqui não é o maior lucro possível, mas sim ter o dinheiro disponível imediatamente caso o negócio precise."
+    q: "Como comprovar renda sendo MEI?",
+    a: "Os melhores documentos são: 1. Sua Declaração Anual (DASN-SIMEI). 2. Extratos mensais da conta PJ que mostram o faturamento regular. 3. Extratos da conta PF mostrando os recebimentos constantes de Pró-labore."
   }
 ];
 
 export function AccountGuide() {
   return (
-    <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500 pb-16">
-      <div className="space-y-4">
-        <header className="space-y-1">
-          <h3 className="text-lg font-headline font-bold">Arquitetura de Contas</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            A saúde financeira do MEI exige a separação total entre CPF e CNPJ. 
-            Siga este modelo para blindar seu patrimônio.
-          </p>
-        </header>
-        
-        <div className="space-y-3">
-          <Separator className="bg-border/50" />
-          <div className="flex items-center gap-2 text-[11px] font-bold text-muted-foreground/80 tracking-wide uppercase px-1 py-1">
-            <Info className="w-3.5 h-3.5" />
-            Clique em cada conta para ver as dicas práticas
-          </div>
-          <Separator className="bg-border/50" />
-        </div>
+    <div className="space-y-10 animate-in slide-in-from-bottom-4 duration-500 pb-16">
+      {/* Header Unicórnio */}
+      <div className="relative group">
+        <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 to-indigo-500/30 blur-xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
+        <Card className="relative bg-card/60 backdrop-blur-xl border-primary/20 overflow-hidden">
+          <CardContent className="pt-8 pb-8 px-6 space-y-4">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-primary rounded-2xl shadow-lg shadow-primary/30 text-primary-foreground">
+                <ShieldCheck className="w-8 h-8" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-black tracking-tight text-foreground">Arquitetura de Blindagem</h3>
+                <p className="text-sm text-muted-foreground font-medium">O guia definitivo para separar sua vida pessoal do seu império.</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-xl border border-border/50 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
+              <Zap className="w-4 h-4 text-primary animate-pulse" />
+              Regra de Ouro: Disciplina bancária gera liberdade financeira.
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <Accordion type="single" collapsible className="w-full space-y-4">
-        {CONTAS.map((c) => (
-          <AccordionItem 
-            key={c.id} 
-            value={c.id} 
-            className={`border rounded-xl px-1 bg-card/40 transition-all hover:bg-card/60 ${c.borderColor}`}
-          >
-            <AccordionTrigger className="hover:no-underline py-5 px-4 group">
-              <div className="flex gap-4 items-start text-left">
-                <div className={`${c.bgColor} ${c.color} p-3 rounded-xl flex-shrink-0 transition-transform group-data-[state=open]:scale-110 shadow-sm`}>
-                  {c.icon}
-                </div>
-                <div className="space-y-1.5">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h4 className="font-headline font-bold text-lg leading-none">{c.label}</h4>
-                    <Badge variant="outline" className={`${c.color} ${c.bgColor} border-transparent text-[9px] font-black px-2 py-0`}>
-                      {c.tipo}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground font-medium line-clamp-1 group-data-[state=open]:hidden">
-                    {c.desc}
-                  </p>
-                </div>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-4 pb-6 pt-2">
-              <div className="space-y-5">
-                <div className="p-4 rounded-xl bg-secondary/20 border border-border/40">
-                  <p className="text-sm text-foreground font-semibold mb-3 leading-relaxed">{c.desc}</p>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Onde abrir:</span>
-                    <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${c.bgColor} ${c.color}`}>{c.sugestao}</span>
-                  </div>
-                </div>
-                
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-                    <Wallet className="w-3 h-3" />
-                    Guia Prático de Operação
-                  </div>
-                  <ul className="grid gap-3">
-                    {c.detalhes.map((d, i) => (
-                      <li key={i} className="flex gap-3 text-xs text-muted-foreground leading-relaxed items-start">
-                        <div className={`w-1.5 h-1.5 rounded-full ${c.color} mt-1.5 shrink-0 shadow-[0_0_8px_rgba(0,0,0,0.1)]`} />
-                        {d}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
+      {/* Grid de Contas */}
+      <div className="grid gap-6">
+        <div className="flex items-center gap-2 px-1">
+          <Info className="w-4 h-4 text-primary" />
+          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">O Ecossistema de 4 Contas</span>
+        </div>
 
-      <Card className="bg-secondary/10 border-dashed border-2 overflow-hidden">
-        <CardHeader className="pb-4">
+        <Accordion type="single" collapsible className="w-full space-y-4">
+          {CONTAS.map((c) => (
+            <AccordionItem 
+              key={c.id} 
+              value={c.id} 
+              className={`border rounded-2xl px-1 bg-card/40 transition-all hover:bg-card/80 shadow-sm ${c.borderColor}`}
+            >
+              <AccordionTrigger className="hover:no-underline py-6 px-5 group">
+                <div className="flex gap-4 items-start text-left">
+                  <div className={`${c.bgColor} ${c.color} p-4 rounded-2xl flex-shrink-0 transition-all group-data-[state=open]:scale-110 group-data-[state=open]:shadow-xl group-data-[state=open]:shadow-current/10`}>
+                    {c.icon}
+                  </div>
+                  <div className="space-y-1.5 pt-1">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <h4 className="font-black text-lg tracking-tight leading-none">{c.label}</h4>
+                      <Badge variant="outline" className={`${c.color} ${c.bgColor} border-transparent text-[8px] font-black px-2.5 py-0.5 tracking-wider`}>
+                        {c.tipo}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground font-medium line-clamp-1 group-data-[state=open]:hidden italic">
+                      {c.desc}
+                    </p>
+                  </div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="px-5 pb-8 pt-2">
+                <div className="space-y-6">
+                  <div className="p-5 rounded-2xl bg-secondary/20 border-2 border-dashed border-border/40 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-4 opacity-5">
+                      {c.icon}
+                    </div>
+                    <p className="text-sm text-foreground font-bold mb-4 leading-relaxed relative z-10">{c.desc}</p>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">Onde Operar:</span>
+                      <span className={`text-[10px] font-black px-3 py-1 rounded-full ${c.bgColor} ${c.color} shadow-sm`}>{c.sugestao}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-5">
+                    <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-primary/80">
+                      <Wallet className="w-3.5 h-3.5" />
+                      Protocolos de Gestão
+                    </div>
+                    <ul className="grid gap-4">
+                      {c.detalhes.map((d, i) => (
+                        <li key={i} className="flex gap-4 text-xs text-muted-foreground leading-relaxed items-start group/li">
+                          <div className={`w-2 h-2 rounded-full ${c.color} mt-1.5 shrink-0 shadow-lg group-hover/li:scale-125 transition-transform`} />
+                          <span className="group-hover/li:text-foreground transition-colors">{d}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <Separator className="bg-border/50" />
+
+                  <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 flex gap-3 items-start">
+                    <Zap className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-black uppercase text-primary tracking-widest">Pro Tip</span>
+                      <p className="text-xs text-muted-foreground font-medium italic leading-relaxed">{c.proTip}</p>
+                    </div>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </div>
+
+      {/* Fluxo de Capital Unicórnio */}
+      <section className="space-y-6">
+        <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-primary" />
-            <CardTitle className="text-sm font-black uppercase tracking-[0.15em] text-foreground/80">
-              Fluxo Inteligente de Dinheiro
-            </CardTitle>
+            <Share2 className="w-5 h-5 text-primary" />
+            <h3 className="font-black text-lg tracking-tight">Fluxo Mestre do Capital</h3>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="relative space-y-4">
-            <div className="absolute left-[7px] top-2 bottom-2 w-px bg-border/50" />
-            {FLUXO.map((f, i) => (
-              <div key={i} className="flex items-center gap-4 group relative">
-                <div className="w-3.5 h-3.5 rounded-full bg-background border-2 border-border group-hover:border-primary transition-colors z-10 flex items-center justify-center">
-                  <div className="w-1 h-1 rounded-full bg-muted-foreground/30 group-hover:bg-primary" />
-                </div>
-                <div className="flex items-center gap-3 flex-1 py-1">
-                  <span className="text-xs text-muted-foreground font-medium min-w-[100px]">{f.de}</span>
-                  <ArrowRight className="w-3 h-3 text-muted-foreground/30" />
-                  <span className={`text-xs font-black tracking-tight ${f.color}`}>{f.para}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+          <Badge className="bg-primary/20 text-primary border-none text-[9px] font-black uppercase">Automated Path</Badge>
+        </div>
 
+        <Card className="bg-secondary/10 border-2 border-dashed border-border/60 overflow-hidden relative group">
+          <CardContent className="p-8">
+            <div className="relative space-y-8">
+              <div className="absolute left-[11px] top-4 bottom-4 w-0.5 bg-gradient-to-b from-primary via-indigo-500 to-purple-500 opacity-20" />
+              {FLUXO_VISUAL.map((f, i) => (
+                <div key={i} className="flex items-center gap-6 group/item relative">
+                  <div className="w-6 h-6 rounded-full bg-background border-2 border-border group-hover/item:border-primary transition-all duration-500 z-10 flex items-center justify-center shadow-xl">
+                    <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30 group-hover/item:bg-primary group-hover/item:scale-150 transition-all" />
+                  </div>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 flex-1 py-1">
+                    <div className="min-w-[120px]">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 leading-none">{f.de}</span>
+                      <div className="flex items-center gap-2 mt-1">
+                         <ArrowDownRight className="w-3 h-3 text-primary" />
+                         <span className="text-xs font-black text-foreground">{f.para}</span>
+                      </div>
+                    </div>
+                    <div className="flex-1 flex items-center gap-4">
+                      <div className="h-px flex-1 bg-border/40 hidden sm:block" />
+                      <div className="text-right">
+                        <div className="text-[9px] font-black text-primary uppercase tracking-[0.2em]">{f.status}</div>
+                        <div className="text-xs text-muted-foreground font-medium">{f.desc}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* FAQ Profissional */}
       <section className="space-y-6 pt-6">
-        <div className="flex items-center gap-2">
-          <div className="p-2 bg-secondary rounded-lg">
-            <HelpCircle className="w-5 h-5 text-muted-foreground" />
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-primary/10 rounded-xl text-primary shadow-inner">
+            <HelpCircle className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="font-headline font-bold text-lg">Dúvidas sobre Contas</h3>
-            <p className="text-xs text-muted-foreground">Organização bancária e segurança do seu capital.</p>
+            <h3 className="font-black text-xl tracking-tight">Blindagem Antirruído</h3>
+            <p className="text-xs text-muted-foreground font-medium">As respostas que protegem seu patrimônio contra erros fiscais.</p>
           </div>
         </div>
 
-        <Accordion type="single" collapsible className="w-full space-y-2">
+        <Accordion type="single" collapsible className="w-full space-y-3">
           {FAQS_CONTAS.map((faq, idx) => (
-            <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-xl px-4 bg-card shadow-sm hover:shadow-md transition-shadow">
-              <AccordionTrigger className="text-sm font-bold text-left hover:no-underline py-4">
-                {faq.q}
+            <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-2xl px-5 bg-card/40 shadow-sm hover:shadow-md transition-all hover:bg-card">
+              <AccordionTrigger className="text-sm font-black text-left hover:no-underline py-5 leading-relaxed group">
+                <span className="group-hover:text-primary transition-colors">{faq.q}</span>
               </AccordionTrigger>
-              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-4">
-                {faq.a}
+              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-6 pt-2 font-medium">
+                <div className="flex gap-4">
+                  <div className="w-1 h-full bg-primary/20 rounded-full" />
+                  {faq.a}
+                </div>
               </AccordionContent>
             </AccordionItem>
           ))}
