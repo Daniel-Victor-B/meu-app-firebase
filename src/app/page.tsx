@@ -127,6 +127,7 @@ export default function Home() {
                 custos={custos} setCustos={setCustos}
                 prolabore={prolabore} setProlabore={setProlabore}
                 reservaPct={reservaPct} setReservaPct={setReservaPct}
+                setActiveTab={setActiveTab}
               />
             </div>
           </TabsContent>

@@ -32,13 +32,15 @@ interface FinancialDistributionProps {
   setProlabore: (v: number) => void;
   reservaPct: number;
   setReservaPct: (v: number) => void;
+  setActiveTab?: (v: string) => void;
 }
 
 export function FinancialDistribution({ 
   fat, setFat, 
   custos, setCustos, 
   prolabore, setProlabore, 
-  reservaPct, setReservaPct 
+  reservaPct, setReservaPct,
+  setActiveTab
 }: FinancialDistributionProps) {
   const das = 76;
   const totalDespesas = custos + das + prolabore;
@@ -308,7 +310,11 @@ export function FinancialDistribution({
             </p>
          </div>
          <div className="relative z-10">
-            <Button variant="outline" className="rounded-xl font-bold gap-2 group/btn h-11 px-8 border-primary/30 hover:bg-primary/10 transition-all">
+            <Button 
+              onClick={() => setActiveTab?.('contas')}
+              variant="outline" 
+              className="rounded-xl font-bold gap-2 group/btn h-11 px-8 border-primary/30 hover:bg-primary/10 transition-all"
+            >
                Saiba mais sobre a Blindagem
                <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
             </Button>
