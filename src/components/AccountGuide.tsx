@@ -64,8 +64,8 @@ const CONTAS = [
   },
   {
     id: "pf-sal",
-    label: "Pró-labore (PF/CPF)",
-    tipo: "CONTA CORRENTE PESSOAL (PF/CPF)",
+    label: "Conta Corrente Pessoal (PF/CPF)",
+    tipo: "SALÁRIO (PRÓ-LABORE)",
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
     borderColor: "border-blue-500/20",
@@ -82,8 +82,8 @@ const CONTAS = [
   },
   {
     id: "pf-inv",
-    label: "Investimentos (PF/CPF)",
-    tipo: "PATRIMÔNIO INDIVIDUAL (PF/CPF)",
+    label: "Conta Corrente Pessoal (PF/CPF)",
+    tipo: "RIQUEZA (INVESTIMENTOS)",
     color: "text-primary",
     bgColor: "bg-primary/10",
     borderColor: "border-primary/20",
@@ -126,15 +126,12 @@ const FAQS_CONTAS = [
 export function AccountGuide() {
   const handleAccordionChange = (value: string) => {
     if (value) {
-      // Aguardamos 250ms para que a animação de fechamento do item anterior não cause "pulos" no cálculo da posição
       setTimeout(() => {
         const element = document.getElementById(`item-${value}`);
         if (element) {
-          // Calculamos a posição exata para ficar logo abaixo do menu sticky (TabsList)
-          // O menu está no topo + offset do TabsList
           const elementRect = element.getBoundingClientRect();
           const absoluteElementTop = elementRect.top + window.pageYOffset;
-          const menuOffset = 110; // Ajuste para ficar logo abaixo do menu sticky
+          const menuOffset = 110; // Alinhamento exato abaixo do menu de abas
 
           window.scrollTo({
             top: absoluteElementTop - menuOffset,
@@ -157,7 +154,7 @@ export function AccountGuide() {
                 <ShieldCheck className="w-8 h-8" />
               </div>
               <div>
-                <h3 className="text-2xl font-black tracking-tight text-foreground uppercase italic leading-none">Arquitetura de Blindagem</h3>
+                <h3 className="text-2xl font-headline font-bold tracking-tight text-foreground">Arquitetura de Blindagem</h3>
                 <p className="text-sm text-muted-foreground font-medium mt-1">O protocolo definitivo para separar o CPF do seu império PJ.</p>
               </div>
             </div>
@@ -197,8 +194,8 @@ export function AccountGuide() {
                   </div>
                   <div className="space-y-1.5 pt-1">
                     <div className="flex flex-wrap items-center gap-3">
-                      <h4 className="font-black text-lg tracking-tight leading-none italic uppercase">{c.label}</h4>
-                      <Badge variant="outline" className={`${c.color} ${c.bgColor} border-transparent text-[8px] font-black px-2.5 py-0.5 tracking-wider`}>
+                      <h4 className="font-headline font-bold text-lg tracking-tight leading-none">{c.label}</h4>
+                      <Badge variant="outline" className={`${c.color} ${c.bgColor} border-transparent text-[8px] font-black px-2.5 py-0.5 tracking-wider uppercase`}>
                         {c.tipo}
                       </Badge>
                     </div>
@@ -257,7 +254,7 @@ export function AccountGuide() {
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
             <Share2 className="w-5 h-5 text-primary" />
-            <h3 className="font-black text-lg tracking-tight uppercase italic">Fluxo Mestre do Capital</h3>
+            <h3 className="font-headline font-bold text-lg tracking-tight">Fluxo Mestre do Capital</h3>
           </div>
           <Badge className="bg-primary/20 text-primary border-none text-[9px] font-black uppercase">Path Optimization</Badge>
         </div>
@@ -276,7 +273,7 @@ export function AccountGuide() {
                       <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 leading-none">{f.de}</span>
                       <div className="flex items-center gap-2 mt-1">
                          <ArrowDownRight className="w-3 h-3 text-primary" />
-                         <span className="text-xs font-black text-foreground">{f.para}</span>
+                         <span className="text-xs font-bold text-foreground">{f.para}</span>
                       </div>
                     </div>
                     <div className="flex-1 flex items-center gap-4">
@@ -301,7 +298,7 @@ export function AccountGuide() {
             <HelpCircle className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="font-black text-xl tracking-tight uppercase italic leading-none">Blindagem Antirruído</h3>
+            <h3 className="font-headline font-bold text-xl tracking-tight">Blindagem Antirruído</h3>
             <p className="text-xs text-muted-foreground font-medium mt-1">As respostas que protegem seu patrimônio contra erros fiscais e contábeis.</p>
           </div>
         </div>
@@ -309,7 +306,7 @@ export function AccountGuide() {
         <Accordion type="single" collapsible className="w-full space-y-3">
           {FAQS_CONTAS.map((faq, idx) => (
             <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-2xl px-5 bg-card/40 shadow-sm hover:shadow-md transition-all hover:bg-card">
-              <AccordionTrigger className="text-sm font-black text-left hover:no-underline py-5 leading-relaxed group">
+              <AccordionTrigger className="text-sm font-bold text-left hover:no-underline py-5 leading-relaxed group">
                 <span className="group-hover:text-primary transition-colors">{faq.q}</span>
               </AccordionTrigger>
               <AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-6 pt-2 font-medium">
