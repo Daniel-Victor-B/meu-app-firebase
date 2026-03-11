@@ -46,7 +46,7 @@ export default function Home() {
   const mesesRestantes = fat > 0 ? Math.floor(restante / fat) : 12;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 md:py-12 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 py-8 md:py-12 space-y-8">
       <header className="flex items-center gap-4 mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground shadow-xl shadow-primary/20">
           <Landmark className="w-8 h-8" />
@@ -95,7 +95,7 @@ export default function Home() {
 
         <div className="mt-8">
           <TabsContent value="distribuicao">
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-3xl mx-auto">
               <FinancialDistribution 
                 fat={fat} setFat={setFat}
                 custos={custos} setCustos={setCustos}
@@ -125,7 +125,7 @@ export default function Home() {
           </TabsContent>
 
           <TabsContent value="limite">
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-4xl mx-auto">
               <MeiLimitTracker 
                 fatAcum={fatAcum}
                 fatMensal={fat}
@@ -140,33 +140,25 @@ export default function Home() {
           </TabsContent>
 
           <TabsContent value="contas">
-            <div className="max-w-2xl mx-auto">
-              <AccountGuide />
-            </div>
+            <AccountGuide />
           </TabsContent>
 
           <TabsContent value="nfse">
-            <div className="max-w-2xl mx-auto">
-              <NfseGuide />
-            </div>
+            <NfseGuide />
           </TabsContent>
 
           <TabsContent value="guia">
-            <div className="max-w-2xl mx-auto">
-              <Checklist />
-            </div>
+            <Checklist />
           </TabsContent>
 
           <TabsContent value="ia">
-            <div className="max-w-2xl mx-auto">
-              <AiAdvisor 
-                fat={fat}
-                custos={custos}
-                prolabore={prolabore}
-                reservaPct={reservaPct}
-                mesesFat={mesesFat}
-              />
-            </div>
+            <AiAdvisor 
+              fat={fat}
+              custos={custos}
+              prolabore={prolabore}
+              reservaPct={reservaPct}
+              mesesFat={mesesFat}
+            />
           </TabsContent>
         </div>
       </Tabs>
