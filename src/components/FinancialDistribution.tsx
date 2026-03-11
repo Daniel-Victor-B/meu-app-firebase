@@ -299,32 +299,32 @@ export function FinancialDistribution({
 
       {/* Manifesto Educativo de Rodapé - Design Elegante e Sofisticado */}
       <section className="relative p-1 rounded-[40px] bg-gradient-to-br from-primary/20 via-border/50 to-indigo-500/10 shadow-2xl overflow-hidden group transition-all duration-700 hover:shadow-primary/10">
-        <div className="bg-card/40 backdrop-blur-xl rounded-[39px] p-8 md:p-10 flex flex-col lg:flex-row items-center justify-between gap-10 relative">
+        <div className="bg-card/40 backdrop-blur-xl rounded-[39px] p-8 md:p-12 flex flex-col lg:flex-row items-center justify-between gap-12 relative">
           
           {/* Decorativo de fundo sutil */}
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 blur-[100px] rounded-full group-hover:bg-primary/20 transition-all duration-1000" />
           
-          <div className="flex flex-col md:flex-row items-center gap-8 relative z-10 max-w-3xl">
+          <div className="flex flex-col lg:flex-row items-center gap-10 relative z-10 max-w-4xl">
             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner border border-primary/20 shrink-0">
                <ShieldCheck className="w-8 h-8" />
             </div>
             
-            <div className="space-y-3 text-center md:text-left">
-               <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full mb-1">
+            <div className="space-y-4 text-center lg:text-left">
+               <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-full mb-1">
                  <Zap className="w-3.5 h-3.5 text-primary animate-pulse" />
                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Protocolo de Autoridade</span>
                </div>
-               <h4 className="text-2xl font-black tracking-tight text-foreground leading-none">
+               <h4 className="text-2xl md:text-3xl font-black tracking-tight text-foreground leading-none">
                  O Poder da Distribuição <span className="text-primary">Disciplinada</span>
                </h4>
-               <p className="text-sm text-muted-foreground leading-relaxed font-medium">
+               <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-medium text-balance">
                   No MEI Flow, o faturamento não é seu salário. Ele é a energia que sustenta a sua <strong className="text-foreground">Blindagem Patrimonial</strong>. 
                   Mantenha a disciplina mensal e veja o seu lucro trimestral se transformar em <span className="text-primary italic font-bold">liberdade inegociável</span>.
                </p>
             </div>
           </div>
 
-          <div className="relative z-10 shrink-0">
+          <div className="relative z-10 shrink-0 mt-6 lg:mt-0">
              <Button 
                onClick={() => setActiveTab?.('contas')}
                variant="default" 
