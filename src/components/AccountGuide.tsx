@@ -64,7 +64,7 @@ const CONTAS = [
   },
   {
     id: "pf-sal",
-    label: "Conta Corrente Pessoal (PF/CPF)",
+    label: "Conta Corrente Pessoal (PF/CPF) (SALÁRIO)",
     tipo: "SALÁRIO (PRÓ-LABORE)",
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
@@ -82,7 +82,7 @@ const CONTAS = [
   },
   {
     id: "pf-inv",
-    label: "Conta Corrente Pessoal (PF/CPF)",
+    label: "Conta Corrente Pessoal (PF/CPF) (INVESTIMENTOS)",
     tipo: "RIQUEZA (INVESTIMENTOS)",
     color: "text-primary",
     bgColor: "bg-primary/10",
@@ -126,19 +126,20 @@ const FAQS_CONTAS = [
 export function AccountGuide() {
   const handleAccordionChange = (value: string) => {
     if (value) {
+      // Timeout maior para garantir que a animação de fechamento da anterior não atrapalhe a altura
       setTimeout(() => {
         const element = document.getElementById(`item-${value}`);
         if (element) {
           const elementRect = element.getBoundingClientRect();
           const absoluteElementTop = elementRect.top + window.pageYOffset;
-          const menuOffset = 110; // Alinhamento exato abaixo do menu de abas
+          const menuOffset = 110; // Ajuste exato abaixo do menu fixo de abas
 
           window.scrollTo({
             top: absoluteElementTop - menuOffset,
             behavior: 'smooth'
           });
         }
-      }, 250);
+      }, 300);
     }
   };
 
