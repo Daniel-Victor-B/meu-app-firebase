@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react";
@@ -25,6 +26,7 @@ export default function Home() {
   const [reservaPct, setReservaPct] = useState(20);
   const [mesesFat, setMesesFat] = useState(6);
   const [fatAcum, setFatAcum] = useState(0);
+  const [activeTab, setActiveTab] = useState("distribuicao");
   
   // Estado centralizado da planilha para sincronização
   const [monthlyData, setMonthlyData] = useState<MonthlyData[]>(
@@ -32,6 +34,11 @@ export default function Home() {
   );
 
   const LIMITE_MEI_ANUAL = 81000;
+
+  // Reset de scroll ao trocar de aba
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [activeTab]);
 
   useEffect(() => {
     setFatAcum(fat * mesesFat);
@@ -54,7 +61,7 @@ export default function Home() {
       </header>
 
       {/* Main Navigation */}
-      <Tabs defaultValue="distribuicao" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid grid-cols-4 md:grid-cols-8 h-auto p-1 bg-secondary/50 backdrop-blur-sm border sticky top-4 z-50">
           <TabsTrigger value="distribuicao" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs">
             <DollarSign className="w-4 h-4" />
