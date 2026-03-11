@@ -176,9 +176,7 @@ export function NfseGuide() {
   const [step, setStep] = useState(0);
   const current = STEPS_CONFIG[step];
 
-  // Motor de Scroll Sincronizado: Garante que ao mudar de passo, o usuário volte ao topo do guia
   useEffect(() => {
-    // Calculamos a posição do topo da página com um pequeno offset para o menu fixo
     window.scrollTo({ 
       top: 0, 
       behavior: 'smooth' 
@@ -187,11 +185,10 @@ export function NfseGuide() {
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
-      <div className="text-sm text-muted-foreground font-medium text-center">
+      <div className="text-sm text-muted-foreground font-medium leading-relaxed">
         Guia definitivo para emissão de Nota Fiscal de Serviço (NFS-e) no Portal Nacional, blindando sua operação como infoprodutor ou prestador de serviços.
       </div>
 
-      {/* Header do Passo */}
       <div className="flex items-center gap-4 p-5 rounded-2xl bg-secondary/30 border border-border/50 shadow-sm">
         <div 
           className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg"
@@ -207,7 +204,6 @@ export function NfseGuide() {
         </div>
       </div>
 
-      {/* Conteúdo do Bloco */}
       <div className="space-y-5">
         {current.conteudo.map((bloco: any, bi: number) => {
           if (bloco.tipo === "regra") return (
@@ -345,7 +341,6 @@ export function NfseGuide() {
         })}
       </div>
 
-      {/* Navegação entre Passos */}
       <div className="flex items-center justify-between pt-10 border-t border-border/50">
         <Button 
           variant="outline" 

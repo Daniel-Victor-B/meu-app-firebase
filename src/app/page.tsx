@@ -28,14 +28,12 @@ export default function Home() {
   const [fatAcum, setFatAcum] = useState(0);
   const [activeTab, setActiveTab] = useState("distribuicao");
   
-  // Estado centralizado da planilha para sincronização
   const [monthlyData, setMonthlyData] = useState<MonthlyData[]>(
     Array(12).fill(null).map(() => ({ receita: 5000, custos: 1500, active: true }))
   );
 
   const LIMITE_MEI_ANUAL = 81000;
 
-  // Reset de scroll ao trocar de aba
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [activeTab]);
@@ -48,8 +46,7 @@ export default function Home() {
   const mesesRestantes = fat > 0 ? Math.floor(restante / fat) : 12;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8 md:py-12 space-y-8">
-      {/* Header */}
+    <div className="max-w-4xl mx-auto px-4 py-8 md:py-12 space-y-8">
       <header className="flex items-center gap-4 mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground shadow-xl shadow-primary/20">
           <Landmark className="w-8 h-8" />
@@ -60,7 +57,6 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main Navigation */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid grid-cols-4 md:grid-cols-8 h-auto p-1 bg-secondary/50 backdrop-blur-sm border sticky top-4 z-50">
           <TabsTrigger value="distribuicao" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs">
@@ -99,12 +95,14 @@ export default function Home() {
 
         <div className="mt-8">
           <TabsContent value="distribuicao">
-            <FinancialDistribution 
-              fat={fat} setFat={setFat}
-              custos={custos} setCustos={setCustos}
-              prolabore={prolabore} setProlabore={setProlabore}
-              reservaPct={reservaPct} setReservaPct={setReservaPct}
-            />
+            <div className="max-w-2xl mx-auto">
+              <FinancialDistribution 
+                fat={fat} setFat={setFat}
+                custos={custos} setCustos={setCustos}
+                prolabore={prolabore} setProlabore={setProlabore}
+                reservaPct={reservaPct} setReservaPct={setReservaPct}
+              />
+            </div>
           </TabsContent>
 
           <TabsContent value="gestao">
@@ -127,38 +125,48 @@ export default function Home() {
           </TabsContent>
 
           <TabsContent value="limite">
-            <MeiLimitTracker 
-              fatAcum={fatAcum}
-              fatMensal={fat}
-              setFatMensal={setFat}
-              limiteAnual={LIMITE_MEI_ANUAL}
-              mesesFat={mesesFat}
-              setMesesFat={setMesesFat}
-              mesesRestantes={mesesRestantes}
-              monthlySpreadsheetData={monthlyData}
-            />
+            <div className="max-w-2xl mx-auto">
+              <MeiLimitTracker 
+                fatAcum={fatAcum}
+                fatMensal={fat}
+                setFatMensal={setFat}
+                limiteAnual={LIMITE_MEI_ANUAL}
+                mesesFat={mesesFat}
+                setMesesFat={setMesesFat}
+                mesesRestantes={mesesRestantes}
+                monthlySpreadsheetData={monthlyData}
+              />
+            </div>
           </TabsContent>
 
           <TabsContent value="contas">
-            <AccountGuide />
+            <div className="max-w-2xl mx-auto">
+              <AccountGuide />
+            </div>
           </TabsContent>
 
           <TabsContent value="nfse">
-            <NfseGuide />
+            <div className="max-w-2xl mx-auto">
+              <NfseGuide />
+            </div>
           </TabsContent>
 
           <TabsContent value="guia">
-            <Checklist />
+            <div className="max-w-2xl mx-auto">
+              <Checklist />
+            </div>
           </TabsContent>
 
           <TabsContent value="ia">
-            <AiAdvisor 
-              fat={fat}
-              custos={custos}
-              prolabore={prolabore}
-              reservaPct={reservaPct}
-              mesesFat={mesesFat}
-            />
+            <div className="max-w-2xl mx-auto">
+              <AiAdvisor 
+                fat={fat}
+                custos={custos}
+                prolabore={prolabore}
+                reservaPct={reservaPct}
+                mesesFat={mesesFat}
+              />
+            </div>
           </TabsContent>
         </div>
       </Tabs>
