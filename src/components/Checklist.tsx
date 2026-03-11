@@ -1,7 +1,7 @@
 
 "use client"
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
@@ -10,10 +10,15 @@ import {
   Rocket, 
   CalendarDays, 
   CalendarCheck, 
-  AlertTriangle, 
+  ShieldAlert, 
   CheckCircle2, 
   ListChecks, 
-  HelpCircle
+  HelpCircle,
+  Zap,
+  Info,
+  ArrowRight,
+  Lock,
+  Target
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -26,88 +31,95 @@ import {
 const SECTIONS = [
   {
     id: "setup",
-    titulo: "Configuração Inicial",
-    subtitulo: "Faça uma vez para estruturar o negócio",
+    titulo: "Arquitetura de Fundação",
+    subtitulo: "Configuração única para blindar o início do negócio",
     icon: <Rocket className="w-5 h-5" />,
     color: "text-blue-500",
     bgColor: "bg-blue-500/10",
+    borderColor: "border-blue-500/20",
     tasks: [
-      { id: "s1", text: "Emitir CCMEI (Certificado de MEI)", detail: "Guarde o PDF, ele é o seu contrato social." },
-      { id: "s2", text: "Abrir Conta Digital PJ", detail: "Indispensável para não misturar CPF e CNPJ." },
-      { id: "s3", text: "Configurar Emissor de NFS-e Nacional", detail: "Fazer o cadastro e criar 'Serviços Favoritos'." },
-      { id: "s4", text: "Verificar Inscrição Municipal", detail: "Consultar se sua prefeitura exige alvará ou nota manual." },
+      { id: "s1", text: "Emitir Certificado CCMEI Atualizado", detail: "O seu 'Contrato Social'. Guarde o PDF original e atualizado." },
+      { id: "s2", text: "Abertura de Conta PJ Operacional", detail: "Separar o CPF do CNPJ é o primeiro passo da blindagem patrimonial." },
+      { id: "s3", text: "Credenciamento no Emissor Nacional (NFS-e)", detail: "Configurar e-mail, telefone e 'Serviços Favoritos' para agilizar vendas." },
+      { id: "s4", text: "Consulta de Inscrição Municipal/Alvará", detail: "Verificar se sua prefeitura exige licenciamento específico para sua sede." },
     ],
   },
   {
     id: "mensal",
-    titulo: "Rotina Mensal",
-    subtitulo: "Todo mês para evitar multas e juros",
+    titulo: "Ritual de Operação Mensal",
+    subtitulo: "Manutenção da saúde fiscal e fluxo de caixa",
     icon: <CalendarDays className="w-5 h-5" />,
     color: "text-primary",
     bgColor: "bg-primary/10",
+    borderColor: "border-primary/20",
     tasks: [
-      { id: "m1", text: "Pagar o DAS (Imposto)", detail: "Vence todo dia 20. Coloque em débito automático." },
-      { id: "m2", text: "Relatório Mensal de Receitas", detail: "Planilhar todas as vendas (com e sem nota)." },
-      { id: "m3", text: "Transferir Pró-labore", detail: "Da conta PJ para a PF. Pague-se primeiro!" },
-      { id: "m4", text: "Separar Notas de Compra", detail: "Guardar NFs de tudo que a empresa comprou (insumos/equipamentos)." },
+      { id: "m1", text: "Liquidação do DAS (Guia Mensal)", detail: "Vencimento todo dia 20. O custo fixo que garante seus benefícios." },
+      { id: "m2", text: "Relatório Mensal de Faturamento Bruto", detail: "Planilhar todas as vendas (com e sem nota) para a Declaração Anual." },
+      { id: "m3", text: "Transferência de PF Pró-labore", detail: "O pagamento do seu salário executivo. Da conta PJ para a PF Salário." },
+      { id: "m4", text: "Organização de Notas de Compra", detail: "Arquivar NFs de insumos e ferramentas adquiridas pelo CNPJ." },
     ],
   },
   {
     id: "anual",
-    titulo: "Obrigações Anuais",
-    subtitulo: "O fechamento do seu ano fiscal",
+    titulo: "Ciclo de Fechamento Anual",
+    subtitulo: "Obrigações críticas de prestação de contas",
     icon: <CalendarCheck className="w-5 h-5" />,
-    color: "text-orange-500",
-    bgColor: "bg-orange-500/10",
+    color: "text-amber-500",
+    bgColor: "bg-amber-500/10",
+    borderColor: "border-amber-500/20",
     tasks: [
-      { id: "a1", text: "Enviar DASN-SIMEI", detail: "Declaração de faturamento bruto (Jan até Maio)." },
-      { id: "a2", text: "Revisar Limite (81k)", detail: "Conferir se o faturamento anual exige migração para ME." },
-      { id: "a3", text: "Imposto de Renda PF", detail: "Declarar os lucros distribuídos (isenção do MEI)." },
+      { id: "a1", text: "Envio da DASN-SIMEI", detail: "Declaração faturamento bruto total. Prazo limite: 31 de Maio." },
+      { id: "a2", text: "Auditoria do Limite de 81k", detail: "Conferir se o crescimento exige migração antecipada para ME." },
+      { id: "a3", text: "Declaração de Imposto de Renda PF", detail: "Informar os rendimentos isentos (lucro distribuído) do seu CPF." },
     ],
   },
   {
-    id: "seguranca",
-    titulo: "Blindagem de Caixa",
-    subtitulo: "Boas práticas de sobrevivência",
-    icon: <AlertTriangle className="w-5 h-5" />,
-    color: "text-destructive",
-    bgColor: "bg-destructive/10",
+    id: "blindagem",
+    titulo: "Protocolo de Blindagem",
+    subtitulo: "Segurança máxima para o caixa da empresa",
+    icon: <ShieldAlert className="w-5 h-5" />,
+    color: "text-purple-500",
+    bgColor: "bg-purple-500/10",
+    borderColor: "border-purple-500/20",
     tasks: [
-      { id: "sg1", text: "Regra do 100%", detail: "Todo dinheiro de cliente entra na PJ, nunca na PF." },
-      { id: "sg2", text: "Reserva de Emergência", detail: "Manter 6 meses de custos fixos no CDB de liquidez diária." },
-      { id: "sg3", text: "Check de Notas Fiscais", detail: "Emitiu para todo CNPJ? Toda empresa exige nota." },
+      { id: "sg1", text: "Respeito à Regra do 100%", detail: "Todo faturamento entra na PJ. Nenhuma exceção para o CPF." },
+      { id: "sg2", text: "Manutenção da PJ Reserva", detail: "Garantir que o 'Pulmão Financeiro' tenha 6 meses de custos totais." },
+      { id: "sg3", text: "Check de Emissão Obrigatória (CNPJ)", detail: "Garantir nota fiscal para toda venda realizada para outras empresas." },
     ],
   },
 ];
 
-const FAQS_GERAL = [
+const FAQS_GUIDE = [
   {
-    q: "Posso ter mais de um CNPJ MEI?",
-    a: "Não. A legislação permite apenas um CNPJ MEI por CPF e você não pode ser sócio ou administrador de outra empresa."
+    q: "O MEI é obrigado a emitir nota fiscal?",
+    a: "Para empresas (CNPJ), sim. Para pessoas físicas (CPF), a emissão é opcional, a menos que o cliente exija. No entanto, o faturamento deve ser sempre registrado no relatório mensal."
   },
   {
-    q: "Sou obrigado a emitir nota fiscal para pessoa física?",
-    a: "Não, a menos que o cliente exija. No entanto, para vendas a empresas (CNPJ), a emissão é obrigatória."
+    q: "O que acontece se eu não pagar o DAS?",
+    a: "Você perde a cobertura previdenciária (auxílio-doença, aposentadoria), acumula juros diários e pode ter o CNPJ cancelado e a dívida transferida para o seu CPF."
   },
   {
-    q: "Esqueci de pagar o DAS. E agora?",
-    a: "Você deve acessar o portal PGMEI e gerar a guia atualizada com juros e multa. O pagamento em dia é essencial para manter seus benefícios previdenciários."
+    q: "Posso ser MEI e ter carteira assinada (CLT)?",
+    a: "Sim. O único detalhe é que, em caso de demissão sem justa causa, você perde o direito ao Seguro-Desemprego, pois o governo entende que você já possui uma fonte de renda (o MEI)."
   },
   {
-    q: "MEI pode contratar funcionário?",
-    a: "Sim, o MEI pode contratar um único funcionário que receba o salário mínimo ou o piso da categoria."
-  },
-  {
-    q: "Preciso de contador para ser MEI?",
-    a: "Legalmente não, mas um contador é muito recomendado para ajudar na declaração de Imposto de Renda PF e no processo de migração para ME."
+    q: "Preciso de contador para fechar o ano?",
+    a: "Não é obrigatório, mas é altamente recomendado para calcular o 'Lucro Isento' no seu Imposto de Renda PF, evitando que você pague impostos desnecessários no seu CPF."
   }
 ];
 
 export function Checklist() {
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
 
+  useEffect(() => {
+    const saved = localStorage.getItem("mei-flow-checklist");
+    if (saved) setCheckedItems(JSON.parse(saved));
+  }, []);
+
   const toggleTask = (id: string) => {
-    setCheckedItems(prev => ({ ...prev, [id]: !prev[id] }));
+    const next = { ...checkedItems, [id]: !checkedItems[id] };
+    setCheckedItems(next);
+    localStorage.setItem("mei-flow-checklist", JSON.stringify(next));
   };
 
   const getProgress = (tasks: { id: string }[]) => {
@@ -115,96 +127,163 @@ export function Checklist() {
     return (completed / tasks.length) * 100;
   };
 
-  return (
-    <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500 pb-16">
-      <header>
-        <h2 className="text-xl font-headline font-bold flex items-center gap-2">
-          <ListChecks className="w-6 h-6 text-primary" />
-          Checklist de Operação MEI
-        </h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Gerencie suas tarefas fundamentais para manter a saúde do seu negócio.
-        </p>
-      </header>
+  const totalTasks = SECTIONS.reduce((acc, s) => acc + s.tasks.length, 0);
+  const totalCompleted = Object.values(checkedItems).filter(Boolean).length;
+  const globalProgress = (totalCompleted / totalTasks) * 100;
 
+  return (
+    <div className="space-y-10 animate-in slide-in-from-bottom-4 duration-500 pb-20">
+      {/* Header Premium */}
+      <div className="relative group">
+        <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 blur-xl opacity-50"></div>
+        <Card className="relative bg-card/60 backdrop-blur-xl border-primary/20 overflow-hidden shadow-2xl">
+          <CardContent className="pt-8 pb-8 px-6 space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-primary rounded-2xl shadow-lg shadow-primary/30 text-primary-foreground">
+                  <ListChecks className="w-8 h-8" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-headline font-bold tracking-tight">Protocolo de Operação</h3>
+                  <p className="text-sm text-muted-foreground font-medium mt-1">O mapa de tarefas para manter sua empresa no topo da regularidade.</p>
+                </div>
+              </div>
+              <div className="text-right space-y-2 min-w-[150px]">
+                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-primary">
+                  <span>Domínio Total</span>
+                  <span>{globalProgress.toFixed(0)}%</span>
+                </div>
+                <Progress value={globalProgress} className="h-2 shadow-inner" />
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-xl border border-border/50 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
+              <Zap className="w-4 h-4 text-primary animate-pulse" />
+              Checklist dinâmico: Seus progressos são salvos automaticamente.
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Seções de Checklist */}
       <div className="grid gap-6">
         {SECTIONS.map((section) => {
           const progress = getProgress(section.tasks);
+          const isDone = progress === 100;
+
           return (
-            <Card key={section.id} className="overflow-hidden border-border/60">
+            <Card key={section.id} className={cn(
+              "overflow-hidden transition-all duration-300 border-2",
+              isDone ? "border-primary/30 bg-primary/5" : "border-border/40 bg-card/40"
+            )}>
               <CardHeader className="pb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-3">
-                    <div className={cn("p-2 rounded-lg", section.bgColor, section.color)}>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-4">
+                    <div className={cn("p-3 rounded-2xl shadow-sm", section.bgColor, section.color)}>
                       {section.icon}
                     </div>
                     <div>
-                      <CardTitle className="text-base font-bold">{section.titulo}</CardTitle>
-                      <CardDescription className="text-xs">{section.subtitulo}</CardDescription>
+                      <CardTitle className="text-lg font-bold tracking-tight">{section.titulo}</CardTitle>
+                      <CardDescription className="text-xs font-medium">{section.subtitulo}</CardDescription>
                     </div>
                   </div>
-                  <Badge variant="outline" className={cn("font-code", progress === 100 ? "bg-primary/20 text-primary border-primary/50" : "")}>
-                    {progress.toFixed(0)}%
+                  <Badge variant="outline" className={cn(
+                    "font-code text-[10px] px-3 py-1 border-transparent",
+                    isDone ? "bg-primary text-primary-foreground" : section.bgColor + " " + section.color
+                  )}>
+                    {isDone ? "CONCLUÍDO" : `${progress.toFixed(0)}%`}
                   </Badge>
                 </div>
-                <Progress value={progress} className="h-1.5" />
+                <Progress value={progress} className="h-1.5" indicatorClassName={isDone ? "bg-primary" : ""} />
               </CardHeader>
-              <CardContent className="grid gap-4">
-                {section.tasks.map((task) => (
-                  <div 
-                    key={task.id} 
-                    className={cn(
-                      "flex items-start gap-4 p-3 rounded-xl transition-all duration-200 border border-transparent",
-                      checkedItems[task.id] ? "bg-secondary/20 opacity-60" : "hover:bg-secondary/40 hover:border-border/50"
-                    )}
-                  >
-                    <Checkbox 
-                      id={task.id} 
-                      checked={checkedItems[task.id]} 
-                      onCheckedChange={() => toggleTask(task.id)}
-                      className="mt-1"
-                    />
-                    <div className="grid gap-1 cursor-pointer flex-1" onClick={() => toggleTask(task.id)}>
-                      <label 
-                        htmlFor={task.id} 
-                        className={cn(
-                          "text-sm font-bold leading-none cursor-pointer",
-                          checkedItems[task.id] && "line-through text-muted-foreground"
-                        )}
-                      >
-                        {task.text}
-                      </label>
-                      <p className="text-[11px] text-muted-foreground leading-relaxed">
-                        {task.detail}
-                      </p>
+              <CardContent className="grid gap-3 pt-2">
+                {section.tasks.map((task) => {
+                  const checked = !!checkedItems[task.id];
+                  return (
+                    <div 
+                      key={task.id} 
+                      onClick={() => toggleTask(task.id)}
+                      className={cn(
+                        "group flex items-start gap-4 p-4 rounded-2xl transition-all duration-300 border cursor-pointer",
+                        checked 
+                          ? "bg-secondary/20 border-transparent opacity-60" 
+                          : "bg-background/40 border-border/50 hover:border-primary/40 hover:bg-secondary/10 shadow-sm"
+                      )}
+                    >
+                      <div className="mt-1">
+                        <Checkbox 
+                          id={task.id} 
+                          checked={checked}
+                          onCheckedChange={() => {}} // Handle via parent div click for better UX
+                          className="w-5 h-5 rounded-md data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                        />
+                      </div>
+                      <div className="space-y-1 flex-1">
+                        <div className={cn(
+                          "text-sm font-bold transition-all",
+                          checked ? "line-through text-muted-foreground" : "text-foreground"
+                        )}>
+                          {task.text}
+                        </div>
+                        <p className="text-[11px] text-muted-foreground font-medium leading-relaxed group-hover:text-foreground/80 transition-colors">
+                          {task.detail}
+                        </p>
+                      </div>
+                      {!checked && <ArrowRight className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary group-hover:translate-x-1 transition-all self-center" />}
+                      {checked && <CheckCircle2 className="w-5 h-5 text-primary self-center animate-in zoom-in duration-300" />}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </CardContent>
             </Card>
           );
         })}
       </div>
 
+      {/* Insight de Operação de Elite */}
+      <section className="relative overflow-hidden p-8 rounded-[32px] bg-secondary/30 border-2 border-dashed border-border/60">
+        <div className="absolute top-0 right-0 p-10 opacity-5">
+           <Target className="w-32 h-32" />
+        </div>
+        <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center">
+          <div className="w-20 h-20 rounded-3xl bg-primary/20 flex items-center justify-center text-primary shadow-xl shrink-0">
+             <Zap className="w-10 h-10" />
+          </div>
+          <div className="space-y-3">
+             <div className="text-[10px] font-black uppercase text-primary tracking-[0.3em]">Protocolo Unicórnio</div>
+             <h4 className="text-xl font-bold tracking-tight">O Segredo da Operação Profissional</h4>
+             <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl font-medium">
+               Grandes empresas não são construídas apenas com grandes vendas, mas com **processos impecáveis**. 
+               Seguir este checklist mensalmente não é apenas burocracia, é a construção da sua **autoridade empresarial**. 
+               Um MEI organizado é o único que consegue migrar para Microempresa (ME) com lucro e sem dívidas.
+             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ de Autoridade */}
       <section className="space-y-6 pt-6">
-        <div className="flex items-center gap-2">
-          <div className="p-2 bg-secondary rounded-lg">
-            <HelpCircle className="w-5 h-5 text-muted-foreground" />
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-primary/10 rounded-xl text-primary shadow-inner">
+            <HelpCircle className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="font-headline font-bold text-lg">Perguntas Frequentes (FAQ)</h3>
-            <p className="text-xs text-muted-foreground">Respostas rápidas para as dúvidas mais comuns do dia a dia.</p>
+            <h3 className="font-headline font-bold text-xl tracking-tight">Blindagem Antirruído</h3>
+            <p className="text-xs text-muted-foreground font-medium mt-1">Respostas diretas para as dúvidas que travam o crescimento do MEI.</p>
           </div>
         </div>
 
-        <Accordion type="single" collapsible className="w-full space-y-2">
-          {FAQS_GERAL.map((faq, idx) => (
-            <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-xl px-4 bg-card shadow-sm hover:shadow-md transition-shadow">
-              <AccordionTrigger className="text-sm font-bold text-left hover:no-underline py-4">
-                {faq.q}
+        <Accordion type="single" collapsible className="w-full space-y-3">
+          {FAQS_GUIDE.map((faq, idx) => (
+            <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-2xl px-5 bg-card/40 shadow-sm hover:shadow-md transition-all hover:bg-card">
+              <AccordionTrigger className="text-sm font-bold text-left hover:no-underline py-5 leading-relaxed group">
+                <span className="group-hover:text-primary transition-colors">{faq.q}</span>
               </AccordionTrigger>
-              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-4">
-                {faq.a}
+              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-6 pt-2 font-medium">
+                <div className="flex gap-4">
+                  <div className="w-1 h-full bg-primary/20 rounded-full shrink-0" />
+                  {faq.a}
+                </div>
               </AccordionContent>
             </AccordionItem>
           ))}
