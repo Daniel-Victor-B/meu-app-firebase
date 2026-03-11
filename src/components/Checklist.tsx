@@ -21,7 +21,11 @@ import {
   Wallet,
   Sparkles,
   ChevronRight,
-  Target
+  Target,
+  Trophy,
+  TrendingUp,
+  Flame,
+  MousePointer2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
@@ -140,6 +144,10 @@ export function Checklist({ fat, custos, prolabore }: ChecklistProps) {
     return (completed / tasks.length) * 100;
   };
 
+  const totalTasks = SECTIONS.reduce((acc, s) => acc + s.tasks.length, 0);
+  const totalCompleted = Object.values(checkedItems).filter(Boolean).length;
+  const globalProgress = (totalCompleted / totalTasks) * 100;
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(`section-${id}`);
     if (element) {
@@ -154,53 +162,54 @@ export function Checklist({ fat, custos, prolabore }: ChecklistProps) {
     }
   };
 
-  const totalTasks = SECTIONS.reduce((acc, s) => acc + s.tasks.length, 0);
-  const totalCompleted = Object.values(checkedItems).filter(Boolean).length;
-  const globalProgress = (totalCompleted / totalTasks) * 100;
-
   const chartData = useMemo(() => {
     const das = 76;
     
     // Cenário Atual
-    const currentCostsPct = fat > 0 ? ((custos + das) / fat) * 100 : 0;
-    const currentSalaryPct = fat > 0 ? (prolabore / fat) * 100 : 0;
+    const currentCostsPct = fat > 0 ? ((custos + das) / fat) * 100 : 30;
+    const currentSalaryPct = fat > 0 ? (prolabore / fat) * 100 : 40;
     const currentProfit = Math.max(0, fat - custos - das - prolabore);
-    const currentProfitPct = fat > 0 ? (currentProfit / fat) * 100 : 0;
+    const currentProfitPct = fat > 0 ? (currentProfit / fat) * 100 : 30;
 
     // Cenário Elite (Benchmark 10% de custo)
     const eliteCosts = fat * 0.1;
-    const eliteCostsPct = fat > 0 ? ((eliteCosts + das) / fat) * 100 : 10;
-    const eliteProfit = Math.max(0, fat - eliteCosts - das - prolabore);
-    const eliteProfitPct = fat > 0 ? (eliteProfit / fat) * 100 : 0;
+    const eliteCostsPct = 10; 
+    const eliteSalaryPct = currentSalaryPct;
+    const eliteProfitPct = 100 - eliteCostsPct - eliteSalaryPct;
 
     if (isEliteMode) {
       return [
-        { name: 'PJ Operacional', value: eliteCostsPct, color: '#60a5fa', desc: 'Sustentação (Benchmark 10%)' },
-        { name: 'PF Pró-labore', value: currentSalaryPct, color: '#fbbf24', desc: 'Sobrevivência (Seu Salário)' },
-        { name: 'PF Investimentos', value: eliteProfitPct, color: '#f472b6', desc: 'Liberdade (Riqueza Real)' }
+        { name: 'Operacional', value: eliteCostsPct, color: '#60a5fa', desc: 'Sustentação' },
+        { name: 'Pró-labore', value: eliteSalaryPct, color: '#fbbf24', desc: 'Sobrevivência' },
+        { name: 'Riqueza', value: eliteProfitPct, color: '#f472b6', desc: 'Liberdade' }
       ];
     }
 
     return [
-      { name: 'PJ Operacional', value: currentCostsPct, color: '#60a5fa', desc: 'Sustentação (Seus Custos)' },
-      { name: 'PF Pró-labore', value: currentSalaryPct, color: '#fbbf24', desc: 'Sobrevivência (Seu Salário)' },
-      { name: 'PF Investimentos', value: currentProfitPct, color: '#f472b6', desc: 'Liberdade (Seu Lucro)' }
+      { name: 'Operacional', value: currentCostsPct, color: '#60a5fa', desc: 'Sustentação' },
+      { name: 'Pró-labore', value: currentSalaryPct, color: '#fbbf24', desc: 'Sobrevivência' },
+      { name: 'Riqueza', value: currentProfitPct, color: '#f472b6', desc: 'Liberdade' }
     ];
   }, [fat, custos, prolabore, isEliteMode]);
 
-  const profitGap = useMemo(() => {
+  const wealthExplosion = useMemo(() => {
     const das = 76;
     const currentProfit = Math.max(0, fat - custos - das - prolabore);
     const eliteCosts = fat * 0.1;
     const eliteProfit = Math.max(0, fat - eliteCosts - das - prolabore);
-    return Math.max(0, eliteProfit - currentProfit);
+    const gap = Math.max(0, eliteProfit - currentProfit);
+    return {
+      monthlyGap: gap,
+      annualGap: gap * 12,
+      multiplier: currentProfit > 0 ? (eliteProfit / currentProfit).toFixed(1) : "∞"
+    };
   }, [fat, custos, prolabore]);
 
   return (
     <div className="space-y-10 animate-in slide-in-from-bottom-4 duration-500 pb-20">
-      {/* Header Premium com Painel de Comando */}
+      {/* Painel de Comando de Elite */}
       <div className="relative group">
-        <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-blue-500/20 blur-xl opacity-50"></div>
+        <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 to-blue-500/30 blur-xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
         <Card className="relative bg-card/60 backdrop-blur-xl border-primary/20 overflow-hidden shadow-2xl">
           <CardContent className="pt-8 pb-8 px-6 space-y-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -213,16 +222,15 @@ export function Checklist({ fat, custos, prolabore }: ChecklistProps) {
                   <p className="text-sm text-muted-foreground font-medium mt-1">O mapa tático para uma gestão de elite.</p>
                 </div>
               </div>
-              <div className="text-right space-y-2 min-w-[150px]">
-                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-primary">
+              <div className="text-right space-y-2 min-w-[180px]">
+                <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.3em] text-primary">
                   <span>Domínio Total</span>
                   <span>{globalProgress.toFixed(0)}%</span>
                 </div>
-                <Progress value={globalProgress} className="h-2 shadow-inner" />
+                <Progress value={globalProgress} className="h-2.5 shadow-inner" />
               </div>
             </div>
             
-            {/* Dashboard Tático de Pilares */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {SECTIONS.map((section) => {
                 const progress = getProgress(section.tasks);
@@ -257,7 +265,7 @@ export function Checklist({ fat, custos, prolabore }: ChecklistProps) {
 
             <div className="flex items-center gap-3 p-4 bg-secondary/50 rounded-xl border border-border/50 text-[11px] font-bold text-muted-foreground uppercase tracking-widest">
               <Zap className="w-4 h-4 text-primary animate-pulse" />
-              Gestão Ágil: Clique nos pilares acima para navegar instantaneamente entre as seções.
+              Navegação Tática: Clique nos pilares acima para acesso instantâneo.
             </div>
           </CardContent>
         </Card>
@@ -342,110 +350,113 @@ export function Checklist({ fat, custos, prolabore }: ChecklistProps) {
         })}
       </div>
 
-      {/* Protocolo Unicórnio - Manifesto Visual de Elite */}
-      <section className="relative group p-1 rounded-[48px] bg-gradient-to-br from-indigo-900 via-primary/40 to-pink-900 shadow-2xl overflow-hidden mt-16">
-        <div className="bg-slate-950/95 backdrop-blur-3xl rounded-[47px] p-8 md:p-16 space-y-16 relative overflow-hidden">
+      {/* Audit de Riqueza Unicórnio - O Grande Final */}
+      <section className="relative group p-1 rounded-[48px] bg-gradient-to-br from-indigo-950 via-primary/30 to-pink-950 shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden mt-16 border border-white/5">
+        <div className="bg-black/90 backdrop-blur-3xl rounded-[47px] p-8 md:p-16 space-y-16 relative overflow-hidden">
           
-          <div className="absolute top-0 right-0 -mr-40 -mt-40 w-[800px] h-[800px] bg-primary/10 blur-[150px] rounded-full opacity-60 group-hover:opacity-100 transition-opacity duration-1000" />
+          <div className="absolute top-0 right-0 -mr-40 -mt-40 w-[800px] h-[800px] bg-primary/10 blur-[180px] rounded-full opacity-40 animate-pulse" />
+          <div className="absolute bottom-0 left-0 -ml-40 -mb-40 w-[600px] h-[600px] bg-pink-500/10 blur-[150px] rounded-full opacity-30" />
           
-          <div className="relative z-10 flex flex-col items-center text-center space-y-12">
+          <div className="relative z-10 space-y-16">
             
-            <div className="space-y-8 max-w-4xl mx-auto">
-              <div className="inline-flex items-center gap-3 px-6 py-2 bg-primary/10 border border-primary/20 rounded-full animate-pulse">
-                <Sparkles className="w-4 h-4 text-primary" />
-                <span className="text-[11px] font-black uppercase tracking-[0.5em] text-primary">Operação de Elite Profissional</span>
+            {/* Header Emocional: Persuasão de Blair Warren */}
+            <div className="text-center space-y-8 max-w-4xl mx-auto">
+              <div className="inline-flex items-center gap-3 px-6 py-2 bg-white/5 border border-white/10 rounded-full">
+                <Flame className="w-4 h-4 text-orange-500 animate-bounce" />
+                <span className="text-[11px] font-black uppercase tracking-[0.5em] text-white/80">O Segredo da Escala Exponencial</span>
               </div>
               
-              <h4 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
-                A verdadeira escala não nasce apenas do faturamento bruto, mas da <span className="bg-gradient-to-r from-blue-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">Eficiência da Blindagem</span>.
+              <h4 className="text-4xl md:text-6xl font-black tracking-tight text-white leading-tight">
+                A verdadeira escala não nasce do esforço, mas da <span className="bg-gradient-to-r from-blue-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">Eficiência da Blindagem</span>.
               </h4>
               
-              <p className="text-lg md:text-xl text-slate-300 leading-relaxed font-medium">
-                Operar com processos de elite separa o amador do empresário que constrói riqueza real. Ao dominar a separação entre <strong>PJ Operacional</strong> e <strong>PF Pró-labore</strong>, você não está apenas cumprindo tarefas; está forjando a infraestrutura que permitirá sua migração para ME com caixa robusto e <strong>PF Investimentos</strong> em constante crescimento.
+              <p className="text-lg md:text-xl text-slate-400 leading-relaxed font-medium">
+                Sua ineficiência não é culpa sua, é a falta de um sistema. Ao dominar a separação entre <strong>PJ Operacional</strong> e <strong>PF Pró-labore</strong>, você atira pedras no inimigo da confusão patrimonial e forja a infraestrutura para sua migração para ME com lucro real e <strong>PF Investimentos</strong> em explosão.
               </p>
             </div>
 
-            {/* Audit Unicórnio: Funcionalidade Brilhante */}
-            <div className="w-full max-w-5xl mx-auto space-y-12">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                
-                <div className="lg:col-span-4 space-y-4 text-left order-2 lg:order-1">
-                  <div className="p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md space-y-6">
-                    <div className="space-y-2">
-                       <h5 className="text-xs font-black text-white uppercase tracking-[0.2em]">Audit de Eficiência</h5>
-                       <p className="text-[10px] text-slate-400 leading-relaxed">Simule o impacto de uma estrutura de custos de 10% (Padrão Unicórnio) sobre o seu faturamento atual.</p>
-                    </div>
-
-                    <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-900/50 border border-white/10">
-                       <div className="flex items-center gap-2">
-                          <Zap className={cn("w-4 h-4 transition-colors", isEliteMode ? "text-amber-400" : "text-slate-500")} />
-                          <span className="text-[10px] font-black text-white uppercase tracking-widest">Modo Elite</span>
-                       </div>
-                       <Switch 
-                         checked={isEliteMode}
-                         onCheckedChange={setIsEliteMode}
-                         className="data-[state=checked]:bg-amber-400"
-                       />
-                    </div>
-
-                    {isEliteMode && (
-                      <div className="p-4 rounded-xl bg-amber-400/10 border border-amber-400/20 animate-in zoom-in duration-300">
-                         <div className="text-[9px] font-black text-amber-400 uppercase tracking-widest mb-1">Riqueza Escondida</div>
-                         <div className="text-lg font-black text-white">{formatCurrency(profitGap)}</div>
-                         <p className="text-[8px] text-slate-400 mt-1 uppercase font-bold">Extra mensal ao otimizar custos</p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md space-y-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 rounded-full bg-blue-400 shadow-[0_0_8px_#60a5fa]" />
-                      <span className="text-xs font-black text-white uppercase tracking-widest">PJ Operacional</span>
-                    </div>
-                    <p className="text-[10px] text-slate-400 leading-relaxed font-medium">Sustentação do negócio.</p>
-                  </div>
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md space-y-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24]" />
-                      <span className="text-xs font-black text-white uppercase tracking-widest">PF Pró-labore</span>
-                    </div>
-                    <p className="text-[10px] text-slate-400 leading-relaxed font-medium">Sua sobrevivência mensal.</p>
-                  </div>
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md space-y-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-3 h-3 rounded-full bg-pink-400 shadow-[0_0_8px_#f472b6]" />
-                      <span className="text-xs font-black text-white uppercase tracking-widest">PF Investimentos</span>
-                    </div>
-                    <p className="text-[10px] text-slate-400 leading-relaxed font-medium">Sua riqueza e liberdade.</p>
-                  </div>
-                </div>
-
-                <div className="lg:col-span-8 h-[400px] relative group/chart order-1 lg:order-2">
-                  <div className="absolute inset-0 bg-white/5 rounded-[40px] border border-white/10 shadow-inner backdrop-blur-sm -z-10" />
+            {/* Funcionalidade Brilhante: Audit de Explosão de Riqueza */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+              
+              {/* Coluna de Controle e Gatilhos */}
+              <div className="lg:col-span-4 space-y-6 order-2 lg:order-1">
+                <Card className="bg-white/5 border-white/10 backdrop-blur-2xl p-8 rounded-[32px] space-y-8 shadow-2xl relative overflow-hidden group/card">
+                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 blur-3xl rounded-full opacity-0 group-hover/card:opacity-100 transition-opacity" />
                   
-                  <div className="absolute inset-x-8 top-10 bottom-20 flex flex-col justify-between pointer-events-none opacity-20">
+                  <div className="space-y-4">
+                    <h5 className="text-xs font-black text-white uppercase tracking-[0.3em]">Audit de Escala</h5>
+                    <div className="flex items-center justify-between p-4 rounded-2xl bg-black/50 border border-white/10">
+                      <div className="flex items-center gap-3">
+                        <Zap className={cn("w-5 h-5 transition-all duration-500", isEliteMode ? "text-amber-400 scale-125 drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]" : "text-slate-600")} />
+                        <span className="text-xs font-black text-white uppercase tracking-widest">Modo Unicórnio</span>
+                      </div>
+                      <Switch 
+                        checked={isEliteMode}
+                        onCheckedChange={setIsEliteMode}
+                        className="data-[state=checked]:bg-amber-400 scale-125"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Resultados em Tempo Real */}
+                  <div className="space-y-4">
+                    <div className="p-5 rounded-2xl bg-pink-500/10 border border-pink-500/20 animate-in zoom-in duration-500">
+                       <div className="flex items-center justify-between mb-1">
+                         <span className="text-[9px] font-black text-pink-400 uppercase tracking-widest">Multiplicador de Riqueza</span>
+                         <Trophy className="w-3.5 h-3.5 text-pink-400" />
+                       </div>
+                       <div className="text-3xl font-black text-white tracking-tighter">{isEliteMode ? wealthExplosion.multiplier + "x" : "1.0x"}</div>
+                       <p className="text-[10px] text-slate-500 mt-2 font-medium">Potencial de crescimento do seu patrimônio pessoal.</p>
+                    </div>
+
+                    <div className="p-5 rounded-2xl bg-blue-500/10 border border-blue-500/20">
+                       <div className="flex items-center justify-between mb-1">
+                         <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest">Extra Anual (Elite)</span>
+                         <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+                       </div>
+                       <div className="text-2xl font-black text-white tracking-tighter">{isEliteMode ? formatCurrency(wealthExplosion.annualGap) : "R$ 0"}</div>
+                       <p className="text-[10px] text-slate-500 mt-2 font-medium">O valor que a ineficiência drena do seu bolso por ano.</p>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center text-primary">
+                      <ShieldCheck className="w-6 h-6" />
+                    </div>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-tight">Disciplina gera Liberdade.</p>
+                  </div>
+                </Card>
+              </div>
+
+              {/* Coluna do Gráfico: A Visualização da Explosão */}
+              <div className="lg:col-span-8 h-[500px] relative order-1 lg:order-2">
+                <div className="absolute inset-0 bg-white/5 rounded-[48px] border border-white/10 shadow-inner backdrop-blur-md flex flex-col items-center justify-center">
+                  
+                  {/* Grid de Fundo Sofisticado */}
+                  <div className="absolute inset-x-12 top-16 bottom-24 flex flex-col justify-between pointer-events-none opacity-10">
                     {[100, 75, 50, 25, 0].map((val) => (
-                      <div key={val} className="flex items-center gap-4">
-                        <span className="text-[9px] font-black text-white w-6">{val}%</span>
-                        <div className="h-px flex-1 bg-white/50" />
+                      <div key={val} className="flex items-center gap-6">
+                        <span className="text-[10px] font-black text-white w-8">{val}%</span>
+                        <div className="h-px flex-1 bg-white" />
                       </div>
                     ))}
                   </div>
 
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={chartData} margin={{ top: 40, right: 60, left: 60, bottom: 40 }}>
+                  {/* O Gráfico Doce e Transparente */}
+                  <ResponsiveContainer width="90%" height="80%">
+                    <BarChart data={chartData} margin={{ top: 20, right: 30, left: 30, bottom: 20 }}>
                       <defs>
                         <linearGradient id="gradBlue" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.8}/>
-                          <stop offset="100%" stopColor="#60a5fa" stopOpacity={0.2}/>
+                          <stop offset="0%" stopColor="#60a5fa" stopOpacity={0.6}/>
+                          <stop offset="100%" stopColor="#60a5fa" stopOpacity={0.1}/>
                         </linearGradient>
                         <linearGradient id="gradYellow" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#fbbf24" stopOpacity={0.8}/>
-                          <stop offset="100%" stopColor="#fbbf24" stopOpacity={0.2}/>
+                          <stop offset="0%" stopColor="#fbbf24" stopOpacity={0.6}/>
+                          <stop offset="100%" stopColor="#fbbf24" stopOpacity={0.1}/>
                         </linearGradient>
                         <linearGradient id="gradPink" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#f472b6" stopOpacity={0.8}/>
-                          <stop offset="100%" stopColor="#f472b6" stopOpacity={0.2}/>
+                          <stop offset="0%" stopColor="#f472b6" stopOpacity={0.6}/>
+                          <stop offset="100%" stopColor="#f472b6" stopOpacity={0.1}/>
                         </linearGradient>
                       </defs>
                       <XAxis 
@@ -454,56 +465,71 @@ export function Checklist({ fat, custos, prolabore }: ChecklistProps) {
                         tick={false}
                       />
                       <Tooltip 
-                        cursor={{ fill: 'rgba(255,255,255,0.03)', radius: 30 }}
+                        cursor={{ fill: 'rgba(255,255,255,0.02)', radius: 40 }}
                         content={({ active, payload }) => {
                           if (active && payload && payload.length) {
                             return (
-                              <div className="bg-slate-900/95 border border-white/20 p-5 rounded-3xl shadow-2xl backdrop-blur-2xl">
-                                <div className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-2">{payload[0].payload.desc}</div>
+                              <div className="bg-black/80 border border-white/20 p-6 rounded-[24px] shadow-2xl backdrop-blur-2xl">
+                                <div className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 mb-3">{payload[0].payload.desc}</div>
                                 <div className="text-xl font-black text-white">{payload[0].name}</div>
-                                <div className="mt-2 text-2xl font-black text-primary">{payload[0].value.toFixed(1)}% <span className="text-[10px] font-medium text-muted-foreground uppercase">Participação</span></div>
+                                <div className="mt-3 flex items-center gap-2">
+                                  <div className="text-3xl font-black text-primary">{payload[0].value.toFixed(1)}%</div>
+                                  <div className="h-4 w-px bg-white/20" />
+                                  <div className="text-[10px] font-black text-slate-400 uppercase">Impacto</div>
+                                </div>
                               </div>
                             );
                           }
                           return null;
                         }}
                       />
-                      <Bar dataKey="value" radius={[30, 30, 0, 0]} barSize={90} animationDuration={1000} animationEasing="ease-in-out">
+                      <Bar dataKey="value" radius={[40, 40, 40, 40]} barSize={100} animationDuration={1500} animationEasing="ease-in-out">
                         {chartData.map((entry, index) => (
                           <Cell 
                             key={`cell-${index}`} 
                             fill={index === 0 ? 'url(#gradBlue)' : index === 1 ? 'url(#gradYellow)' : 'url(#gradPink)'} 
-                            className="transition-all duration-700 hover:opacity-100 opacity-70 filter drop-shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+                            className="transition-all duration-1000 filter drop-shadow-[0_0_30px_rgba(255,255,255,0.05)] hover:opacity-100 opacity-80"
                           />
                         ))}
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                   
-                  <div className="absolute bottom-10 inset-x-0 flex justify-around px-12 pointer-events-none">
+                  {/* Legendas Intuitivas e Doces */}
+                  <div className="absolute bottom-12 inset-x-0 flex justify-around px-20">
                     {chartData.map((item, i) => (
-                      <div key={i} className="text-center space-y-1">
-                        <div className="text-[10px] font-black text-white uppercase tracking-widest opacity-80">{item.name}</div>
-                        <div className="text-[8px] font-bold text-slate-500 uppercase tracking-[0.3em]">{item.desc}</div>
+                      <div key={i} className="text-center group/leg">
+                        <div className="flex flex-col items-center gap-2">
+                          <div className="w-12 h-1.5 rounded-full shadow-lg transition-all duration-500 group-hover/leg:scale-x-125" style={{ backgroundColor: item.color }} />
+                          <div className="text-xs font-black text-white uppercase tracking-widest">{item.name}</div>
+                          <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{item.desc}</div>
+                        </div>
                       </div>
                     ))}
                   </div>
-                </div>
-              </div>
 
-              <div className="pt-12 border-t border-white/10 space-y-4">
-                <div className="text-2xl md:text-3xl font-black text-white tracking-widest uppercase">
-                  Disciplina fiscal é a <span className="text-primary italic">liberdade</span> do amanhã.
+                  {/* Overlay de Interatividade */}
+                  <div className="absolute top-8 right-12 flex items-center gap-2 text-[10px] font-black text-white/30 uppercase tracking-[0.4em]">
+                    <MousePointer2 className="w-3 h-3" />
+                    Explore os Pilares
+                  </div>
                 </div>
-                <p className="text-xs text-slate-400 max-w-2xl mx-auto font-medium opacity-80 italic">
-                  O domínio desses três pilares é o que transformará seu CNPJ em um império. Mantenha os trilhos separados e a sua riqueza crescerá por conta própria.
-                </p>
               </div>
+            </div>
+
+            {/* Manifesto de Encerramento */}
+            <div className="pt-16 border-t border-white/5 text-center space-y-6">
+              <h4 className="text-2xl md:text-3xl font-black text-white tracking-[0.2em] uppercase">
+                O MEI é apenas o casulo. A <span className="text-primary italic">Eficiência</span> é o que libera o seu voo.
+              </h4>
+              <p className="text-xs text-slate-500 max-w-2xl mx-auto font-medium opacity-60 italic leading-relaxed">
+                Você não está aqui para pagar boletos. Você está aqui para dominar sua infraestrutura financeira e construir riqueza geracional. A disciplina fiscal de hoje é a liberdade inegociável do amanhã.
+              </p>
             </div>
           </div>
           
-          <div className="absolute bottom-0 right-0 p-16 opacity-[0.02] pointer-events-none scale-150">
-             <Landmark className="w-96 h-96 text-white" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-[0.01] pointer-events-none">
+             <Landmark className="w-[1000px] h-[1000px] text-white" />
           </div>
         </div>
       </section>
