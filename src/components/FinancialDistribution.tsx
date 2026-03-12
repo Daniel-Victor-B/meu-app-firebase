@@ -95,14 +95,16 @@ export function FinancialDistribution({
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <div className="p-1.5 bg-primary/20 rounded-lg text-primary shadow-[0_0_20px_rgba(var(--primary),0.4)] animate-pulse">
-                      <Zap className="w-4 h-4" />
+                      <Activity className="w-4 h-4" />
                     </div>
                     <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5 text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 flex items-center gap-1.5">
-                      <Activity className="w-3 h-3" />
+                      <Zap className="w-3 h-3" />
                       Sistema de Eficiência Máxima
                     </Badge>
                   </div>
-                  <CardTitle className="text-2xl font-black tracking-tighter text-foreground pt-1">Gestão de Fluxo</CardTitle>
+                  <CardTitle className="text-2xl font-black tracking-tighter pt-1 bg-gradient-to-r from-indigo-500 via-primary to-purple-500 bg-clip-text text-transparent">
+                    Gestão de Fluxo
+                  </CardTitle>
                 </div>
               </div>
             </CardHeader>
