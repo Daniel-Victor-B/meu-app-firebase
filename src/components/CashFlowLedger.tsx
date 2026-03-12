@@ -34,7 +34,9 @@ import {
   ChevronRight,
   Zap,
   Calendar,
-  Clock
+  Clock,
+  BarChart3,
+  TrendingDown
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -52,6 +54,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Slider } from "@/components/ui/slider";
 import { type MonthlyData } from "@/app/page";
 
 const MESES = [
@@ -101,9 +104,11 @@ export function CashFlowLedger({
   const [mesesReserva, setMesesReserva] = useState(6);
   const [startMonth, setStartMonth] = useState(0);
   const [duration, setDuration] = useState(12);
+  const [distribuicaoLucroPct, setDistribuicaoLucroPct] = useState(50); // 50% PF / 50% PJ
+  const [selectedQuarter, setSelectedQuarter] = useState(0);
   const das = 76;
 
-  // Persistência local para configurações da planilha
+  // Persistência local
   useEffect(() => {
     const savedReserva = localStorage.getItem("mei-flow-ledger-meses-reserva");
     if (savedReserva) setMesesReserva(parseInt(savedReserva, 10) || 6);
@@ -113,6 +118,9 @@ export function CashFlowLedger({
 
     const savedDuration = localStorage.getItem("mei-flow-ledger-duration");
     if (savedDuration) setDuration(parseInt(savedDuration, 10) || 12);
+
+    const savedDist = localStorage.getItem("mei-flow-ledger-dist-lucro");
+    if (savedDist) setDistribuicaoLucroPct(parseInt(savedDist, 10) || 50);
   }, []);
 
   useEffect(() => {
@@ -126,6 +134,10 @@ export function CashFlowLedger({
   useEffect(() => {
     localStorage.setItem("mei-flow-ledger-duration", duration.toString());
   }, [duration]);
+
+  useEffect(() => {
+    localStorage.setItem("mei-flow-ledger-dist-lucro", distribuicaoLucroPct.toString());
+  }, [distribuicaoLucroPct]);
 
   useEffect(() => {
     if (monthlyData.every(m => m.receita === 5000 && m.custos === 1500)) {
@@ -149,8 +161,7 @@ export function CashFlowLedger({
     let acumuladoReceita = 0;
     let acumuladoLucroTotal = 0;
 
-    // Use only the number of months specified by duration
-    const rows = monthlyData.slice(0, duration).map((m) => {
+    const rows = monthlyData.slice(0, 12).map((m) => {
       if (!m.active) {
         return {
           ...m,
@@ -181,11 +192,35 @@ export function CashFlowLedger({
     });
 
     return { rows, acumuladoReserva, acumuladoReceita, acumuladoLucro: acumuladoLucroTotal };
-  }, [monthlyData, fat, custos, prolabore, reservaPct, duration]);
+  }, [monthlyData, fat, custos, prolabore, reservaPct]);
+
+  const quarterlyTotals = useMemo(() => {
+    const quarters = [
+      { id: 0, name: "1º Trimestre", months: [0, 1, 2], profit: 0, revenue: 0 },
+      { id: 1, name: "2º Trimestre", months: [3, 4, 5], profit: 0, revenue: 0 },
+      { id: 2, name: "3º Trimestre", months: [6, 7, 8], profit: 0, revenue: 0 },
+      { id: 3, name: "4º Trimestre", months: [9, 10, 11], profit: 0, revenue: 0 },
+    ];
+
+    quarters.forEach(q => {
+      q.months.forEach(mIdx => {
+        const row = totals.rows[mIdx];
+        if (row && row.active) {
+          q.profit += row.lucro;
+          q.revenue += row.receita;
+        }
+      });
+    });
+
+    return quarters;
+  }, [totals.rows]);
+
+  const currentQ = quarterlyTotals[selectedQuarter];
+  const qProfitPF = (currentQ.profit * distribuicaoLucroPct) / 100;
+  const qProfitPJ = currentQ.profit - qProfitPF;
 
   const metaTotal = (custos + das + prolabore) * mesesReserva;
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
-
   const LIMITE_MEI = 81000;
   const percentualLimite = Math.min(100, (totals.acumuladoReceita / LIMITE_MEI) * 100);
 
@@ -213,7 +248,6 @@ export function CashFlowLedger({
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {/* Bloco de Reserva */}
         <Card className="bg-primary/5 border-primary/20 shadow-md">
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2 text-primary">
@@ -239,14 +273,9 @@ export function CashFlowLedger({
               </div>
               <Progress value={progressoMeta} className="h-2" />
             </div>
-            <div className="pt-2 flex items-start gap-2 text-[10px] text-muted-foreground leading-tight italic">
-              <Lightbulb className="w-3 h-3 text-primary shrink-0" />
-              <span>Sua meta é cobrir seus gastos totais de {formatCurrency(custos + das + prolabore)}/mês por {mesesReserva} meses.</span>
-            </div>
           </CardContent>
         </Card>
 
-        {/* Bloco de Regras do Jogo */}
         <Card className="bg-secondary/20 border-border/60 border-2 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
             <Settings2 className="w-16 h-16" />
@@ -273,16 +302,12 @@ export function CashFlowLedger({
                     onDown={() => setProlabore(Math.max(0, prolabore - 100))}
                     colorClass="text-blue-500"
                   />
-                  <div className="relative flex-1 group/param">
-                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">R$</span>
-                    <Input 
-                      className="h-9 pl-7 pr-7 text-xs font-bold bg-background/80 border-blue-500/30 focus:border-blue-500 focus:ring-blue-500/20" 
-                      type="number" 
-                      value={prolabore}
-                      onChange={(e) => setProlabore(parseFloat(e.target.value) || 0)}
-                    />
-                    <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-blue-500/30 group-hover/param:text-blue-500 transition-colors pointer-events-none" />
-                  </div>
+                  <Input 
+                    className="h-9 px-2 text-xs font-bold bg-background/80 border-blue-500/30" 
+                    type="number" 
+                    value={prolabore}
+                    onChange={(e) => setProlabore(parseFloat(e.target.value) || 0)}
+                  />
                 </div>
               </div>
 
@@ -297,82 +322,44 @@ export function CashFlowLedger({
                     onDown={() => setReservaPct(Math.max(0, reservaPct - 5))}
                     colorClass="text-purple-500"
                   />
-                  <div className="relative flex-1 group/param">
-                    <span className="absolute right-7 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">%</span>
-                    <Input 
-                      className="h-9 pr-12 text-xs font-bold bg-background/80 border-purple-500/30 focus:border-purple-500 focus:ring-purple-500/20 text-right" 
-                      type="number" 
-                      value={reservaPct}
-                      onChange={(e) => setReservaPct(parseFloat(e.target.value) || 0)}
-                    />
-                    <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-purple-500/30 group-hover/param:text-blue-500 transition-colors pointer-events-none" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center gap-1.5 text-[10px] text-primary font-black uppercase">
-                  <CalendarClock className="w-3 h-3" />
-                  Meta (Meses)
-                </div>
-                <div className="flex items-center gap-2">
-                  <StepButtons 
-                    onUp={() => setMesesReserva(Math.min(24, mesesReserva + 1))}
-                    onDown={() => setMesesReserva(Math.max(1, mesesReserva - 1))}
-                    colorClass="text-primary"
+                  <Input 
+                    className="h-9 px-2 text-xs font-bold bg-background/80 border-purple-500/30 text-right" 
+                    type="number" 
+                    value={reservaPct}
+                    onChange={(e) => setReservaPct(parseFloat(e.target.value) || 0)}
                   />
-                  <div className="relative flex-1 group/param">
-                    <Input 
-                      className="h-9 pr-8 text-xs font-bold bg-background/80 border-primary/30 focus:border-primary focus:ring-primary/20 text-center" 
-                      type="number" 
-                      value={mesesReserva}
-                      onChange={(e) => setMesesReserva(parseInt(e.target.value) || 1)}
-                    />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] font-bold text-muted-foreground uppercase">mês</span>
-                  </div>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5 text-[10px] text-amber-500 font-black uppercase">
                   <Calendar className="w-3 h-3" />
-                  Mês de Início
+                  Início
                 </div>
                 <Select value={startMonth.toString()} onValueChange={(v) => setStartMonth(parseInt(v))}>
-                  <SelectTrigger className="h-9 text-xs font-bold bg-background/80 border-amber-500/30 focus:border-amber-500 focus:ring-amber-500/20">
+                  <SelectTrigger className="h-9 text-xs font-bold bg-background/80 border-amber-500/30">
                     <SelectValue placeholder="Mês" />
                   </SelectTrigger>
                   <SelectContent>
                     {MESES.map((mes, idx) => (
-                      <SelectItem key={idx} value={idx.toString()} className="text-xs font-medium">
-                        {mes}
-                      </SelectItem>
+                      <SelectItem key={idx} value={idx.toString()} className="text-xs font-medium">{mes}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="space-y-2 col-span-2">
+              <div className="space-y-2">
                 <div className="flex items-center gap-1.5 text-[10px] text-emerald-500 font-black uppercase">
                   <Clock className="w-3 h-3" />
-                  Duração (Meses)
+                  Duração
                 </div>
-                <div className="flex items-center gap-2">
-                  <StepButtons 
-                    onUp={() => setDuration(Math.min(12, duration + 1))}
-                    onDown={() => setDuration(Math.max(1, duration - 1))}
-                    colorClass="text-emerald-500"
-                  />
-                  <div className="relative flex-1 group/param">
-                    <Input 
-                      className="h-9 pr-8 text-xs font-bold bg-background/80 border-emerald-500/30 focus:border-emerald-500 focus:ring-emerald-500/20 text-center" 
-                      type="number" 
-                      value={duration}
-                      onChange={(e) => setDuration(Math.min(12, Math.max(1, parseInt(e.target.value) || 1)))}
-                    />
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] font-bold text-muted-foreground uppercase">mês</span>
-                  </div>
-                </div>
+                <Input 
+                  className="h-9 px-2 text-xs font-bold bg-background/80 border-emerald-500/30 text-center" 
+                  type="number" 
+                  min="1" max="12"
+                  value={duration}
+                  onChange={(e) => setDuration(Math.min(12, Math.max(1, parseInt(e.target.value) || 1)))}
+                />
               </div>
             </div>
           </CardContent>
@@ -395,25 +382,25 @@ export function CashFlowLedger({
               <div className="text-lg font-bold text-indigo-500 leading-tight">{formatCurrency(totals.acumuladoReceita || 0)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-indigo-500/70">
                 <ShieldCheck className="w-2.5 h-2.5" />
-                {percentualLimite.toFixed(1)}% do Teto de 81k
+                {percentualLimite.toFixed(1)}% do Teto
               </div>
             </div>
 
             <div className="p-3 bg-primary/10 rounded-xl border border-primary/20">
-              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Lucro Real (Livre para Você)</div>
+              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Lucro Real Acumulado</div>
               <div className="text-lg font-bold text-primary leading-tight">{formatCurrency(totals.acumuladoLucro || 0)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-primary/70">
                 <Wallet className="w-2.5 h-2.5" />
-                Dinheiro Extra Acumulado
+                Disponibilidade Total
               </div>
             </div>
 
             <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
-              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Reserva (Caixa da Empresa)</div>
+              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Reserva (Caixa Empresa)</div>
               <div className="text-lg font-bold text-purple-500 leading-tight">{formatCurrency(totals.acumuladoReserva || 0)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-purple-500/70">
                 <PiggyBank className="w-2.5 h-2.5" />
-                Patrimônio do Negócio
+                Patrimônio Acumulado
               </div>
             </div>
           </div>
@@ -424,18 +411,8 @@ export function CashFlowLedger({
             <Table className="min-w-[1250px] border-collapse">
               <TableHeader className="bg-secondary/30">
                 <TableRow className="hover:bg-transparent border-b bg-primary/10">
-                  <TableHead colSpan={9} className="h-12 py-0 text-center border-b border-primary/20">
-                    <div className="flex items-center justify-between px-8 animate-pulse text-[10px] font-bold uppercase tracking-[0.4em] text-primary/80">
-                      <div className="flex items-center gap-4">
-                        <ArrowLeftRight className="w-4 h-4" />
-                        Área de Rolagem Lateral
-                        <ArrowLeftRight className="w-4 h-4" />
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <ArrowLeftRight className="w-4 h-4" />
-                        Área de Rolagem Lateral
-                        <ArrowLeftRight className="w-4 h-4" />
-                      </div>
+                  <TableHead colSpan={10} className="h-12 py-0 text-center border-b border-primary/20">
+                    <div className="flex items-center justify-between px-8 text-[10px] font-bold uppercase tracking-[0.4em] text-primary/80">
                       <div className="flex items-center gap-4">
                         <ArrowLeftRight className="w-4 h-4" />
                         Área de Rolagem Lateral
@@ -448,37 +425,17 @@ export function CashFlowLedger({
                 <TableRow className="hover:bg-transparent border-b">
                   <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r bg-secondary/10">Status</TableHead>
                   <TableHead className="w-[90px] font-bold text-[10px] uppercase border-r text-center bg-secondary/10">Mês</TableHead>
-                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-indigo-500 bg-indigo-500/5">
-                    <div className="flex items-center gap-2">
-                      <TrendingUp className="w-3 h-3" />
-                      Faturamento Mensal (R$)
-                    </div>
-                  </TableHead>
-                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-orange-500 bg-orange-500/5">
-                    <div className="flex items-center gap-2">
-                      <Scale className="w-3 h-3" />
-                      Custos Operacionais (R$)
-                    </div>
-                  </TableHead>
+                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-indigo-500 bg-indigo-500/5">Faturamento (R$)</TableHead>
+                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-orange-500 bg-orange-500/5">Custos Op. (R$)</TableHead>
                   <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase px-6">Sobra Bruta</TableHead>
-                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-purple-500 px-6">
-                    <div className="flex items-center justify-end gap-2">
-                      <PiggyBank className="w-3 h-3" />
-                      Reserva PJ
-                    </div>
-                  </TableHead>
-                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-primary px-6">
-                    <div className="flex items-center justify-end gap-2">
-                      <Wallet className="w-3 h-3" />
-                      Lucro Extra
-                    </div>
-                  </TableHead>
+                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-purple-500 px-6">Reserva PJ</TableHead>
+                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-primary px-6">Lucro Real</TableHead>
                   <TableHead className="w-[180px] text-right font-bold text-[10px] uppercase px-6 opacity-30">Lucro Acum.</TableHead>
                   <TableHead className="w-[180px] text-right font-bold text-[10px] uppercase px-6 opacity-30">Reserva Acum.</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {totals.rows.map((row, i) => (
+                {totals.rows.slice(0, duration).map((row, i) => (
                   <TableRow key={i} className={cn(
                     "transition-all duration-300",
                     !row.active ? "opacity-20 grayscale scale-[0.98]" : "hover:bg-primary/5"
@@ -488,7 +445,7 @@ export function CashFlowLedger({
                         <Switch 
                           checked={row.active} 
                           onCheckedChange={(checked) => updateMonth(i, 'active', !!checked)}
-                          className="scale-90 data-[state=checked]:bg-primary"
+                          className="scale-90"
                         />
                       </div>
                     </TableCell>
@@ -496,28 +453,22 @@ export function CashFlowLedger({
                       {MESES[(i + startMonth) % 12]}
                     </TableCell>
                     <TableCell className="py-2 px-6 bg-indigo-500/5">
-                      <div className="relative group/input">
-                        <Input 
-                          type="number" 
-                          disabled={!row.active}
-                          value={row.receita} 
-                          onChange={(e) => updateMonth(i, 'receita', e.target.value)}
-                          className="h-10 text-xs font-bold bg-background/40 border-indigo-500/20 hover:border-indigo-500 focus:border-indigo-500 focus:bg-background/80 transition-all text-indigo-500 pr-8"
-                        />
-                        <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-indigo-500/30 group-hover/input:text-indigo-500 transition-colors pointer-events-none" />
-                      </div>
+                      <Input 
+                        type="number" 
+                        disabled={!row.active}
+                        value={row.receita} 
+                        onChange={(e) => updateMonth(i, 'receita', e.target.value)}
+                        className="h-10 text-xs font-bold text-indigo-500"
+                      />
                     </TableCell>
                     <TableCell className="py-2 px-6 bg-orange-500/5">
-                      <div className="relative group/input">
-                        <Input 
-                          type="number" 
-                          disabled={!row.active}
-                          value={row.custos} 
-                          onChange={(e) => updateMonth(i, 'custos', e.target.value)}
-                          className="h-10 text-xs font-bold bg-background/40 border-orange-500/20 hover:border-orange-500 focus:border-orange-500 focus:bg-background/80 transition-all text-orange-500 pr-8"
-                        />
-                        <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-orange-500/30 group-hover/input:text-orange-500 transition-colors pointer-events-none" />
-                      </div>
+                      <Input 
+                        type="number" 
+                        disabled={!row.active}
+                        value={row.custos} 
+                        onChange={(e) => updateMonth(i, 'custos', e.target.value)}
+                        className="h-10 text-xs font-bold text-orange-500"
+                      />
                     </TableCell>
                     <TableCell className="text-right text-xs font-medium tabular-nums px-6 bg-secondary/10">
                       {formatCurrency(row.sobra || 0)}
@@ -542,173 +493,190 @@ export function CashFlowLedger({
         </CardContent>
       </Card>
 
+      {/* SISTEMA DE CICLO DE RIQUEZA TRIMESTRAL */}
       <div className="grid grid-cols-1 gap-6">
-        <div className="p-1 rounded-3xl bg-gradient-to-br from-amber-500/40 via-amber-500/10 to-transparent shadow-2xl">
-          <div className="bg-background/95 backdrop-blur-xl rounded-[22px] p-8 space-y-10 overflow-hidden relative">
-            {/* Background Decorativo */}
-            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-amber-500/5 blur-[100px] rounded-full" />
+        <div className="p-1 rounded-[40px] bg-gradient-to-br from-amber-500/30 via-primary/20 to-indigo-500/20 shadow-2xl">
+          <div className="bg-card/90 backdrop-blur-xl rounded-[39px] p-8 space-y-10 overflow-hidden relative">
+            <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-primary/10 blur-[100px] rounded-full" />
             
-            {/* Header: Motor de Prosperidade */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 relative z-10">
               <div className="space-y-3">
                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full">
                   <Zap className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
-                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-600">Gestão de Destino Profissional</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-600">Ciclo de Riqueza Trimestral</span>
                 </div>
                 <h3 className="text-4xl font-black tracking-tighter text-foreground leading-none">
-                  O Ciclo do Capital <span className="text-amber-500">R$ 10k</span>
+                  Gestão de <span className="text-amber-500">90 Dias</span>
                 </h3>
                 <p className="text-sm text-muted-foreground font-medium max-w-md leading-relaxed">
-                  Visualize o potencial explosivo de uma operação otimizada com 10% de custos. 
-                  Transforme faturamento bruto em patrimônio real.
+                  Analise o acúmulo real e defina as ações táticas para o seu lucro trimestral.
                 </p>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Padrão de Excelência</div>
-                  <div className="text-xl font-black text-amber-600">Unicórnio</div>
-                </div>
-                <div className="w-12 h-12 rounded-2xl bg-amber-500 flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
-                  <Target className="w-6 h-6" />
-                </div>
+              
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {quarterlyTotals.map((q) => (
+                  <Button 
+                    key={q.id}
+                    variant={selectedQuarter === q.id ? "default" : "outline"}
+                    className={cn(
+                      "h-12 flex flex-col gap-0.5 rounded-xl border-2 transition-all",
+                      selectedQuarter === q.id ? "bg-amber-500 border-amber-500" : "hover:border-amber-500/50"
+                    )}
+                    onClick={() => setSelectedQuarter(q.id)}
+                  >
+                    <span className="text-[9px] font-black uppercase opacity-60 tracking-widest">{q.name}</span>
+                    <span className="text-xs font-bold">{formatCurrency(q.profit)}</span>
+                  </Button>
+                ))}
               </div>
             </div>
 
-            {/* Fluxo Visual: Nível Unicórnio */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
-              {/* Coluna 1: Input de Energia (Faturamento) */}
-              <div className="lg:col-span-3 space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-amber-500" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Faturamento Mensal</span>
-                </div>
-                <div className="p-6 rounded-3xl bg-secondary/30 border-2 border-amber-500/20 shadow-inner group hover:border-amber-500/40 transition-all">
-                  <div className="text-3xl font-black text-foreground tabular-nums tracking-tighter">R$ 10.000</div>
-                  <div className="mt-2 flex items-center gap-2 text-[9px] font-black uppercase text-amber-600/70">
-                    <Rocket className="w-3 h-3" />
-                    Potencial de Escala 10x
+              {/* Diagnóstico do Trimestre */}
+              <div className="lg:col-span-4 space-y-6">
+                <div className="p-6 rounded-3xl bg-secondary/30 border-2 border-amber-500/20 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Lucro Total do Ciclo</span>
+                    <Target className="w-4 h-4 text-amber-500" />
+                  </div>
+                  <div className="text-4xl font-black text-foreground tabular-nums tracking-tighter">
+                    {formatCurrency(currentQ.profit)}
+                  </div>
+                  <div className="pt-4 border-t border-amber-500/10 space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "p-2 rounded-lg",
+                        currentQ.profit > (fat * 1.5) ? "bg-emerald-500/10 text-emerald-500" : "bg-blue-500/10 text-blue-500"
+                      )}>
+                        <Activity className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-black uppercase text-muted-foreground leading-none">Contexto Tático</div>
+                        <div className="text-xs font-bold mt-1">
+                          {currentQ.profit === 0 ? "Sem lucro acumulado" : 
+                           currentQ.profit > (fat * 2) ? "Escala Exponencial" : 
+                           currentQ.profit < (fat * 0.5) ? "Ajuste Operacional" : "Crescimento Estável"}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                
-                {/* Deduções Visuais */}
-                <div className="space-y-2 pl-4 border-l-2 border-dashed border-amber-500/20">
-                  <div className="flex justify-between text-xs py-1">
-                    <span className="text-muted-foreground">Custos (10%)</span>
-                    <span className="font-bold text-orange-500">- R$ 1.000</span>
+
+                <div className="space-y-4 p-6 rounded-3xl bg-primary/5 border border-primary/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sparkles className="w-4 h-4 text-primary" />
+                    <span className="text-[10px] font-black uppercase text-primary tracking-widest">Ações Recomendadas</span>
                   </div>
-                  <div className="flex justify-between text-xs py-1">
-                    <span className="text-muted-foreground">DAS (Fixo)</span>
-                    <span className="font-bold text-red-500">- R$ 76</span>
-                  </div>
-                  <div className="flex justify-between text-xs py-1">
-                    <span className="text-muted-foreground">Pró-labore</span>
-                    <span className="font-bold text-blue-500">- R$ 2.000</span>
-                  </div>
+                  <ul className="space-y-3">
+                    {currentQ.profit > 0 ? (
+                      <>
+                        <li className="flex gap-3 text-xs text-muted-foreground">
+                          <ChevronRight className="w-3.5 h-3.5 text-primary shrink-0" />
+                          <span>Mover {distribuicaoLucroPct}% para sua <strong>Corretora PF</strong></span>
+                        </li>
+                        <li className="flex gap-3 text-xs text-muted-foreground">
+                          <ChevronRight className="w-3.5 h-3.5 text-primary shrink-0" />
+                          <span>Reinvestir {100-distribuicaoLucroPct}% na <strong>Escala PJ</strong></span>
+                        </li>
+                      </>
+                    ) : (
+                      <li className="flex gap-3 text-xs text-muted-foreground italic">
+                        <TrendingDown className="w-3.5 h-3.5 text-destructive shrink-0" />
+                        <span>Focar em reduzir custos operacionais no próximo ciclo.</span>
+                      </li>
+                    )}
+                  </ul>
                 </div>
               </div>
 
-              {/* Conector Central: O Filtro de Lucro */}
-              <div className="lg:col-span-1 flex items-center justify-center py-4">
-                <div className="h-px lg:h-full w-full lg:w-px bg-gradient-to-b from-amber-500/50 via-amber-500/10 to-transparent relative">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-background border-2 border-amber-500/30 flex items-center justify-center shadow-xl">
-                    <ChevronRight className="w-4 h-4 text-amber-500 rotate-90 lg:rotate-0" />
-                  </div>
-                </div>
-              </div>
-
-              {/* Coluna 2: A Sobra Explosiva */}
-              <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Bloco de Resultado Mensal */}
-                <div className="space-y-6">
-                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-primary" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Resultado Líquido do Mês</span>
-                  </div>
-                  
-                  <div className="p-8 rounded-[40px] bg-amber-500/10 border-2 border-amber-500/30 shadow-2xl relative group overflow-hidden">
-                    <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                      <Sparkles className="w-20 h-20" />
+              {/* Simulador de Destino */}
+              <div className="lg:col-span-8 space-y-8">
+                <div className="p-8 rounded-[40px] bg-background/40 border-2 border-dashed border-amber-500/20 space-y-10">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+                    <div className="space-y-1 text-center sm:text-left">
+                      <h4 className="text-xl font-black text-foreground tracking-tight">Estratégia de Destino</h4>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Defina como sua riqueza será distribuída</p>
                     </div>
-                    <div className="text-[10px] font-black uppercase text-amber-600 mb-2 tracking-[0.3em]">Sobra Bruta Mensal</div>
-                    <div className="text-5xl font-black text-foreground tracking-tighter tabular-nums">R$ 6.924</div>
-                    <div className="mt-4 flex items-center gap-2">
-                       <Badge className="bg-amber-500 text-white border-none font-black text-[9px] uppercase tracking-widest">Taxa de Eficiência: 69%</Badge>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 rounded-2xl bg-secondary/50 border border-purple-500/20 space-y-1">
-                      <div className="text-[8px] font-black text-purple-500 uppercase tracking-widest">Reserva PJ (60%)</div>
-                      <div className="text-lg font-black text-foreground">R$ 4.154</div>
-                    </div>
-                    <div className="p-4 rounded-2xl bg-secondary/50 border border-primary/20 space-y-1">
-                      <div className="text-[8px] font-black text-primary uppercase tracking-widest">Acumulado Op (40%)</div>
-                      <div className="text-lg font-black text-foreground">R$ 2.770</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Bloco de Explosão Trimestral */}
-                <div className="space-y-6">
-                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">O Poder dos 90 Dias</span>
-                  </div>
-
-                  <div className="relative h-full">
-                    <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-transparent blur-3xl opacity-30 rounded-full" />
-                    <div className="relative h-full flex flex-col justify-between p-8 rounded-[40px] border-2 border-dashed border-amber-500/30 bg-background/40 backdrop-blur-md shadow-xl group">
-                      <div className="space-y-1">
-                        <div className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Fechamento do Trimestre</div>
-                        <div className="text-2xl font-black text-foreground">R$ 8.310 <span className="text-xs font-normal text-muted-foreground opacity-60">acumulados</span></div>
-                        <div className="text-[9px] font-bold text-amber-600 uppercase italic">Cálculo: R$ 2.770 x 3 meses</div>
+                    <div className="flex items-center gap-4 bg-secondary/50 p-3 rounded-2xl border">
+                      <div className="text-center">
+                        <div className="text-xs font-black text-blue-500">{distribuicaoLucroPct}%</div>
+                        <div className="text-[8px] font-bold text-muted-foreground uppercase">Liberdade (PF)</div>
                       </div>
-
-                      <div className="py-8 flex items-center justify-center relative">
-                        <div className="absolute h-px w-full bg-gradient-to-r from-transparent via-amber-500/20 to-transparent" />
-                        <div className="w-16 h-16 rounded-3xl bg-amber-500 text-white flex items-center justify-center shadow-2xl shadow-amber-500/40 z-10 group-hover:scale-110 transition-transform">
-                          <Landmark className="w-8 h-8" />
-                        </div>
+                      <div className="w-px h-6 bg-border" />
+                      <div className="text-center">
+                        <div className="text-xs font-black text-primary">{100 - distribuicaoLucroPct}%</div>
+                        <div className="text-[8px] font-bold text-muted-foreground uppercase">Escala (PJ)</div>
                       </div>
+                    </div>
+                  </div>
 
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="text-center space-y-2">
-                          <div className="mx-auto w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
-                             <Wallet className="w-5 h-5" />
-                          </div>
-                          <div className="space-y-0.5">
-                            <div className="text-sm font-black text-amber-600">R$ 4.155</div>
-                            <div className="text-[8px] font-black text-muted-foreground uppercase leading-none">PF: Sua Liberdade (50%)</div>
-                          </div>
-                        </div>
-                        <div className="text-center space-y-2">
-                          <div className="mx-auto w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
-                             <Rocket className="w-5 h-5" />
-                          </div>
-                          <div className="space-y-0.5">
-                            <div className="text-sm font-black text-amber-600">R$ 4.155</div>
-                            <div className="text-[8px] font-black text-muted-foreground uppercase leading-none">PJ: Sua Escala (50%)</div>
-                          </div>
-                        </div>
+                  <div className="space-y-6">
+                    <Slider 
+                      value={[distribuicaoLucroPct]} 
+                      min={0} 
+                      max={100} 
+                      step={5} 
+                      onValueChange={([v]) => setDistribuicaoLucroPct(v)}
+                      className="py-4"
+                    />
+                    <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-blue-500" />
+                        Retirada Pessoal
                       </div>
+                      <div className="flex items-center gap-2">
+                        Investimento Empresa
+                        <div className="w-2 h-2 rounded-full bg-primary" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
+                    <div className="p-6 rounded-3xl bg-blue-500/5 border border-blue-500/20 group hover:bg-blue-500/10 transition-all">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-blue-500/20 rounded-xl text-blue-500">
+                          <Landmark className="w-5 h-5" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase text-blue-500 tracking-widest">Liberdade (PF/CPF)</span>
+                      </div>
+                      <div className="text-2xl font-black text-foreground tabular-nums tracking-tighter">
+                        {formatCurrency(qProfitPF)}
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">
+                        Destinado a investimentos pessoais, lazer e construção de patrimônio no seu CPF.
+                      </p>
+                    </div>
+
+                    <div className="p-6 rounded-3xl bg-primary/5 border border-primary/20 group hover:bg-primary/10 transition-all">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 bg-primary/20 rounded-xl text-primary">
+                          <Rocket className="w-5 h-5" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase text-primary tracking-widest">Escala (PJ/CNPJ)</span>
+                      </div>
+                      <div className="text-2xl font-black text-foreground tabular-nums tracking-tighter">
+                        {formatCurrency(qProfitPJ)}
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">
+                        Reinvestimento em marketing, ferramentas, infraestrutura ou reserva extra da empresa.
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Footer Educativo */}
             <div className="pt-8 border-t border-amber-500/10 relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
                <div className="flex items-center gap-3">
                   <div className="p-2 bg-amber-500/20 rounded-lg text-amber-600">
                     <Lightbulb className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className="text-xs font-black uppercase text-foreground">Regra de Ouro: Disciplina gera Liberdade</h4>
-                    <p className="text-[10px] text-muted-foreground leading-tight">O Pró-labore é sua sobrevivência. O Lucro trimestral é sua construção de riqueza.</p>
+                    <h4 className="text-xs font-black uppercase text-foreground">Protocolo Trimestral de Excelência</h4>
+                    <p className="text-[10px] text-muted-foreground leading-tight">Mantenha a reserva intocada e distribua apenas o lucro real a cada 90 dias.</p>
                   </div>
                </div>
-               <div className="text-[10px] font-black text-amber-600/50 uppercase tracking-[0.4em]">MEI Flow Elite Model</div>
+               <div className="text-[10px] font-black text-amber-600/50 uppercase tracking-[0.4em]">MEI Flow Strategy Engine</div>
             </div>
           </div>
         </div>
