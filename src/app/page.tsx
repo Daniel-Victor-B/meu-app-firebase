@@ -72,7 +72,7 @@ export default function Home() {
   const mesesRestantes = fat > 0 ? Math.floor(restante / fat) : 12;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-4 md:py-6 space-y-4 overflow-x-hidden">
+    <div className="max-w-6xl mx-auto px-4 py-4 md:py-6 space-y-4">
       <header className="flex items-center gap-4 mb-4 animate-in fade-in slide-in-from-top-4 duration-700">
         <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground shadow-xl shadow-primary/20">
           <Landmark className="w-6 h-6" />
@@ -84,7 +84,7 @@ export default function Home() {
       </header>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-4 md:grid-cols-8 h-auto p-1 bg-secondary/50 backdrop-blur-sm border sticky top-2 z-50">
+        <TabsList className="grid grid-cols-4 md:grid-cols-8 h-auto p-1 bg-background/80 backdrop-blur-md border sticky top-0 z-50 shadow-lg">
           <TabsTrigger value="distribuicao" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs">
             <DollarSign className="w-4 h-4" />
             <span className="hidden sm:inline">Mensal</span>
@@ -119,7 +119,7 @@ export default function Home() {
           </TabsTrigger>
         </TabsList>
 
-        <div className="mt-1">
+        <div className="mt-6">
           <TabsContent value="distribuicao">
             <div className="w-full">
               <FinancialDistribution 
