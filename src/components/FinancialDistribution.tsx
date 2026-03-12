@@ -159,8 +159,8 @@ export function FinancialDistribution({
                 </div>
                 
                 <div className="grid gap-3 relative z-10">
-                  <div className="group/item relative flex items-center justify-between p-5 rounded-3xl bg-white/5 backdrop-blur-3xl border border-white/20 shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-orange-400/10 to-transparent pointer-events-none" />
+                  <div className="group/item relative flex items-center justify-between p-5 rounded-3xl bg-white/5 backdrop-blur-3xl border border-white/20 shadow-[0_0_30px_rgba(249,115,22,0.1),inset_0_0_20px_rgba(255,255,255,0.05)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-orange-400/10 via-transparent to-orange-600/5 pointer-events-none" />
                     <div className="flex items-center gap-3 relative z-10">
                        <div className="p-2.5 bg-black/40 border border-orange-500/20 rounded-xl text-orange-400 group-hover/item:bg-orange-500 group-hover/item:text-white transition-all duration-500 shadow-[0_0_10px_rgba(249,115,22,0.2)]">
                          <Scale className="w-4 h-4" />
@@ -188,8 +188,8 @@ export function FinancialDistribution({
                     </div>
                   </div>
 
-                  <div className="group/item relative flex items-center justify-between p-5 rounded-3xl bg-white/5 backdrop-blur-3xl border border-white/20 shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-400/10 to-transparent pointer-events-none" />
+                  <div className="group/item relative flex items-center justify-between p-5 rounded-3xl bg-white/5 backdrop-blur-3xl border border-white/20 shadow-[0_0_30px_rgba(59,130,246,0.1),inset_0_0_20px_rgba(255,255,255,0.05)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-400/10 via-transparent to-blue-600/5 pointer-events-none" />
                     <div className="flex items-center gap-3 relative z-10">
                        <div className="p-2.5 bg-black/40 border border-blue-500/20 rounded-xl text-blue-400 group-hover/item:bg-blue-500 group-hover/item:text-white transition-all duration-500 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
                          <UserCircle className="w-4 h-4" />
@@ -217,8 +217,8 @@ export function FinancialDistribution({
                     </div>
                   </div>
 
-                  <div className="group/item relative flex items-center justify-between p-5 rounded-3xl bg-white/5 backdrop-blur-3xl border border-white/20 shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-purple-400/10 to-transparent pointer-events-none" />
+                  <div className="group/item relative flex items-center justify-between p-5 rounded-3xl bg-white/5 backdrop-blur-3xl border border-white/20 shadow-[0_0_30px_rgba(168,85,247,0.1),inset_0_0_20px_rgba(255,255,255,0.05)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-purple-400/10 via-transparent to-purple-600/5 pointer-events-none" />
                     <div className="flex items-center gap-3 relative z-10">
                        <div className="p-2.5 bg-black/40 border border-purple-500/20 rounded-xl text-purple-400 group-hover/item:bg-purple-500 group-hover/item:text-white transition-all duration-500 shadow-[0_0_10px_rgba(168,85,247,0.2)]">
                          <ShieldCheck className="w-4 h-4" />
@@ -379,3 +379,4 @@ export function FinancialDistribution({
     </div>
   );
 }
+
