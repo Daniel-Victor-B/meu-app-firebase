@@ -16,9 +16,8 @@ import {
   ShieldCheck, 
   Wallet, 
   Zap,
-  Info,
-  ArrowRight,
-  Target
+  Target,
+  ArrowRight
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -64,7 +63,7 @@ export function FinancialDistribution({
       <Button 
         variant="ghost" 
         size="icon" 
-        className={cn("h-4 w-6 rounded-t-md rounded-b-none border border-border hover:bg-secondary transition-all", colorClass)}
+        className={cn("h-4 w-6 rounded-t-md rounded-b-none border border-border/50 hover:bg-secondary transition-all", colorClass)}
         onClick={onUp}
       >
         <ChevronUp className="w-3 h-3" />
@@ -72,7 +71,7 @@ export function FinancialDistribution({
       <Button 
         variant="ghost" 
         size="icon" 
-        className={cn("h-4 w-6 rounded-b-md rounded-t-none border border-border hover:bg-secondary transition-all", colorClass)}
+        className={cn("h-4 w-6 rounded-b-md rounded-t-none border border-border/50 hover:bg-secondary transition-all", colorClass)}
         onClick={onDown}
       >
         <ChevronDown className="w-3 h-3" />
@@ -83,117 +82,156 @@ export function FinancialDistribution({
   return (
     <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500 pb-16">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Painel de Parâmetros Financeiros */}
+        {/* Painel de Parâmetros Financeiros - Design Unicórnio Nível Extremo */}
         <div className="lg:col-span-5 space-y-6">
-          <Card className="border-border/50 shadow-xl overflow-hidden group">
-            <div className="h-1 w-full bg-gradient-to-r from-indigo-500 via-primary to-accent" />
-            <CardHeader className="pb-4">
-              <div className="flex items-center gap-2 mb-1">
-                <Target className="w-4 h-4 text-primary" />
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Configurações de Blindagem</span>
-              </div>
-              <CardTitle className="text-2xl font-headline font-bold">Diagnóstico Mensal</CardTitle>
-              <CardDescription className="text-xs font-medium">Ajuste os parâmetros para otimizar sua operação.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              
-              {/* Seção 1: Entrada (Energia do Negócio) */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-indigo-500/70">
-                   <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                   Motor de Entrada
+          <Card className="border-primary/20 shadow-2xl overflow-hidden bg-card/40 backdrop-blur-xl relative group transition-all duration-500">
+            <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 via-primary to-purple-500 opacity-50" />
+            
+            <CardHeader className="pb-6 relative">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 bg-primary/10 rounded-lg text-primary">
+                  <Target className="w-4 h-4" />
                 </div>
-                <div className="flex items-center justify-between p-4 rounded-2xl bg-indigo-500/5 border border-indigo-500/20 group/input transition-all hover:bg-indigo-500/10 hover:border-indigo-500/40">
-                  <div className="flex items-center gap-3">
-                    <StepButtons 
-                      onUp={() => setFat(fat + 100)} 
-                      onDown={() => setFat(Math.max(0, fat - 100))} 
-                      colorClass="text-indigo-500"
-                    />
-                    <label className="text-xs font-bold text-indigo-500 uppercase tracking-tight">Faturamento Bruto</label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase">R$</span>
-                    <div className="relative">
-                      <Input 
-                        type="number" 
-                        value={fat} 
-                        onChange={(e) => setFat(parseFloat(e.target.value) || 0)}
-                        className="w-28 h-10 text-right font-code font-bold text-indigo-500 bg-background/50 border-indigo-500/20 focus-visible:ring-1 focus-visible:ring-indigo-500 pr-7 transition-all"
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground/70">Protocolo de Comando</span>
+              </div>
+              <CardTitle className="text-2xl font-black tracking-tight text-foreground">Configurações de Blindagem</CardTitle>
+              <CardDescription className="text-xs font-medium text-muted-foreground">Otimize seu fluxo com precisão tática.</CardDescription>
+            </CardHeader>
+
+            <CardContent className="space-y-8 relative">
+              
+              {/* Seção 1: Motor de Entrada */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-px flex-1 bg-gradient-to-r from-indigo-500/30 to-transparent" />
+                  <span className="text-[9px] font-black text-indigo-500 uppercase tracking-[0.3em]">Motor de Entrada</span>
+                  <div className="h-px flex-1 bg-gradient-to-l from-indigo-500/30 to-transparent" />
+                </div>
+                
+                <div className="group/item relative p-6 rounded-[24px] bg-indigo-500/[0.03] border border-indigo-500/10 hover:border-indigo-500/30 transition-all duration-500 shadow-inner">
+                  <div className="flex items-center justify-between gap-6">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-indigo-500 rounded-2xl text-white shadow-lg shadow-indigo-500/20 group-hover/item:scale-110 transition-transform duration-500">
+                        <TrendingUp className="w-5 h-5" />
+                      </div>
+                      <div className="space-y-0.5">
+                        <label className="text-[10px] font-black text-indigo-500 uppercase tracking-widest leading-none">Faturamento Mensal</label>
+                        <div className="text-xs text-muted-foreground font-medium italic opacity-60">Receita Bruta Total</div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <StepButtons 
+                        onUp={() => setFat(fat + 100)} 
+                        onDown={() => setFat(Math.max(0, fat - 100))} 
+                        colorClass="text-indigo-500"
                       />
-                      <PenLine className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-indigo-500/30 pointer-events-none" />
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-indigo-500/50">R$</span>
+                        <Input 
+                          type="number" 
+                          value={fat} 
+                          onChange={(e) => setFat(parseFloat(e.target.value) || 0)}
+                          className="w-32 h-12 pl-8 pr-10 text-right font-code font-bold text-lg text-indigo-500 bg-background/50 border-indigo-500/20 focus-visible:ring-1 focus-visible:ring-indigo-500 transition-all rounded-xl"
+                        />
+                        <PenLine className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-500/20 pointer-events-none" />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Seção 2: Drenos (Saídas Obrigatórias) */}
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-orange-500/70">
-                   <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
-                   Drenos de Saída
+              {/* Seção 2: Drenos e Estratégia */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-px flex-1 bg-gradient-to-r from-primary/30 to-transparent" />
+                  <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">Drenos e Estratégia</span>
+                  <div className="h-px flex-1 bg-gradient-to-l from-primary/30 to-transparent" />
                 </div>
-                <div className="grid gap-3">
-                  {/* Custos */}
-                  <div className="flex items-center justify-between p-3.5 rounded-2xl bg-orange-500/5 border border-orange-500/10 transition-all hover:border-orange-500/30">
+                
+                <div className="grid gap-4">
+                  {/* Custos Operacionais */}
+                  <div className="group/item flex items-center justify-between p-4 rounded-2xl bg-orange-500/[0.03] border border-orange-500/10 hover:border-orange-500/30 transition-all duration-500">
+                    <div className="flex items-center gap-4">
+                       <div className="p-2.5 bg-orange-500/10 rounded-xl text-orange-500 group-hover/item:bg-orange-500 group-hover/item:text-white transition-all duration-500">
+                         <Scale className="w-4 h-4" />
+                       </div>
+                       <div className="space-y-0.5">
+                         <label className="text-[9px] font-black text-orange-500 uppercase tracking-widest leading-none">Operacional</label>
+                         <div className="text-[10px] text-muted-foreground font-medium italic opacity-60">Manutenção do Negócio</div>
+                       </div>
+                    </div>
                     <div className="flex items-center gap-3">
                       <StepButtons 
                         onUp={() => setCustos(custos + 50)} 
                         onDown={() => setCustos(Math.max(0, custos - 50))} 
                         colorClass="text-orange-500"
                       />
-                      <label className="text-xs font-bold text-orange-500 uppercase tracking-tight">Operacional</label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase">R$</span>
-                      <Input 
-                        type="number" 
-                        value={custos} 
-                        onChange={(e) => setCustos(parseFloat(e.target.value) || 0)}
-                        className="w-24 h-9 text-right font-code font-bold text-orange-500 bg-background/50 border-orange-500/20 focus-visible:ring-1 focus-visible:ring-orange-500 transition-all"
-                      />
+                      <div className="relative">
+                        <Input 
+                          type="number" 
+                          value={custos} 
+                          onChange={(e) => setCustos(parseFloat(e.target.value) || 0)}
+                          className="w-24 h-10 text-right font-code font-bold text-orange-500 bg-background/50 border-orange-500/20 focus-visible:ring-1 focus-visible:ring-orange-500 transition-all rounded-lg"
+                        />
+                      </div>
                     </div>
                   </div>
 
                   {/* Pró-labore */}
-                  <div className="flex items-center justify-between p-3.5 rounded-2xl bg-blue-500/5 border border-blue-500/10 transition-all hover:border-blue-500/30">
+                  <div className="group/item flex items-center justify-between p-4 rounded-2xl bg-blue-500/[0.03] border border-blue-500/10 hover:border-blue-500/30 transition-all duration-500">
+                    <div className="flex items-center gap-4">
+                       <div className="p-2.5 bg-blue-500/10 rounded-xl text-blue-500 group-hover/item:bg-blue-500 group-hover/item:text-white transition-all duration-500">
+                         <UserCircle className="w-4 h-4" />
+                       </div>
+                       <div className="space-y-0.5">
+                         <label className="text-[9px] font-black text-blue-500 uppercase tracking-widest leading-none">Seu Salário</label>
+                         <div className="text-[10px] text-muted-foreground font-medium italic opacity-60">Pró-labore Fixo</div>
+                       </div>
+                    </div>
                     <div className="flex items-center gap-3">
                       <StepButtons 
                         onUp={() => setProlabore(prolabore + 50)} 
                         onDown={() => setProlabore(Math.max(0, prolabore - 50))} 
                         colorClass="text-blue-500"
                       />
-                      <label className="text-xs font-bold text-blue-500 uppercase tracking-tight">Seu Salário (PF)</label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase">R$</span>
-                      <Input 
-                        type="number" 
-                        value={prolabore} 
-                        onChange={(e) => setProlabore(parseFloat(e.target.value) || 0)}
-                        className="w-24 h-9 text-right font-code font-bold text-blue-500 bg-background/50 border-blue-500/20 focus-visible:ring-1 focus-visible:ring-blue-500 transition-all"
-                      />
+                      <div className="relative">
+                        <Input 
+                          type="number" 
+                          value={prolabore} 
+                          onChange={(e) => setProlabore(parseFloat(e.target.value) || 0)}
+                          className="w-24 h-10 text-right font-code font-bold text-blue-500 bg-background/50 border-blue-500/20 focus-visible:ring-1 focus-visible:ring-blue-500 transition-all rounded-lg"
+                        />
+                      </div>
                     </div>
                   </div>
 
-                  {/* Reserva */}
-                  <div className="flex items-center justify-between p-3.5 rounded-2xl bg-purple-500/5 border border-purple-500/10 transition-all hover:border-purple-500/30">
+                  {/* Reserva Percentual */}
+                  <div className="group/item flex items-center justify-between p-4 rounded-2xl bg-purple-500/[0.03] border border-purple-500/10 hover:border-purple-500/30 transition-all duration-500">
+                    <div className="flex items-center gap-4">
+                       <div className="p-2.5 bg-purple-500/10 rounded-xl text-purple-500 group-hover/item:bg-purple-500 group-hover/item:text-white transition-all duration-500">
+                         <ShieldCheck className="w-4 h-4" />
+                       </div>
+                       <div className="space-y-0.5">
+                         <label className="text-[9px] font-black text-purple-500 uppercase tracking-widest leading-none">Blindagem PJ</label>
+                         <div className="text-[10px] text-muted-foreground font-medium italic opacity-60">Retenção de Segurança</div>
+                       </div>
+                    </div>
                     <div className="flex items-center gap-3">
                       <StepButtons 
                         onUp={() => setReservaPct(Math.min(100, reservaPct + 5))} 
                         onDown={() => setReservaPct(Math.max(0, reservaPct - 5))} 
                         colorClass="text-purple-500"
                       />
-                      <label className="text-xs font-bold text-purple-500 uppercase tracking-tight">Reserva Estratégica</label>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Input 
-                        type="number" 
-                        value={reservaPct} 
-                        onChange={(e) => setReservaPct(parseFloat(e.target.value) || 0)}
-                        className="w-16 h-9 text-right font-code font-bold text-purple-500 bg-background/50 border-purple-500/20 focus-visible:ring-1 focus-visible:ring-purple-500 transition-all"
-                      />
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase">%</span>
+                      <div className="relative">
+                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-purple-500/50">%</span>
+                        <Input 
+                          type="number" 
+                          value={reservaPct} 
+                          onChange={(e) => setReservaPct(parseFloat(e.target.value) || 0)}
+                          className="w-20 h-10 text-center font-code font-bold text-purple-500 bg-background/50 border-purple-500/20 focus-visible:ring-1 focus-visible:ring-purple-500 transition-all rounded-lg pr-5"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -278,7 +316,7 @@ export function FinancialDistribution({
                       </div>
                       <div>
                         <div className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Sobra Real</div>
-                        <div className="text-lg font-black text-foreground">{formatCurrency(sobra)} <span className="text-[10px] text-amber-500">Disponível</span></div>
+                        <div className="text-lg font-black text-foreground">{formatCurrency(sobra)} <span className="text-[10px] text-amber-500 font-bold uppercase">Disponível</span></div>
                       </div>
                    </div>
                    <div className="flex items-center gap-3">
@@ -287,7 +325,7 @@ export function FinancialDistribution({
                       </div>
                       <div>
                         <div className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Blindagem PJ</div>
-                        <div className="text-lg font-black text-foreground">{formatCurrency(reservaVal)} <span className="text-[10px] text-purple-500">Acumulado</span></div>
+                        <div className="text-lg font-black text-foreground">{formatCurrency(reservaVal)} <span className="text-[10px] text-purple-500 font-bold uppercase">Acumulado</span></div>
                       </div>
                    </div>
                 </div>
@@ -297,11 +335,10 @@ export function FinancialDistribution({
         </div>
       </div>
 
-      {/* Manifesto Educativo de Rodapé - Design Elegante e Sofisticado */}
+      {/* Manifesto Educativo de Rodapé */}
       <section className="relative p-1 rounded-[40px] bg-gradient-to-br from-primary/20 via-border/50 to-indigo-500/10 shadow-2xl overflow-hidden group transition-all duration-700 hover:shadow-primary/10">
         <div className="bg-card/40 backdrop-blur-xl rounded-[39px] p-8 md:p-12 flex flex-col lg:flex-row items-center justify-between gap-12 relative">
           
-          {/* Decorativo de fundo sutil */}
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 blur-[100px] rounded-full group-hover:bg-primary/20 transition-all duration-1000" />
           
           <div className="flex flex-col lg:flex-row items-center gap-10 relative z-10 max-w-4xl">
@@ -318,7 +355,7 @@ export function FinancialDistribution({
                  O Poder da Distribuição <span className="text-primary">Disciplinada</span>
                </h4>
                <p className="text-sm md:text-base text-muted-foreground leading-relaxed font-medium text-balance">
-                  No MEI Flow, o faturamento não é seu salário. Ele é a energia que sustenta a sua <strong className="text-foreground">Blindagem Patrimonial</strong>. 
+                  No MEI Flow, o faturamento não é seu salário. Ele é a energia que sustenta a sua <strong>Blindagem Patrimonial</strong>. 
                   Mantenha a disciplina mensal e veja o seu lucro trimestral se transformar em <span className="text-primary italic font-bold">liberdade inegociável</span>.
                </p>
             </div>
