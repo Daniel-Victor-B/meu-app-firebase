@@ -32,7 +32,8 @@ import {
   Landmark,
   Sparkles,
   ChevronRight,
-  Zap
+  Zap,
+  Calendar
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -42,6 +43,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { type MonthlyData } from "@/app/page";
 
@@ -90,17 +98,25 @@ export function CashFlowLedger({
   monthlyData, setMonthlyData
 }: CashFlowLedgerProps) {
   const [mesesReserva, setMesesReserva] = useState(6);
+  const [startMonth, setStartMonth] = useState(0);
   const das = 76;
 
   // Persistência local para configurações da planilha
   useEffect(() => {
-    const saved = localStorage.getItem("mei-flow-ledger-meses-reserva");
-    if (saved) setMesesReserva(parseInt(saved, 10) || 6);
+    const savedReserva = localStorage.getItem("mei-flow-ledger-meses-reserva");
+    if (savedReserva) setMesesReserva(parseInt(savedReserva, 10) || 6);
+    
+    const savedStartMonth = localStorage.getItem("mei-flow-ledger-start-month");
+    if (savedStartMonth) setStartMonth(parseInt(savedStartMonth, 10) || 0);
   }, []);
 
   useEffect(() => {
     localStorage.setItem("mei-flow-ledger-meses-reserva", mesesReserva.toString());
   }, [mesesReserva]);
+
+  useEffect(() => {
+    localStorage.setItem("mei-flow-ledger-start-month", startMonth.toString());
+  }, [startMonth]);
 
   useEffect(() => {
     if (monthlyData.every(m => m.receita === 5000 && m.custos === 1500)) {
@@ -308,13 +324,22 @@ export function CashFlowLedger({
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center gap-1.5 text-[10px] text-red-500 font-black uppercase">
-                  <ShieldCheck className="w-3 h-3" />
-                  Imposto DAS
+                <div className="flex items-center gap-1.5 text-[10px] text-amber-500 font-black uppercase">
+                  <Calendar className="w-3 h-3" />
+                  Mês de Início
                 </div>
-                <div className="h-9 flex items-center justify-center text-xs font-bold bg-secondary/80 rounded-md border border-red-500/30 text-red-500 tabular-nums">
-                  {formatCurrency(das)}
-                </div>
+                <Select value={startMonth.toString()} onValueChange={(v) => setStartMonth(parseInt(v))}>
+                  <SelectTrigger className="h-9 text-xs font-bold bg-background/80 border-amber-500/30 focus:border-amber-500 focus:ring-amber-500/20">
+                    <SelectValue placeholder="Mês" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {MESES.map((mes, idx) => (
+                      <SelectItem key={idx} value={idx.toString()} className="text-xs font-medium">
+                        {mes}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </CardContent>
@@ -435,7 +460,7 @@ export function CashFlowLedger({
                       </div>
                     </TableCell>
                     <TableCell className="font-bold text-xs py-3 border-r text-center bg-card">
-                      {MESES[i]}
+                      {MESES[(i + startMonth) % 12]}
                     </TableCell>
                     <TableCell className="py-2 px-6 bg-indigo-500/5">
                       <div className="relative group/input">
