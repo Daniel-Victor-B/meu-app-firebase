@@ -255,20 +255,22 @@ export function FinancialDistribution({
         <div className="lg:col-span-7 space-y-6">
           <Card className="border-border/50 shadow-xl overflow-hidden h-full flex flex-col">
             <CardHeader className="bg-secondary/20 border-b pr-3 pt-3">
-              <div className="flex items-start justify-between">
-                <div className="flex flex-col">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex flex-col min-w-0">
                   <CardTitle className="text-xl font-headline font-bold">Mapa do Capital</CardTitle>
                   <CardDescription className="text-[10px] uppercase font-bold text-muted-foreground/60 leading-none mb-1.5 flex items-center gap-1">
-                    <span className="whitespace-nowrap">Distribuição proporcional</span>
-                    <span className="whitespace-nowrap">do faturamento.</span>
-                    <ArrowRight className="w-2.5 h-2.5 opacity-50" />
+                    <div className="flex flex-col">
+                      <span className="whitespace-nowrap">Distribuição proporcional</span>
+                      <span className="whitespace-nowrap">do faturamento.</span>
+                    </div>
+                    <ArrowRight className="w-2.5 h-2.5 opacity-50 shrink-0" />
                   </CardDescription>
                 </div>
                 <Badge variant="outline" className={cn(
-                  "font-black text-[10px] uppercase tracking-widest px-3 py-1 flex items-center gap-1.5 -mt-1 whitespace-nowrap",
+                  "font-black text-[10px] uppercase tracking-widest px-3 py-1 flex items-center gap-1.5 -mt-1 whitespace-nowrap shrink-0",
                   sobra > 0 ? "bg-primary/20 text-primary border-primary/20" : "bg-destructive/20 text-destructive border-destructive/20"
                 )}>
-                  {sobra > 0 ? "Operação Saudável" : "Cuidado Fiscais"}
+                  <span className="whitespace-nowrap">{sobra > 0 ? "Operação Saudável" : "Cuidado Fiscais"}</span>
                   <Activity className={cn("w-3 h-3", sobra > 0 && "animate-pulse")} />
                 </Badge>
               </div>
