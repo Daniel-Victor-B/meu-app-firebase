@@ -83,7 +83,7 @@ export function FinancialDistribution({
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Painel de Parâmetros Financeiros - Configuração de Blindagem */}
+        {/* Painel de Parâmetros Financeiros */}
         <div className="lg:col-span-5 space-y-4">
           <Card className="border-white/10 shadow-2xl overflow-hidden bg-card/40 backdrop-blur-2xl relative group transition-all duration-700 h-full flex flex-col">
             <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 via-primary to-purple-500 opacity-50" />
@@ -95,21 +95,17 @@ export function FinancialDistribution({
                     <div className="p-1.5 bg-primary/20 rounded-lg text-primary shadow-[0_0_20px_rgba(var(--primary),0.4)] animate-pulse">
                       <Shield className="w-4 h-4" />
                     </div>
-                    <span className="text-[9px] font-black uppercase tracking-[0.4em] text-primary/80">Gestão de Elite</span>
+                    <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5 text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 flex items-center gap-1.5">
+                      <ShieldCheck className="w-3 h-3" />
+                      Sistema de Elite
+                    </Badge>
                   </div>
-                  <CardTitle className="text-xl font-black tracking-tighter text-foreground">Arquitetura de Blindagem</CardTitle>
-                </div>
-                <div className="flex flex-col items-end">
-                   <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 flex items-center gap-1.5">
-                     <ShieldCheck className="w-2.5 h-2.5" />
-                     Sistema de Elite
-                   </Badge>
-                   <CardDescription className="text-[10px] font-bold text-muted-foreground mt-1">Gestão de Fluxo Patrimonial</CardDescription>
+                  <CardTitle className="text-2xl font-black tracking-tighter text-foreground pt-1">Configuração de Fluxo</CardTitle>
                 </div>
               </div>
             </CardHeader>
 
-            <CardContent className="flex-1 space-y-5 px-6 pb-6 relative">
+            <CardContent className="flex-1 space-y-4 px-6 pb-6 relative">
               
               {/* Seção 1: Motor de Entrada */}
               <div className="space-y-3">
@@ -360,7 +356,7 @@ export function FinancialDistribution({
         </div>
       </div>
 
-      {/* Manifesto Educativo de Rodapé - Alinhamento Cirúrgico */}
+      {/* Manifesto Educativo de Rodapé */}
       <section className="relative p-1 rounded-[40px] bg-gradient-to-br from-primary/20 via-border/50 to-indigo-500/10 shadow-2xl overflow-hidden group transition-all duration-700 hover:shadow-primary/10">
         <div className="bg-card/40 backdrop-blur-xl rounded-[39px] p-8 md:p-12 flex flex-col lg:flex-row items-center justify-between gap-12 relative">
           
