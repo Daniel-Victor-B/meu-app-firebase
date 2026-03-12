@@ -91,31 +91,25 @@ export function FinancialDistribution({
             <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 via-primary to-purple-500 opacity-50" />
             
             <CardHeader className="pb-3 pt-4 px-6 relative">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-1.5 bg-primary/20 rounded-lg text-primary shadow-[0_0_20px_rgba(var(--primary),0.4)] animate-pulse shrink-0">
-                    <Activity className="w-5 h-5" />
-                  </div>
-                  <CardTitle className="text-2xl font-black tracking-tighter bg-gradient-to-r from-indigo-500 via-primary to-purple-500 bg-clip-text text-transparent">
-                    Gestão de Fluxo
-                  </CardTitle>
+              <div className="flex items-center gap-3">
+                <div className="p-1.5 bg-primary/20 rounded-lg text-primary shadow-[0_0_20px_rgba(var(--primary),0.4)] animate-pulse shrink-0">
+                  <Activity className="w-5 h-5" />
                 </div>
-                <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5 text-[9px] font-black uppercase tracking-widest px-2.5 py-1 flex items-center gap-1.5 shrink-0">
-                  <Zap className="w-3 h-3" />
-                  Sistema de Eficiência Máxima
-                </Badge>
+                <CardTitle className="text-2xl font-black tracking-tighter bg-gradient-to-r from-indigo-500 via-primary to-purple-500 bg-clip-text text-transparent">
+                  Gestão de Fluxo
+                </CardTitle>
               </div>
             </CardHeader>
 
             <CardContent className="flex-1 space-y-4 px-6 pb-6 relative">
               
-              {/* Seção 1: Motor de Entrada */}
+              {/* Seção 1: Entrada de Capital */}
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <div className="h-px flex-1 bg-gradient-to-r from-indigo-500/40 to-transparent" />
                   <div className="flex items-center gap-2">
-                    <Sparkles className="w-3 h-3 text-indigo-400" />
-                    <span className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.3em]">Motor de Faturamento</span>
+                    <Zap className="w-3 h-3 text-indigo-400" />
+                    <span className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.3em]">Fluxo de Receita</span>
                   </div>
                   <div className="h-px flex-1 bg-gradient-to-l from-indigo-500/40 to-transparent" />
                 </div>
@@ -156,13 +150,13 @@ export function FinancialDistribution({
                 </div>
               </div>
 
-              {/* Seção 2: Drenos e Estratégia */}
+              {/* Seção 2: Distribuição Tática */}
               <div className="space-y-2 relative">
                 <div className="flex items-center gap-3 relative z-10">
                   <div className="h-px flex-1 bg-gradient-to-r from-primary/30 to-transparent" />
                   <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-3 h-3 text-primary" />
-                    <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">Arquitetura de Saída</span>
+                    <Settings className="w-3 h-3 text-primary" />
+                    <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">Distribuição Tática</span>
                   </div>
                   <div className="h-px flex-1 bg-gradient-to-l from-primary/30 to-transparent" />
                 </div>
