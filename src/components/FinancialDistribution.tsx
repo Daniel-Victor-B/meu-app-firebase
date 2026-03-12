@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -98,7 +97,7 @@ export function FinancialDistribution({
           <Card className="border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.3)] overflow-hidden bg-card/40 backdrop-blur-2xl relative group transition-all duration-700 h-full flex flex-col">
             <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-indigo-500 via-primary to-purple-500 shadow-[0_0_35px_rgba(34,197,94,1)] z-20" />
             
-            <CardHeader className="pb-4 pt-6 px-6 relative">
+            <CardHeader className="pb-4 pt-4 px-6 relative">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="p-2 bg-primary/20 rounded-lg text-primary shadow-[0_0_35px_rgba(34,197,94,0.7)] animate-pulse shrink-0">
@@ -253,7 +252,8 @@ export function FinancialDistribution({
         </div>
 
         <div className="lg:col-span-7 space-y-6">
-          <Card className="border-border/50 shadow-xl overflow-hidden h-full flex flex-col">
+          <Card className="border-border/50 shadow-xl overflow-hidden h-full flex flex-col relative">
+            <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500/30 via-primary/30 to-purple-500/30 z-20" />
             <CardHeader className="bg-secondary/20 border-b pr-3 pt-3">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex flex-col min-w-0">

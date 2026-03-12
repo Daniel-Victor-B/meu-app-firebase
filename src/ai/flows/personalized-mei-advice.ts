@@ -66,22 +66,30 @@ export type PersonalizedMeiAdviceOutput = z.infer<
   typeof PersonalizedMeiAdviceOutputSchema
 >;
 
-export async function personalizedMeiAdvice(
-  input: PersonalizedMeiAdviceInput
-): Promise<PersonalizedMeiAdviceOutput> {
-  return personalizedMeiAdviceFlow(input);
-}
-
-const MEI_DAS_FIXO = 76; // Valor fixo do DAS atualizado (INSS + ISS)
+const MEI_DAS_FIXO = 76;
 const MEI_LIMITE_80_PERCENT = 0.8;
+
+const PersonalizedMeiAdvicePromptInputSchema = PersonalizedMeiAdviceInputSchema.extend({
+  dasFixo: z.number(),
+  totalDespesasMensais: z.number(),
+  sobraMensal: z.number(),
+  valorReserva: z.number(),
+  lucroDisponivel: z.number(),
+  faturamentoAnualProjetado: z.number(),
+  faturamentoAcumuladoNoAno: z.number(),
+  percentualLimiteProjetado: z.number(),
+  percentualLimiteAcumulado: z.number(),
+  restanteNoLimite: z.number(),
+  limite80Percent: z.number(),
+});
 
 const personalizedMeiAdvicePrompt = ai.definePrompt({
   name: 'personalizedMeiAdvicePrompt',
-  input: {schema: PersonalizedMeiAdviceInputSchema},
+  input: {schema: PersonalizedMeiAdvicePromptInputSchema},
   output: {schema: PersonalizedMeiAdviceOutputSchema},
   prompt: `Você é um consultor financeiro especializado em Microempreendedores Individuais (MEI) no Brasil. Sua função é analisar os dados financeiros fornecidos e oferecer conselhos práticos e personalizados para otimizar a distribuição do faturamento, gerenciar o limite anual do MEI e identificar oportunidades de crescimento, ou alertar sobre riscos.
 
-Com base nos seguintes dados:
+Com base nos seguintes dados e cálculos realizados:
 
 Faturamento Mensal: R\${{{faturamentoMensal}}}
 Custos Operacionais: R\${{{custosOperacionais}}}
@@ -90,21 +98,21 @@ Reserva sobre Sobra (%): {{{reservaPct}}}%
 Meses com Faturamento no Ano: {{{mesesFaturamento}}} meses
 Limite Anual MEI: R\${{{meiLimiteAnual}}}
 
-Considere os seguintes cálculos para sua análise:
+Cálculos Financeiros:
+DAS Fixo Mensal: R\${{{dasFixo}}}
+Total de Despesas Mensais (Custos + DAS + Pró-labore): R\${{{totalDespesasMensais}}}
+Sobra Mensal (Faturamento - Total Despesas): R\${{{sobraMensal}}}
+Valor da Reserva (se houver sobra): R\${{{valorReserva}}}
+Lucro Disponível (Sobra - Reserva): R\${{{lucroDisponivel}}}
 
-DAS Fixo Mensal: R\$${MEI_DAS_FIXO}
-Total de Despesas Mensais (Custos + DAS + Pró-labore): R\${{math 'add' custosOperacionais (math 'add' ${MEI_DAS_FIXO} prolabore)}}
-Sobra Mensal (Faturamento - Total Despesas): R\${{math 'sub' faturamentoMensal (math 'add' custosOperacionais (math 'add' ${MEI_DAS_FIXO} prolabore))}}
-Valor da Reserva (se houver sobra): R\${{math 'round' (math 'mul' (math 'div' (math 'sub' faturamentoMensal (math 'add' custosOperacionais (math 'add' ${MEI_DAS_FIXO} prolabore))) 100) reservaPct)}}
-Lucro Disponível (Sobra - Reserva): R\${{math 'sub' (math 'sub' faturamentoMensal (math 'add' custosOperacionais (math 'add' ${MEI_DAS_FIXO} prolabore))) (math 'round' (math 'mul' (math 'div' (math 'sub' faturamentoMensal (math 'add' custosOperacionais (math 'add' ${MEI_DAS_FIXO} prolabore))) 100) reservaPct))}}
+Projeção Anual:
+Faturamento Anual Projetado: R\${{{faturamentoAnualProjetado}}}
+Faturamento Acumulado no Ano: R\${{{faturamentoAcumuladoNoAno}}}
+Percentual do Limite Anual Projetado: {{{percentualLimiteProjetado}}}%
+Percentual do Limite Anual Acumulado: {{{percentualLimiteAcumulado}}}%
+Restante no Limite Anual: R\${{{restanteNoLimite}}}
 
-Faturamento Anual Projetado (Faturamento Mensal * 12): R\${{math 'mul' faturamentoMensal 12}}
-Faturamento Acumulado no Ano (Faturamento Mensal * Meses Faturamento): R\${{math 'mul' faturamentoMensal mesesFaturamento}}
-Percentual do Limite Anual Projetado: {{math 'round' (math 'mul' (math 'div' (math 'mul' faturamentoMensal 12) meiLimiteAnual) 100)}}%
-Percentual do Limite Anual Acumulado: {{math 'round' (math 'mul' (math 'div' (math 'mul' faturamentoMensal mesesFaturamento) meiLimiteAnual) 100)}}%
-Restante no Limite Anual: R\${{math 'sub' meiLimiteAnual (math 'mul' faturamentoMensal mesesFaturamento)}}
-
-Se o faturamento anual projetado exceder R\${{math 'mul' meiLimiteAnual MEI_LIMITE_80_PERCENT}} (80% do limite anual), um alerta é acionado para considerar a migração para ME.
+Se o faturamento anual projetado exceder R\${{{limite80Percent}}} (80% do limite anual), um alerta é acionado para considerar a migração para ME.
 
 Por favor, forneça o aconselhamento financeiro e sugestões de otimização no formato JSON, conforme o schema de saída definido. Seja direto, prático e claro.`,
 });
@@ -116,22 +124,40 @@ const personalizedMeiAdviceFlow = ai.defineFlow(
     outputSchema: PersonalizedMeiAdviceOutputSchema,
   },
   async (input) => {
-    // Helper for Handlebars to perform basic math operations
-    ai.handlebars.registerHelper('math', function (lvalue, operator, rvalue) {
-      lvalue = parseFloat(lvalue);
-      rvalue = parseFloat(rvalue);
+    const totalDespesasMensais = input.custosOperacionais + MEI_DAS_FIXO + input.prolabore;
+    const sobraMensal = Math.max(0, input.faturamentoMensal - totalDespesasMensais);
+    const valorReserva = Math.round((sobraMensal * input.reservaPct) / 100);
+    const lucroDisponivel = sobraMensal - valorReserva;
 
-      return {
-        'add': lvalue + rvalue,
-        'sub': lvalue - rvalue,
-        'mul': lvalue * rvalue,
-        'div': lvalue / rvalue,
-        'mod': lvalue % rvalue,
-        'round': Math.round(lvalue)
-      }[operator];
-    });
+    const faturamentoAnualProjetado = input.faturamentoMensal * 12;
+    const faturamentoAcumuladoNoAno = input.faturamentoMensal * input.mesesFaturamento;
+    const percentualLimiteProjetado = Math.round((faturamentoAnualProjetado / input.meiLimiteAnual) * 100);
+    const percentualLimiteAcumulado = Math.round((faturamentoAcumuladoNoAno / input.meiLimiteAnual) * 100);
+    const restanteNoLimite = Math.max(0, input.meiLimiteAnual - faturamentoAcumuladoNoAno);
+    const limite80Percent = input.meiLimiteAnual * MEI_LIMITE_80_PERCENT;
 
-    const {output} = await personalizedMeiAdvicePrompt(input);
+    const promptInput = {
+      ...input,
+      dasFixo: MEI_DAS_FIXO,
+      totalDespesasMensais,
+      sobraMensal,
+      valorReserva,
+      lucroDisponivel,
+      faturamentoAnualProjetado,
+      faturamentoAcumuladoNoAno,
+      percentualLimiteProjetado,
+      percentualLimiteAcumulado,
+      restanteNoLimite,
+      limite80Percent,
+    };
+
+    const {output} = await personalizedMeiAdvicePrompt(promptInput);
     return output!;
   }
 );
+
+export async function personalizedMeiAdvice(
+  input: PersonalizedMeiAdviceInput
+): Promise<PersonalizedMeiAdviceOutput> {
+  return personalizedMeiAdviceFlow(input);
+}

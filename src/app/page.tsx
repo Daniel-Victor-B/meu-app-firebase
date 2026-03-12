@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react";
@@ -119,7 +118,7 @@ export default function Home() {
           </TabsTrigger>
         </TabsList>
 
-        <div className="mt-1">
+        <div className="mt-0">
           <TabsContent value="distribuicao">
             <div className="w-full">
               <FinancialDistribution 
