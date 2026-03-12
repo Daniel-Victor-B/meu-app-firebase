@@ -114,16 +114,16 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
                   </div>
                   
                   {/* Bloco Central do Parecer */}
-                  <div className="relative p-6 md:p-8 rounded-3xl bg-black/30 border border-primary/20 shadow-inner overflow-hidden group">
+                  <div className="relative p-6 md:p-7 rounded-2xl bg-black/30 border border-primary/20 shadow-inner overflow-hidden group">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50" />
-                    <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary/10 blur-[40px] rounded-full animate-pulse" />
+                    <div className="absolute -top-10 -right-10 w-20 h-20 bg-primary/10 blur-[40px] rounded-full animate-pulse" />
                     
-                    <div className="absolute top-4 right-6 flex items-center gap-1.5 opacity-40">
+                    <div className="absolute top-3 right-4 flex items-center gap-1.5 opacity-40">
                        <div className="h-1 w-1 rounded-full bg-primary" />
                        <span className="text-[7px] font-black text-primary uppercase tracking-[0.3em]">AI Synthesis</span>
                     </div>
 
-                    <p className="relative z-10 text-base md:text-lg font-medium leading-relaxed text-white tracking-tight text-center md:text-left italic">
+                    <p className="relative z-10 text-sm md:text-base font-medium leading-relaxed text-white/90 tracking-tight text-left italic">
                       "{advice.summary}"
                     </p>
                   </div>
