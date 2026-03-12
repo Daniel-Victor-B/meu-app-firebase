@@ -258,7 +258,11 @@ export function FinancialDistribution({
               <div className="flex items-start justify-between">
                 <div className="flex flex-col">
                   <CardTitle className="text-xl font-headline font-bold">Mapa do Capital</CardTitle>
-                  <CardDescription className="text-[10px] uppercase font-bold text-muted-foreground/60 leading-none mb-1.5">Distribuição proporcional do faturamento.</CardDescription>
+                  <CardDescription className="text-[10px] uppercase font-bold text-muted-foreground/60 leading-none mb-1.5 flex items-center gap-1">
+                    <span className="whitespace-nowrap">Distribuição proporcional</span>
+                    <span className="whitespace-nowrap">do faturamento.</span>
+                    <ArrowRight className="w-2.5 h-2.5 opacity-50" />
+                  </CardDescription>
                 </div>
                 <Badge variant="outline" className={cn(
                   "font-black text-[10px] uppercase tracking-widest px-3 py-1 flex items-center gap-1.5 -mt-1 whitespace-nowrap",
