@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Sparkles, Loader2, MessageSquare, Target, ShieldAlert } from "lucide-react";
+import { Sparkles, Loader2, MessageSquare, Target, ShieldAlert, Zap, Info, ShieldCheck, Activity } from "lucide-react";
 import { personalizedMeiAdvice, type PersonalizedMeiAdviceOutput } from "@/ai/flows/personalized-mei-advice";
 
 interface AiAdvisorProps {
@@ -19,7 +19,6 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
   const [loading, setLoading] = useState(false);
   const [advice, setAdvice] = useState<PersonalizedMeiAdviceOutput | null>(null);
 
-  // Persistência local para o conselho da IA
   useEffect(() => {
     const saved = localStorage.getItem("mei-flow-ai-advice");
     if (saved) {
@@ -89,17 +88,36 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
 
       {advice && (
         <div className="space-y-6 animate-in fade-in zoom-in duration-500">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-2 text-primary mb-1">
-                <MessageSquare className="w-5 h-5" />
-                <span className="text-xs font-bold uppercase tracking-wider">Diagnóstico Geral</span>
-              </div>
-              <CardTitle className="text-lg font-headline leading-relaxed">
-                {advice.summary}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-8">
+          <Card className="overflow-hidden border-primary/20 shadow-2xl">
+            {/* Bloco de Diagnóstico Explosivo */}
+            <div className="relative bg-black/40 p-8 md:p-10 border-b border-primary/10 overflow-hidden">
+               <div className="absolute top-0 right-0 p-12 opacity-5 rotate-12 scale-150">
+                  <Target className="w-32 h-32 text-primary" />
+               </div>
+               <div className="relative z-10 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-2 w-2 rounded-full bg-primary animate-ping" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/80">Protocolo de Diagnóstico em Tempo Real</span>
+                  </div>
+                  
+                  <h3 className="text-3xl md:text-4xl font-black tracking-tighter text-foreground leading-[1.1] max-w-4xl bg-gradient-to-br from-foreground via-foreground to-muted-foreground bg-clip-text">
+                    {advice.summary}
+                  </h3>
+
+                  <div className="flex flex-wrap gap-4 pt-4">
+                    <div className="flex items-center gap-2.5 bg-secondary/50 px-4 py-2 rounded-2xl border border-white/5 backdrop-blur-md">
+                      <Activity className="w-4 h-4 text-primary" />
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Status: Estratégico</span>
+                    </div>
+                    <div className="flex items-center gap-2.5 bg-secondary/50 px-4 py-2 rounded-2xl border border-white/5 backdrop-blur-md">
+                      <Zap className="w-4 h-4 text-amber-500" />
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Motor: DeepSeek R1</span>
+                    </div>
+                  </div>
+               </div>
+            </div>
+
+            <CardContent className="space-y-8 p-8 md:p-10">
               <section className="space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="p-1.5 bg-blue-500/10 text-blue-500 rounded-md">
