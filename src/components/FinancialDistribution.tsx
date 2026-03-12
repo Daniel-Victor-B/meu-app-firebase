@@ -97,13 +97,13 @@ export function FinancialDistribution({
                     </div>
                     <span className="text-[9px] font-black uppercase tracking-[0.4em] text-primary/80">Sistema de Elite</span>
                   </div>
-                  <CardTitle className="text-xl font-black tracking-tighter text-foreground">Blindagem Estratégica</CardTitle>
+                  <CardTitle className="text-xl font-black tracking-tighter text-foreground">Arquitetura de Blindagem</CardTitle>
                 </div>
                 <div className="flex flex-col items-end">
                    <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5 text-[8px] font-black uppercase tracking-widest px-2 py-0.5">
-                     Active Protocol
+                     Protocolo Ativo
                    </Badge>
-                   <CardDescription className="text-[10px] font-bold text-muted-foreground mt-1">Otimização em Tempo Real</CardDescription>
+                   <CardDescription className="text-[10px] font-bold text-muted-foreground mt-1">Gestão de Fluxo Patrimonial</CardDescription>
                 </div>
               </div>
             </CardHeader>
