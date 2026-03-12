@@ -33,7 +33,8 @@ import {
   Sparkles,
   ChevronRight,
   Zap,
-  Calendar
+  Calendar,
+  Clock
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -99,6 +100,7 @@ export function CashFlowLedger({
 }: CashFlowLedgerProps) {
   const [mesesReserva, setMesesReserva] = useState(6);
   const [startMonth, setStartMonth] = useState(0);
+  const [duration, setDuration] = useState(12);
   const das = 76;
 
   // Persistência local para configurações da planilha
@@ -108,6 +110,9 @@ export function CashFlowLedger({
     
     const savedStartMonth = localStorage.getItem("mei-flow-ledger-start-month");
     if (savedStartMonth) setStartMonth(parseInt(savedStartMonth, 10) || 0);
+
+    const savedDuration = localStorage.getItem("mei-flow-ledger-duration");
+    if (savedDuration) setDuration(parseInt(savedDuration, 10) || 12);
   }, []);
 
   useEffect(() => {
@@ -117,6 +122,10 @@ export function CashFlowLedger({
   useEffect(() => {
     localStorage.setItem("mei-flow-ledger-start-month", startMonth.toString());
   }, [startMonth]);
+
+  useEffect(() => {
+    localStorage.setItem("mei-flow-ledger-duration", duration.toString());
+  }, [duration]);
 
   useEffect(() => {
     if (monthlyData.every(m => m.receita === 5000 && m.custos === 1500)) {
@@ -140,7 +149,8 @@ export function CashFlowLedger({
     let acumuladoReceita = 0;
     let acumuladoLucroTotal = 0;
 
-    const rows = monthlyData.map((m) => {
+    // Use only the number of months specified by duration
+    const rows = monthlyData.slice(0, duration).map((m) => {
       if (!m.active) {
         return {
           ...m,
@@ -171,7 +181,7 @@ export function CashFlowLedger({
     });
 
     return { rows, acumuladoReserva, acumuladoReceita, acumuladoLucro: acumuladoLucroTotal };
-  }, [monthlyData, fat, custos, prolabore, reservaPct]);
+  }, [monthlyData, fat, custos, prolabore, reservaPct, duration]);
 
   const metaTotal = (custos + das + prolabore) * mesesReserva;
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
@@ -341,6 +351,29 @@ export function CashFlowLedger({
                   </SelectContent>
                 </Select>
               </div>
+
+              <div className="space-y-2 col-span-2">
+                <div className="flex items-center gap-1.5 text-[10px] text-emerald-500 font-black uppercase">
+                  <Clock className="w-3 h-3" />
+                  Duração (Meses)
+                </div>
+                <div className="flex items-center gap-2">
+                  <StepButtons 
+                    onUp={() => setDuration(Math.min(12, duration + 1))}
+                    onDown={() => setDuration(Math.max(1, duration - 1))}
+                    colorClass="text-emerald-500"
+                  />
+                  <div className="relative flex-1 group/param">
+                    <Input 
+                      className="h-9 pr-8 text-xs font-bold bg-background/80 border-emerald-500/30 focus:border-emerald-500 focus:ring-emerald-500/20 text-center" 
+                      type="number" 
+                      value={duration}
+                      onChange={(e) => setDuration(Math.min(12, Math.max(1, parseInt(e.target.value) || 1)))}
+                    />
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] font-bold text-muted-foreground uppercase">mês</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -358,7 +391,7 @@ export function CashFlowLedger({
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl">
             <div className="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
-              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Faturamento Anual (Limite MEI)</div>
+              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Faturamento (Período)</div>
               <div className="text-lg font-bold text-indigo-500 leading-tight">{formatCurrency(totals.acumuladoReceita || 0)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-indigo-500/70">
                 <ShieldCheck className="w-2.5 h-2.5" />
@@ -371,7 +404,7 @@ export function CashFlowLedger({
               <div className="text-lg font-bold text-primary leading-tight">{formatCurrency(totals.acumuladoLucro || 0)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-primary/70">
                 <Wallet className="w-2.5 h-2.5" />
-                Dinheiro Extra (Trimestral)
+                Dinheiro Extra Acumulado
               </div>
             </div>
 
