@@ -158,7 +158,7 @@ export function FinancialDistribution({
                 </div>
               </div>
 
-              {/* Seção 2: Distribuição Tática */}
+              {/* Seção 2: Estratégia de Alocação */}
               <div className="space-y-4 relative">
                 <div className="flex items-center gap-3 relative z-10">
                   <div className="h-px flex-1 bg-gradient-to-r from-primary/60 to-transparent" />
@@ -170,7 +170,7 @@ export function FinancialDistribution({
                 
                 <div className="grid gap-3 relative z-10">
                   {/* Custos Operacionais (Cristal) */}
-                  <div className="group/item relative flex items-center justify-between p-4 rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
+                  <div className="group/item relative flex items-center justify-between p-5 rounded-3xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-orange-400/10 to-transparent pointer-events-none" />
                     <div className="flex items-center gap-3 relative z-10">
                        <div className="p-2.5 bg-black/40 border border-orange-500/20 rounded-xl text-orange-400 group-hover/item:bg-orange-500 group-hover/item:text-white transition-all duration-500 shadow-[0_0_10px_rgba(249,115,22,0.2)]">
@@ -200,7 +200,7 @@ export function FinancialDistribution({
                   </div>
 
                   {/* Pró-labore (Cristal) */}
-                  <div className="group/item relative flex items-center justify-between p-4 rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
+                  <div className="group/item relative flex items-center justify-between p-5 rounded-3xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-400/10 to-transparent pointer-events-none" />
                     <div className="flex items-center gap-3 relative z-10">
                        <div className="p-2.5 bg-black/40 border border-blue-500/20 rounded-xl text-blue-400 group-hover/item:bg-blue-500 group-hover/item:text-white transition-all duration-500 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
@@ -230,7 +230,7 @@ export function FinancialDistribution({
                   </div>
 
                   {/* Blindagem (Cristal) */}
-                  <div className="group/item relative flex items-center justify-between p-4 rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
+                  <div className="group/item relative flex items-center justify-between p-5 rounded-3xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-purple-400/10 to-transparent pointer-events-none" />
                     <div className="flex items-center gap-3 relative z-10">
                        <div className="p-2.5 bg-black/40 border border-purple-500/20 rounded-xl text-purple-400 group-hover/item:bg-purple-500 group-hover/item:text-white transition-all duration-500 shadow-[0_0_10px_rgba(168,85,247,0.2)]">
