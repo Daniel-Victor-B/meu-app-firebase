@@ -88,34 +88,34 @@ export function FinancialDistribution({
         {/* Painel de Parâmetros Financeiros */}
         <div className="lg:col-span-5 space-y-4">
           <Card className="border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.3)] overflow-hidden bg-card/40 backdrop-blur-2xl relative group transition-all duration-700 h-full flex flex-col">
-            {/* Linha Gradiente de Borda com Brilho Intenso */}
-            <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-indigo-500 via-primary to-purple-500 shadow-[0_0_20px_rgba(34,197,94,0.8)] z-20" />
+            {/* Linha Gradiente de Borda com Brilho Intenso (Aumentado) */}
+            <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-indigo-500 via-primary to-purple-500 shadow-[0_0_35px_rgba(34,197,94,1)] z-20" />
             
-            <CardHeader className="pb-1 pt-4 px-6 relative">
-              <div className="flex items-center gap-3">
-                <div className="p-1.5 bg-primary/20 rounded-lg text-primary shadow-[0_0_25px_rgba(34,197,94,0.5)] animate-pulse shrink-0">
-                  <Activity className="w-5 h-5" />
+            <CardHeader className="pb-4 pt-8 px-6 relative">
+              <div className="flex items-center gap-4">
+                <div className="p-2 bg-primary/20 rounded-lg text-primary shadow-[0_0_35px_rgba(34,197,94,0.7)] animate-pulse shrink-0">
+                  <Activity className="w-6 h-6" />
                 </div>
-                <CardTitle className="text-2xl font-black tracking-tighter bg-gradient-to-r from-indigo-500 via-primary to-purple-500 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(34,197,94,0.7)]">
-                  Gestão de Fluxo
+                <CardTitle className="text-3xl font-black tracking-tighter bg-gradient-to-r from-indigo-500 via-primary to-purple-500 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(34,197,94,0.9)]">
+                  Diagnóstico Mensal
                 </CardTitle>
               </div>
             </CardHeader>
 
-            <CardContent className="flex-1 space-y-3 px-6 pb-6 relative">
+            <CardContent className="flex-1 space-y-8 px-6 pb-8 relative">
               
               {/* Seção 1: Entrada de Capital */}
-              <div className="space-y-1.5">
+              <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="h-px flex-1 bg-gradient-to-r from-indigo-500/60 to-transparent" />
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] drop-shadow-[0_0_8px_rgba(99,102,241,0.8)]">Fluxo de Entrada</span>
+                    <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] drop-shadow-[0_0_15px_rgba(99,102,241,1)]">Projeção de Entrada</span>
                   </div>
                   <div className="h-px flex-1 bg-gradient-to-l from-indigo-500/60 to-transparent" />
                 </div>
                 
-                {/* Card Faturamento (Cristal) */}
-                <div className="group/item relative p-3 rounded-3xl bg-white/5 backdrop-blur-3xl border border-white/20 shadow-[0_0_30px_rgba(99,102,241,0.1),inset_0_0_20px_rgba(255,255,255,0.05)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
+                {/* Card RECEITA (Cristal) */}
+                <div className="group/item relative p-5 rounded-3xl bg-white/5 backdrop-blur-3xl border border-white/20 shadow-[0_0_30px_rgba(99,102,241,0.1),inset_0_0_20px_rgba(255,255,255,0.05)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-400/10 via-transparent to-indigo-600/5 pointer-events-none" />
                   <div className="relative flex items-center justify-between gap-4 z-10">
                     <div className="flex items-center gap-4">
@@ -124,7 +124,7 @@ export function FinancialDistribution({
                       </div>
                       <div className="space-y-0.5">
                         <div className="flex items-center gap-2">
-                          <label className="text-[10px] font-black text-indigo-400 uppercase tracking-widest leading-none drop-shadow-[0_0_10px_rgba(99,102,241,0.8)]">Receita Mensal</label>
+                          <label className="text-[10px] font-black text-indigo-400 uppercase tracking-widest leading-none drop-shadow-[0_0_12px_rgba(99,102,241,0.9)]">RECEITA</label>
                         </div>
                         <div className="text-[8px] text-muted-foreground font-bold uppercase tracking-tighter opacity-60">Faturamento Bruto</div>
                       </div>
@@ -151,18 +151,18 @@ export function FinancialDistribution({
               </div>
 
               {/* Seção 2: Distribuição Tática */}
-              <div className="space-y-1.5 relative">
+              <div className="space-y-4 relative">
                 <div className="flex items-center gap-3 relative z-10">
                   <div className="h-px flex-1 bg-gradient-to-r from-primary/60 to-transparent" />
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]">Alocação de Capital</span>
+                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] drop-shadow-[0_0_15px_rgba(34,197,94,1)]">Estratégia de Alocação</span>
                   </div>
                   <div className="h-px flex-1 bg-gradient-to-l from-primary/60 to-transparent" />
                 </div>
                 
-                <div className="grid gap-2 relative z-10">
+                <div className="grid gap-3 relative z-10">
                   {/* Custos Operacionais (Cristal) */}
-                  <div className="group/item relative flex items-center justify-between p-3 rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
+                  <div className="group/item relative flex items-center justify-between p-4 rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-orange-400/10 to-transparent pointer-events-none" />
                     <div className="flex items-center gap-3 relative z-10">
                        <div className="p-2.5 bg-black/40 border border-orange-500/20 rounded-xl text-orange-400 group-hover/item:bg-orange-500 group-hover/item:text-white transition-all duration-500 shadow-[0_0_10px_rgba(249,115,22,0.2)]">
@@ -192,7 +192,7 @@ export function FinancialDistribution({
                   </div>
 
                   {/* Pró-labore (Cristal) */}
-                  <div className="group/item relative flex items-center justify-between p-3 rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
+                  <div className="group/item relative flex items-center justify-between p-4 rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-400/10 to-transparent pointer-events-none" />
                     <div className="flex items-center gap-3 relative z-10">
                        <div className="p-2.5 bg-black/40 border border-blue-500/20 rounded-xl text-blue-400 group-hover/item:bg-blue-500 group-hover/item:text-white transition-all duration-500 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
@@ -222,7 +222,7 @@ export function FinancialDistribution({
                   </div>
 
                   {/* Blindagem (Cristal) */}
-                  <div className="group/item relative flex items-center justify-between p-3 rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
+                  <div className="group/item relative flex items-center justify-between p-4 rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-purple-400/10 to-transparent pointer-events-none" />
                     <div className="flex items-center gap-3 relative z-10">
                        <div className="p-2.5 bg-black/40 border border-purple-500/20 rounded-xl text-purple-400 group-hover/item:bg-purple-500 group-hover/item:text-white transition-all duration-500 shadow-[0_0_10px_rgba(168,85,247,0.2)]">
