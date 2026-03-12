@@ -111,7 +111,7 @@ export function FinancialDistribution({
               </div>
             </CardHeader>
 
-            <CardContent className="flex-1 space-y-10 px-6 pb-6 relative">
+            <CardContent className="flex-1 space-y-8 px-6 pb-6 relative">
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
