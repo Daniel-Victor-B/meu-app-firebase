@@ -72,19 +72,19 @@ export default function Home() {
   const mesesRestantes = fat > 0 ? Math.floor(restante / fat) : 12;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 md:py-12 space-y-8 overflow-x-hidden">
-      <header className="flex items-center gap-4 mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground shadow-xl shadow-primary/20">
-          <Landmark className="w-8 h-8" />
+    <div className="max-w-6xl mx-auto px-4 py-4 md:py-6 space-y-4 overflow-x-hidden">
+      <header className="flex items-center gap-4 mb-4 animate-in fade-in slide-in-from-top-4 duration-700">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground shadow-xl shadow-primary/20">
+          <Landmark className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="text-3xl font-headline font-bold tracking-tight">MEI Flow</h1>
-          <p className="text-muted-foreground text-sm font-medium">Gestão Financeira Inteligente para MEI</p>
+          <h1 className="text-2xl font-headline font-bold tracking-tight">MEI Flow</h1>
+          <p className="text-muted-foreground text-[10px] font-medium uppercase tracking-wider">Gestão Financeira Inteligente</p>
         </div>
       </header>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-4 md:grid-cols-8 h-auto p-1 bg-secondary/50 backdrop-blur-sm border sticky top-4 z-50">
+        <TabsList className="grid grid-cols-4 md:grid-cols-8 h-auto p-1 bg-secondary/50 backdrop-blur-sm border sticky top-2 z-50">
           <TabsTrigger value="distribuicao" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs">
             <DollarSign className="w-4 h-4" />
             <span className="hidden sm:inline">Mensal</span>
@@ -119,7 +119,7 @@ export default function Home() {
           </TabsTrigger>
         </TabsList>
 
-        <div className="mt-2">
+        <div className="mt-1">
           <TabsContent value="distribuicao">
             <div className="w-full">
               <FinancialDistribution 
@@ -190,9 +190,9 @@ export default function Home() {
         </div>
       </Tabs>
 
-      <footer className="pt-12 pb-6 text-center border-t border-border/50 text-xs text-muted-foreground animate-in fade-in duration-1000">
+      <footer className="pt-8 pb-4 text-center border-t border-border/50 text-[10px] text-muted-foreground animate-in fade-in duration-1000">
         <p>© {new Date().getFullYear()} MEI Flow. Organização e clareza para seu negócio crescer.</p>
-        <p className="mt-2 opacity-50">Baseado no limite anual atual de R$ 81.000,00</p>
+        <p className="mt-1 opacity-50 uppercase tracking-widest">Baseado no limite anual de R$ 81.000,00</p>
       </footer>
     </div>
   );
