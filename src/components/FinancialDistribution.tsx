@@ -83,39 +83,39 @@ export function FinancialDistribution({
   );
 
   return (
-    <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+    <div className="space-y-4 animate-in slide-in-from-bottom-4 duration-500 pb-12">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Painel de Parâmetros Financeiros */}
         <div className="lg:col-span-5 space-y-4">
-          <Card className="border-white/10 shadow-2xl overflow-hidden bg-card/40 backdrop-blur-2xl relative group transition-all duration-700 h-full flex flex-col">
-            <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 via-primary to-purple-500 opacity-50" />
+          <Card className="border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.3)] overflow-hidden bg-card/40 backdrop-blur-2xl relative group transition-all duration-700 h-full flex flex-col">
+            {/* Linha Gradiente de Borda com Brilho Intenso */}
+            <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-indigo-500 via-primary to-purple-500 shadow-[0_0_20px_rgba(34,197,94,0.8)] z-20" />
             
-            <CardHeader className="pb-3 pt-4 px-6 relative">
+            <CardHeader className="pb-1 pt-4 px-6 relative">
               <div className="flex items-center gap-3">
-                <div className="p-1.5 bg-primary/20 rounded-lg text-primary shadow-[0_0_20px_rgba(var(--primary),0.4)] animate-pulse shrink-0">
+                <div className="p-1.5 bg-primary/20 rounded-lg text-primary shadow-[0_0_25px_rgba(34,197,94,0.5)] animate-pulse shrink-0">
                   <Activity className="w-5 h-5" />
                 </div>
-                <CardTitle className="text-2xl font-black tracking-tighter bg-gradient-to-r from-indigo-500 via-primary to-purple-500 bg-clip-text text-transparent">
+                <CardTitle className="text-2xl font-black tracking-tighter bg-gradient-to-r from-indigo-500 via-primary to-purple-500 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(34,197,94,0.7)]">
                   Gestão de Fluxo
                 </CardTitle>
               </div>
             </CardHeader>
 
-            <CardContent className="flex-1 space-y-4 px-6 pb-6 relative">
+            <CardContent className="flex-1 space-y-3 px-6 pb-6 relative">
               
               {/* Seção 1: Entrada de Capital */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <div className="flex items-center gap-3">
-                  <div className="h-px flex-1 bg-gradient-to-r from-indigo-500/40 to-transparent" />
+                  <div className="h-px flex-1 bg-gradient-to-r from-indigo-500/60 to-transparent" />
                   <div className="flex items-center gap-2">
-                    <Zap className="w-3 h-3 text-indigo-400" />
-                    <span className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.3em]">Fluxo de Receita</span>
+                    <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] drop-shadow-[0_0_8px_rgba(99,102,241,0.8)]">Fluxo de Entrada</span>
                   </div>
-                  <div className="h-px flex-1 bg-gradient-to-l from-indigo-500/40 to-transparent" />
+                  <div className="h-px flex-1 bg-gradient-to-l from-indigo-500/60 to-transparent" />
                 </div>
                 
                 {/* Card Faturamento (Cristal) */}
-                <div className="group/item relative p-4 rounded-3xl bg-white/5 backdrop-blur-3xl border border-white/20 shadow-[0_0_30px_rgba(99,102,241,0.1),inset_0_0_20px_rgba(255,255,255,0.05)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
+                <div className="group/item relative p-3 rounded-3xl bg-white/5 backdrop-blur-3xl border border-white/20 shadow-[0_0_30px_rgba(99,102,241,0.1),inset_0_0_20px_rgba(255,255,255,0.05)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-400/10 via-transparent to-indigo-600/5 pointer-events-none" />
                   <div className="relative flex items-center justify-between gap-4 z-10">
                     <div className="flex items-center gap-4">
@@ -126,7 +126,7 @@ export function FinancialDistribution({
                         <div className="flex items-center gap-2">
                           <label className="text-[10px] font-black text-indigo-400 uppercase tracking-widest leading-none drop-shadow-[0_0_10px_rgba(99,102,241,0.8)]">Receita Mensal</label>
                         </div>
-                        <div className="text-[8px] text-muted-foreground font-bold uppercase tracking-tighter opacity-60">Entrada Bruta</div>
+                        <div className="text-[8px] text-muted-foreground font-bold uppercase tracking-tighter opacity-60">Faturamento Bruto</div>
                       </div>
                     </div>
                     
@@ -142,7 +142,7 @@ export function FinancialDistribution({
                           type="number" 
                           value={fat} 
                           onChange={(e) => setFat(parseFloat(e.target.value) || 0)}
-                          className="w-32 h-11 pl-9 pr-2 text-right font-code font-black text-lg text-indigo-300 bg-black/40 border-white/10 group-hover/field:border-indigo-400/40 focus-visible:ring-1 focus-visible:ring-indigo-400 transition-all rounded-xl"
+                          className="w-32 h-10 pl-9 pr-2 text-right font-code font-black text-lg text-indigo-300 bg-black/40 border-white/10 group-hover/field:border-indigo-400/40 focus-visible:ring-1 focus-visible:ring-indigo-400 transition-all rounded-xl"
                         />
                       </div>
                     </div>
@@ -151,19 +151,18 @@ export function FinancialDistribution({
               </div>
 
               {/* Seção 2: Distribuição Tática */}
-              <div className="space-y-2 relative">
+              <div className="space-y-1.5 relative">
                 <div className="flex items-center gap-3 relative z-10">
-                  <div className="h-px flex-1 bg-gradient-to-r from-primary/30 to-transparent" />
+                  <div className="h-px flex-1 bg-gradient-to-r from-primary/60 to-transparent" />
                   <div className="flex items-center gap-2">
-                    <Settings className="w-3 h-3 text-primary" />
-                    <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">Distribuição Tática</span>
+                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]">Alocação de Capital</span>
                   </div>
-                  <div className="h-px flex-1 bg-gradient-to-l from-primary/30 to-transparent" />
+                  <div className="h-px flex-1 bg-gradient-to-l from-primary/60 to-transparent" />
                 </div>
                 
                 <div className="grid gap-2 relative z-10">
                   {/* Custos Operacionais (Cristal) */}
-                  <div className="group/item relative flex items-center justify-between p-3.5 rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
+                  <div className="group/item relative flex items-center justify-between p-3 rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-orange-400/10 to-transparent pointer-events-none" />
                     <div className="flex items-center gap-3 relative z-10">
                        <div className="p-2.5 bg-black/40 border border-orange-500/20 rounded-xl text-orange-400 group-hover/item:bg-orange-500 group-hover/item:text-white transition-all duration-500 shadow-[0_0_10px_rgba(249,115,22,0.2)]">
@@ -193,7 +192,7 @@ export function FinancialDistribution({
                   </div>
 
                   {/* Pró-labore (Cristal) */}
-                  <div className="group/item relative flex items-center justify-between p-3.5 rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
+                  <div className="group/item relative flex items-center justify-between p-3 rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-400/10 to-transparent pointer-events-none" />
                     <div className="flex items-center gap-3 relative z-10">
                        <div className="p-2.5 bg-black/40 border border-blue-500/20 rounded-xl text-blue-400 group-hover/item:bg-blue-500 group-hover/item:text-white transition-all duration-500 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
@@ -223,7 +222,7 @@ export function FinancialDistribution({
                   </div>
 
                   {/* Blindagem (Cristal) */}
-                  <div className="group/item relative flex items-center justify-between p-3.5 rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
+                  <div className="group/item relative flex items-center justify-between p-3 rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-[inset_0_0_15px_rgba(255,255,255,0.02)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-purple-400/10 to-transparent pointer-events-none" />
                     <div className="flex items-center gap-3 relative z-10">
                        <div className="p-2.5 bg-black/40 border border-purple-500/20 rounded-xl text-purple-400 group-hover/item:bg-purple-500 group-hover/item:text-white transition-all duration-500 shadow-[0_0_10px_rgba(168,85,247,0.2)]">
