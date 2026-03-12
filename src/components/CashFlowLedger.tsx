@@ -122,7 +122,7 @@ export function CashFlowLedger({
   const totals = useMemo(() => {
     let acumuladoReserva = 0;
     let acumuladoReceita = 0;
-    let acumuladoLucro = 0;
+    let acumuladoLucroTotal = 0;
 
     const rows = monthlyData.map((m) => {
       if (!m.active) {
@@ -131,7 +131,8 @@ export function CashFlowLedger({
           sobra: 0,
           reserva: 0,
           lucro: 0,
-          acumuladoReserva
+          acumuladoReserva,
+          acumuladoLucro: acumuladoLucroTotal
         };
       }
 
@@ -141,18 +142,19 @@ export function CashFlowLedger({
       
       acumuladoReserva += reserva;
       acumuladoReceita += m.receita;
-      acumuladoLucro += lucro;
+      acumuladoLucroTotal += lucro;
 
       return {
         ...m,
         sobra,
         reserva,
         lucro,
-        acumuladoReserva
+        acumuladoReserva,
+        acumuladoLucro: acumuladoLucroTotal
       };
     });
 
-    return { rows, acumuladoReserva, acumuladoReceita, acumuladoLucro };
+    return { rows, acumuladoReserva, acumuladoReceita, acumuladoLucro: acumuladoLucroTotal };
   }, [monthlyData, fat, custos, prolabore, reservaPct]);
 
   const metaTotal = (custos + das + prolabore) * mesesReserva;
@@ -361,10 +363,10 @@ export function CashFlowLedger({
 
         <CardContent className="p-0">
           <div className="overflow-x-auto no-scrollbar pb-6">
-            <Table className="min-w-[1100px] border-collapse">
+            <Table className="min-w-[1250px] border-collapse">
               <TableHeader className="bg-secondary/30">
                 <TableRow className="hover:bg-transparent border-b bg-primary/10">
-                  <TableHead colSpan={8} className="h-12 py-0 text-center border-b border-primary/20">
+                  <TableHead colSpan={9} className="h-12 py-0 text-center border-b border-primary/20">
                     <div className="flex items-center justify-between px-8 animate-pulse text-[10px] font-bold uppercase tracking-[0.4em] text-primary/80">
                       <div className="flex items-center gap-4">
                         <ArrowLeftRight className="w-4 h-4" />
@@ -413,6 +415,7 @@ export function CashFlowLedger({
                       Lucro Extra
                     </div>
                   </TableHead>
+                  <TableHead className="w-[180px] text-right font-bold text-[10px] uppercase px-6 opacity-30">Lucro Acum.</TableHead>
                   <TableHead className="w-[180px] text-right font-bold text-[10px] uppercase px-6 opacity-30">Reserva Acum.</TableHead>
                 </TableRow>
               </TableHeader>
@@ -466,6 +469,9 @@ export function CashFlowLedger({
                     </TableCell>
                     <TableCell className="text-right text-sm font-black text-primary tabular-nums px-6 bg-primary/5">
                       {formatCurrency(row.lucro || 0)}
+                    </TableCell>
+                    <TableCell className="text-right text-xs font-medium tabular-nums px-6 opacity-30">
+                      {formatCurrency(row.acumuladoLucro || 0)}
                     </TableCell>
                     <TableCell className="text-right text-xs font-medium tabular-nums px-6 opacity-30">
                       {formatCurrency(row.acumuladoReserva || 0)}
