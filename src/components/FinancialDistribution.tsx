@@ -92,7 +92,7 @@ export function FinancialDistribution({
   };
 
   return (
-    <div className="space-y-4 animate-in slide-in-from-bottom-4 duration-500 pb-2 overflow-x-hidden">
+    <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500 pb-2 overflow-x-hidden">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-5 space-y-4">
           <Card className="border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.3)] overflow-hidden bg-card/40 backdrop-blur-2xl relative group transition-all duration-700 h-full flex flex-col">
@@ -254,16 +254,17 @@ export function FinancialDistribution({
 
         <div className="lg:col-span-7 space-y-6">
           <Card className="border-border/50 shadow-xl overflow-hidden h-full flex flex-col">
-            <CardHeader className="bg-secondary/20 border-b">
+            <CardHeader className="bg-secondary/20 border-b pr-3">
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-xl font-headline font-bold">Mapa do Capital</CardTitle>
                   <CardDescription className="text-xs">Distribuição proporcional do faturamento.</CardDescription>
                 </div>
                 <Badge variant="outline" className={cn(
-                  "font-black text-[10px] uppercase tracking-widest px-3 py-1",
+                  "font-black text-[10px] uppercase tracking-widest px-3 py-1 flex items-center gap-1.5",
                   sobra > 0 ? "bg-primary/20 text-primary border-primary/20" : "bg-destructive/20 text-destructive border-destructive/20"
                 )}>
+                  <Activity className={cn("w-3 h-3", sobra > 0 && "animate-pulse")} />
                   {sobra > 0 ? "Operação Saudável" : "Cuidado Fiscais"}
                 </Badge>
               </div>
