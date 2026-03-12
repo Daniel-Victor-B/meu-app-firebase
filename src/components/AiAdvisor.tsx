@@ -1,10 +1,9 @@
-
 "use client"
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Sparkles, Loader2, MessageSquare, Target, ShieldAlert, Zap, Info, ShieldCheck, Activity, BrainCircuit, Terminal, ChevronRight } from "lucide-react";
+import { Sparkles, Loader2, MessageSquare, Target, ShieldAlert, Zap, Activity, BrainCircuit, Terminal, ChevronRight } from "lucide-react";
 import { personalizedMeiAdvice, type PersonalizedMeiAdviceOutput } from "@/ai/flows/personalized-mei-advice";
 
 interface AiAdvisorProps {
@@ -89,16 +88,13 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
       {advice && (
         <div className="space-y-6 animate-in fade-in zoom-in duration-500">
           <Card className="overflow-hidden border-primary/20 shadow-2xl bg-card">
-            {/* NOVO BLOCO DE DIAGNÓSTICO ESTRATÉGICO */}
             <div className="relative overflow-hidden">
-               {/* Decoração de Fundo High-Tech */}
                <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
                   <BrainCircuit className="w-32 h-32 text-primary" />
                </div>
                <div className="absolute -left-10 -top-10 w-40 h-40 bg-primary/5 blur-[80px] rounded-full" />
 
                <div className="p-8 md:p-10 space-y-8 relative z-10">
-                  {/* Header do Briefing */}
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/50 pb-6">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
@@ -119,7 +115,6 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
                     </div>
                   </div>
                   
-                  {/* O "Puts" no Cérebro: Texto do Diagnóstico com Design Didático */}
                   <div className="flex gap-6 items-start">
                     <div className="hidden md:flex flex-col items-center gap-2 shrink-0 pt-1">
                       <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-inner">
@@ -129,16 +124,22 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
                     </div>
                     
                     <div className="space-y-4 flex-1">
-                      <div className="inline-block px-3 py-1 rounded-full bg-secondary text-[10px] font-black uppercase tracking-widest text-muted-foreground border border-border/50">
-                        Visão Geral do Negócio
+                      <div className="flex items-center gap-2">
+                        <div className="h-px flex-1 bg-primary/20" />
+                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] whitespace-nowrap">Veredito do Consultor</span>
+                        <div className="h-px flex-1 bg-primary/20" />
                       </div>
-                      <p className="text-lg md:text-xl font-medium leading-relaxed text-foreground/90 tracking-tight">
-                        {advice.summary}
-                      </p>
+                      <div className="relative p-6 rounded-2xl bg-secondary/20 border border-white/5 shadow-inner">
+                         <p className="text-lg md:text-xl font-bold leading-tight text-white tracking-tight font-code text-center md:text-left italic">
+                           "{advice.summary}"
+                         </p>
+                         <div className="absolute -bottom-2 -right-2 p-1.5 bg-primary rounded-lg shadow-lg">
+                            <Sparkles className="w-4 h-4 text-primary-foreground" />
+                         </div>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Badges de Insight Rápido */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
                     <div className="p-4 rounded-2xl bg-secondary/30 border border-border/50 flex items-center gap-4 group hover:bg-secondary/50 transition-all">
                       <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-500">

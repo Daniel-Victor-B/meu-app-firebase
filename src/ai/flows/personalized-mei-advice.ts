@@ -1,32 +1,27 @@
 'use server';
 
-/**
- * @fileOverview Fluxo de aconselhamento financeiro para MEI via OpenRouter.
- */
-
 async function getAvailableFreeModel(apiKey: string): Promise<string> {
   try {
     const response = await fetch('https://openrouter.ai/api/v1/models', {
       headers: { 'Authorization': `Bearer ${apiKey}` }
     });
     const data = await response.json();
-    
-    // Filtra modelos gratuitos (terminam com :free)
     const freeModels = data.data
       .filter((model: any) => model.id.endsWith(':free'))
       .map((model: any) => model.id);
-    
-    if (freeModels.length > 0) {
-      return freeModels[0];
-    }
-    
-    // Fallback para modelos conhecidos
+    if (freeModels.length > 0) return freeModels[0];
     return 'meta-llama/llama-3.2-3b-instruct:free';
-  } catch (error) {
-    console.error('Erro ao buscar modelos:', error);
+  } catch {
     return 'meta-llama/llama-3.2-3b-instruct:free';
   }
 }
+
+export type PersonalizedMeiAdviceOutput = {
+  summary: string;
+  distributionAdvice: string[];
+  meiLimitAdvice: string[];
+  optimizationSuggestions: string[];
+};
 
 export async function personalizedMeiAdvice(input: {
   faturamentoMensal: number;
@@ -35,7 +30,7 @@ export async function personalizedMeiAdvice(input: {
   reservaPct: number;
   mesesFaturamento: number;
   meiLimiteAnual: number;
-}) {
+}): Promise<PersonalizedMeiAdviceOutput> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     return {
@@ -46,10 +41,7 @@ export async function personalizedMeiAdvice(input: {
     };
   }
 
-  // Busca um modelo gratuito disponível
   const model = await getAvailableFreeModel(apiKey);
-
-  // Cálculos financeiros localmente
   const MEI_DAS_FIXO = 76;
   const totalDespesas = input.custosOperacionais + MEI_DAS_FIXO + input.prolabore;
   const sobra = Math.max(0, input.faturamentoMensal - totalDespesas);
@@ -64,13 +56,20 @@ export async function personalizedMeiAdvice(input: {
   const limite80 = input.meiLimiteAnual * 0.8;
 
   const prompt = `
-Você é um consultor financeiro especializado em MEI. Com base nos dados abaixo, gere um conselho em JSON com as chaves:
+Você é um consultor financeiro de elite, estilo Wall Street, mas para MEIs brasileiros.
+Com base nos dados abaixo, gere um parecer tático em JSON com as chaves:
 - summary (string)
 - distributionAdvice (array de strings)
 - meiLimitAdvice (array de strings)
 - optimizationSuggestions (array de strings)
 
-Dados:
+REGRAS CRÍTICAS PARA O "summary":
+1. NÃO repita os números que eu já te dei (faturamento, sobra, etc). O usuário já está vendo eles na tela.
+2. Dê um VEREDITO claro: o negócio é sustentável ou é um "castelo de cartas"?
+3. Identifique o GARGALO principal.
+4. Use linguagem direta, profissional e impactante. Foque na ÚNICA coisa que ele deve mudar hoje.
+
+Dados para análise:
 - Faturamento Mensal: R$ ${input.faturamentoMensal}
 - Custos: R$ ${input.custosOperacionais}
 - Pró-labore: R$ ${input.prolabore}
@@ -78,20 +77,13 @@ Dados:
 - Meses com faturamento: ${input.mesesFaturamento}
 - Limite Anual MEI: R$ ${input.meiLimiteAnual}
 
-Cálculos:
-- DAS Fixo: R$ ${MEI_DAS_FIXO}
-- Total Despesas: R$ ${totalDespesas}
-- Sobra: R$ ${sobra}
-- Reserva: R$ ${reserva}
-- Lucro Disponível: R$ ${lucro}
-- Faturamento Anual Projetado: R$ ${faturamentoAnualProjetado}
-- Faturamento Acumulado: R$ ${faturamentoAcumulado}
+Cálculos Prontos:
+- Sobra Real: R$ ${sobra}
+- Lucro Livre: R$ ${lucro}
 - % Limite Projetado: ${percentualLimiteProjetado}%
-- % Limite Acumulado: ${percentualLimiteAcumulado}%
 - Restante no Limite: R$ ${restanteLimite}
-- 80% do Limite: R$ ${limite80}
 
-Responda apenas o JSON, sem texto adicional.
+Responda apenas o JSON.
 `;
 
   try {
@@ -102,7 +94,7 @@ Responda apenas o JSON, sem texto adicional.
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: model,
+        model,
         messages: [{ role: 'user', content: prompt }],
         response_format: { type: 'json_object' },
       }),
@@ -128,7 +120,6 @@ Responda apenas o JSON, sem texto adicional.
       };
     }
   } catch (error: any) {
-    console.error('Erro na chamada OpenRouter:', error);
     return {
       summary: `Erro ao consultar IA: ${error.message}`,
       distributionAdvice: [],
