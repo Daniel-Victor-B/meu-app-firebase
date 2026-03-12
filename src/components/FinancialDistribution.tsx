@@ -82,7 +82,7 @@ export function FinancialDistribution({
   return (
     <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500 pb-16">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Painel de Parâmetros Financeiros - Design Unicórnio Nível Extremo */}
+        {/* Painel de Parâmetros Financeiros */}
         <div className="lg:col-span-5 space-y-6">
           <Card className="border-primary/20 shadow-2xl overflow-hidden bg-card/40 backdrop-blur-xl relative group transition-all duration-500">
             <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 via-primary to-purple-500 opacity-50" />
@@ -108,15 +108,15 @@ export function FinancialDistribution({
                   <div className="h-px flex-1 bg-gradient-to-l from-indigo-500/30 to-transparent" />
                 </div>
                 
-                <div className="group/item relative p-6 rounded-[24px] bg-indigo-500/[0.03] border border-indigo-500/10 hover:border-indigo-500/30 transition-all duration-500 shadow-inner">
+                <div className="group/item relative p-6 rounded-[28px] bg-gradient-to-br from-indigo-500/[0.05] to-transparent border border-indigo-500/10 hover:border-indigo-500/40 transition-all duration-500 shadow-[0_8px_32px_rgba(99,102,241,0.05)] hover:shadow-[0_8px_32px_rgba(99,102,241,0.12)]">
                   <div className="flex items-center justify-between gap-6">
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-indigo-500 rounded-2xl text-white shadow-lg shadow-indigo-500/20 group-hover/item:scale-110 transition-transform duration-500">
+                      <div className="p-3 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl text-white shadow-lg shadow-indigo-500/30 group-hover/item:scale-110 transition-transform duration-500">
                         <TrendingUp className="w-5 h-5" />
                       </div>
-                      <div className="space-y-0.5">
-                        <label className="text-[10px] font-black text-indigo-500 uppercase tracking-widest leading-none">Faturamento Mensal</label>
-                        <div className="text-xs text-muted-foreground font-medium italic opacity-60">Receita Bruta Total</div>
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-black text-indigo-500 uppercase tracking-widest leading-none">Faturamento Mensal</label>
+                        <div className="text-[10px] text-muted-foreground font-medium italic opacity-60">Receita Bruta Total</div>
                       </div>
                     </div>
                     
@@ -126,15 +126,15 @@ export function FinancialDistribution({
                         onDown={() => setFat(Math.max(0, fat - 100))} 
                         colorClass="text-indigo-500"
                       />
-                      <div className="relative">
+                      <div className="relative group/field">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-indigo-500/50">R$</span>
                         <Input 
                           type="number" 
                           value={fat} 
                           onChange={(e) => setFat(parseFloat(e.target.value) || 0)}
-                          className="w-32 h-12 pl-8 pr-10 text-right font-code font-bold text-lg text-indigo-500 bg-background/50 border-indigo-500/20 focus-visible:ring-1 focus-visible:ring-indigo-500 transition-all rounded-xl"
+                          className="w-36 h-14 pl-9 pr-10 text-right font-code font-black text-xl text-indigo-500 bg-background/40 border-indigo-500/10 group-hover/field:border-indigo-500/40 focus-visible:ring-1 focus-visible:ring-indigo-500 transition-all rounded-2xl shadow-inner"
                         />
-                        <PenLine className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-500/20 pointer-events-none" />
+                        <PenLine className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-500/20 pointer-events-none group-hover/field:text-indigo-500/40 transition-colors" />
                       </div>
                     </div>
                   </div>
@@ -151,14 +151,14 @@ export function FinancialDistribution({
                 
                 <div className="grid gap-4">
                   {/* Custos Operacionais */}
-                  <div className="group/item flex items-center justify-between p-4 rounded-2xl bg-orange-500/[0.03] border border-orange-500/10 hover:border-orange-500/30 transition-all duration-500">
+                  <div className="group/item flex items-center justify-between p-4 rounded-2xl bg-gradient-to-br from-orange-500/[0.04] to-transparent border border-orange-500/10 hover:border-orange-500/40 transition-all duration-500 shadow-sm hover:shadow-md">
                     <div className="flex items-center gap-4">
-                       <div className="p-2.5 bg-orange-500/10 rounded-xl text-orange-500 group-hover/item:bg-orange-500 group-hover/item:text-white transition-all duration-500">
-                         <Scale className="w-4 h-4" />
+                       <div className="p-3 bg-gradient-to-br from-orange-500/10 to-orange-500/20 rounded-xl text-orange-600 group-hover/item:bg-orange-500 group-hover/item:text-white transition-all duration-500 shadow-inner">
+                         <Scale className="w-5 h-5" />
                        </div>
-                       <div className="space-y-0.5">
-                         <label className="text-[9px] font-black text-orange-500 uppercase tracking-widest leading-none">Operacional</label>
-                         <div className="text-[10px] text-muted-foreground font-medium italic opacity-60">Manutenção do Negócio</div>
+                       <div className="space-y-1">
+                         <label className="text-[10px] font-black text-orange-600 uppercase tracking-widest leading-none">Operacional</label>
+                         <div className="text-[10px] text-muted-foreground font-medium italic opacity-60">Manutenção</div>
                        </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -167,26 +167,26 @@ export function FinancialDistribution({
                         onDown={() => setCustos(Math.max(0, custos - 50))} 
                         colorClass="text-orange-500"
                       />
-                      <div className="relative">
+                      <div className="relative group/field">
                         <Input 
                           type="number" 
                           value={custos} 
                           onChange={(e) => setCustos(parseFloat(e.target.value) || 0)}
-                          className="w-24 h-10 text-right font-code font-bold text-orange-500 bg-background/50 border-orange-500/20 focus-visible:ring-1 focus-visible:ring-orange-500 transition-all rounded-lg"
+                          className="w-28 h-12 text-right font-code font-black text-orange-600 bg-background/40 border-orange-500/10 group-hover/field:border-orange-500/40 focus-visible:ring-1 focus-visible:ring-orange-500 transition-all rounded-xl shadow-inner"
                         />
                       </div>
                     </div>
                   </div>
 
                   {/* Pró-labore */}
-                  <div className="group/item flex items-center justify-between p-4 rounded-2xl bg-blue-500/[0.03] border border-blue-500/10 hover:border-blue-500/30 transition-all duration-500">
+                  <div className="group/item flex items-center justify-between p-4 rounded-2xl bg-gradient-to-br from-blue-500/[0.04] to-transparent border border-blue-500/10 hover:border-blue-500/40 transition-all duration-500 shadow-sm hover:shadow-md">
                     <div className="flex items-center gap-4">
-                       <div className="p-2.5 bg-blue-500/10 rounded-xl text-blue-500 group-hover/item:bg-blue-500 group-hover/item:text-white transition-all duration-500">
-                         <UserCircle className="w-4 h-4" />
+                       <div className="p-3 bg-gradient-to-br from-blue-500/10 to-blue-500/20 rounded-xl text-blue-600 group-hover/item:bg-blue-500 group-hover/item:text-white transition-all duration-500 shadow-inner">
+                         <UserCircle className="w-5 h-5" />
                        </div>
-                       <div className="space-y-0.5">
-                         <label className="text-[9px] font-black text-blue-500 uppercase tracking-widest leading-none">Seu Salário</label>
-                         <div className="text-[10px] text-muted-foreground font-medium italic opacity-60">Pró-labore Fixo</div>
+                       <div className="space-y-1">
+                         <label className="text-[10px] font-black text-blue-600 uppercase tracking-widest leading-none">Seu Salário</label>
+                         <div className="text-[10px] text-muted-foreground font-medium italic opacity-60">Pró-labore</div>
                        </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -195,26 +195,26 @@ export function FinancialDistribution({
                         onDown={() => setProlabore(Math.max(0, prolabore - 50))} 
                         colorClass="text-blue-500"
                       />
-                      <div className="relative">
+                      <div className="relative group/field">
                         <Input 
                           type="number" 
                           value={prolabore} 
                           onChange={(e) => setProlabore(parseFloat(e.target.value) || 0)}
-                          className="w-24 h-10 text-right font-code font-bold text-blue-500 bg-background/50 border-blue-500/20 focus-visible:ring-1 focus-visible:ring-blue-500 transition-all rounded-lg"
+                          className="w-28 h-12 text-right font-code font-black text-blue-600 bg-background/40 border-blue-500/10 group-hover/field:border-blue-500/40 focus-visible:ring-1 focus-visible:ring-blue-500 transition-all rounded-xl shadow-inner"
                         />
                       </div>
                     </div>
                   </div>
 
                   {/* Reserva Percentual */}
-                  <div className="group/item flex items-center justify-between p-4 rounded-2xl bg-purple-500/[0.03] border border-purple-500/10 hover:border-purple-500/30 transition-all duration-500">
+                  <div className="group/item flex items-center justify-between p-4 rounded-2xl bg-gradient-to-br from-purple-500/[0.04] to-transparent border border-purple-500/10 hover:border-purple-500/40 transition-all duration-500 shadow-sm hover:shadow-md">
                     <div className="flex items-center gap-4">
-                       <div className="p-2.5 bg-purple-500/10 rounded-xl text-purple-500 group-hover/item:bg-purple-500 group-hover/item:text-white transition-all duration-500">
-                         <ShieldCheck className="w-4 h-4" />
+                       <div className="p-3 bg-gradient-to-br from-purple-500/10 to-purple-500/20 rounded-xl text-purple-600 group-hover/item:bg-purple-500 group-hover/item:text-white transition-all duration-500 shadow-inner">
+                         <ShieldCheck className="w-5 h-5" />
                        </div>
-                       <div className="space-y-0.5">
-                         <label className="text-[9px] font-black text-purple-500 uppercase tracking-widest leading-none">Blindagem PJ</label>
-                         <div className="text-[10px] text-muted-foreground font-medium italic opacity-60">Retenção de Segurança</div>
+                       <div className="space-y-1">
+                         <label className="text-[10px] font-black text-purple-600 uppercase tracking-widest leading-none">Blindagem PJ</label>
+                         <div className="text-[10px] text-muted-foreground font-medium italic opacity-60">Segurança</div>
                        </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -223,13 +223,13 @@ export function FinancialDistribution({
                         onDown={() => setReservaPct(Math.max(0, reservaPct - 5))} 
                         colorClass="text-purple-500"
                       />
-                      <div className="relative">
-                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-purple-500/50">%</span>
+                      <div className="relative group/field">
+                        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-purple-500/50">%</span>
                         <Input 
                           type="number" 
                           value={reservaPct} 
                           onChange={(e) => setReservaPct(parseFloat(e.target.value) || 0)}
-                          className="w-20 h-10 text-center font-code font-bold text-purple-500 bg-background/50 border-purple-500/20 focus-visible:ring-1 focus-visible:ring-purple-500 transition-all rounded-lg pr-5"
+                          className="w-24 h-12 text-center font-code font-black text-purple-600 bg-background/40 border-purple-500/10 group-hover/field:border-purple-500/40 focus-visible:ring-1 focus-visible:ring-purple-500 transition-all rounded-xl pr-6 shadow-inner"
                         />
                       </div>
                     </div>
