@@ -100,7 +100,7 @@ export function CashFlowLedger({
   const [mesesReserva, setMesesReserva] = useState(6);
   const [startMonth, setStartMonth] = useState(0);
   const [duration, setDuration] = useState(12);
-  const [distribuicaoLucroPct, setDistribuicaoLucroPct] = useState(50); // 50% PF / 50% PJ
+  const [distribuicaoLucroPct, setDistribuicaoLucroPct] = useState(50); // 50% PF / 50% PJ (Manual/Simulador)
   const [selectedQuarter, setSelectedQuarter] = useState(0);
   const das = 76;
 
@@ -212,13 +212,36 @@ export function CashFlowLedger({
   }, [totals.rows]);
 
   const currentQ = quarterlyTotals[selectedQuarter];
-  const qProfitPF = (currentQ.profit * distribuicaoLucroPct) / 100;
-  const qProfitPJ = currentQ.profit - qProfitPF;
+  
+  // Valores manuais baseados no Slider (Simulador)
+  const qProfitPF_Manual = (currentQ.profit * distribuicaoLucroPct) / 100;
+  const qProfitPJ_Manual = currentQ.profit - qProfitPF_Manual;
 
   const metaTotal = (custos + das + prolabore) * mesesReserva;
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
   const LIMITE_MEI = 81000;
   const percentualLimite = Math.min(100, (totals.acumuladoReceita / LIMITE_MEI) * 100);
+
+  // Lógica de Sugestão Tática Real
+  const smartTarget = useMemo(() => {
+    if (progressoMeta < 100) {
+      return { 
+        pf: 20, 
+        pj: 80, 
+        label: "Foco em Segurança", 
+        motive: "Reserva incompleta. Blinde o caixa da empresa." 
+      };
+    }
+    return { 
+      pf: 60, 
+      pj: 40, 
+      label: "Eficiência Máxima", 
+      motive: "Reserva concluída! Priorize sua recompensa pessoal." 
+    };
+  }, [progressoMeta]);
+
+  const qProfitPF_Recommended = (currentQ.profit * smartTarget.pf) / 100;
+  const qProfitPJ_Recommended = currentQ.profit - qProfitPF_Recommended;
 
   const StepButtons = ({ onUp, onDown, colorClass }: { onUp: () => void, onDown: () => void, colorClass: string }) => (
     <div className="flex flex-col -space-y-px">
@@ -561,18 +584,21 @@ export function CashFlowLedger({
                 <div className="space-y-4 p-6 rounded-3xl bg-primary/5 border border-primary/20">
                   <div className="flex items-center gap-2 mb-2">
                     <Sparkles className="w-4 h-4 text-primary" />
-                    <span className="text-[10px] font-black uppercase text-primary tracking-widest">Ações Recomendadas</span>
+                    <span className="text-[10px] font-black uppercase text-primary tracking-widest">Sugestão Tática (Real)</span>
+                  </div>
+                  <div className="text-[10px] text-muted-foreground font-bold italic mb-2">
+                    {smartTarget.motive}
                   </div>
                   <ul className="space-y-3">
                     {currentQ.profit > 0 ? (
                       <>
                         <li className="flex gap-3 text-xs text-muted-foreground">
                           <ChevronRight className="w-3.5 h-3.5 text-primary shrink-0" />
-                          <span>Mover <strong>{formatCurrency(qProfitPF)}</strong> ({distribuicaoLucroPct}%) para sua <strong>Corretora PF</strong></span>
+                          <span>Mover <strong>{formatCurrency(qProfitPF_Recommended)}</strong> ({smartTarget.pf}%) para sua <strong>Corretora PF</strong></span>
                         </li>
                         <li className="flex gap-3 text-xs text-muted-foreground">
                           <ChevronRight className="w-3.5 h-3.5 text-primary shrink-0" />
-                          <span>Reinvestir <strong>{formatCurrency(qProfitPJ)}</strong> ({100 - distribuicaoLucroPct}%) na <strong>Escala PJ</strong></span>
+                          <span>Reinvestir <strong>{formatCurrency(qProfitPJ_Recommended)}</strong> ({smartTarget.pj}%) na <strong>Escala PJ</strong></span>
                         </li>
                       </>
                     ) : (
@@ -582,6 +608,16 @@ export function CashFlowLedger({
                       </li>
                     )}
                   </ul>
+                  {currentQ.profit > 0 && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full text-[10px] font-black uppercase tracking-widest h-8 mt-2"
+                      onClick={() => setDistribuicaoLucroPct(smartTarget.pf)}
+                    >
+                      Aplicar Sugestão no Simulador
+                    </Button>
+                  )}
                 </div>
               </div>
 
@@ -590,7 +626,7 @@ export function CashFlowLedger({
                 <div className="p-8 rounded-[40px] bg-background/40 border-2 border-dashed border-amber-500/20 space-y-10">
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
                     <div className="space-y-1 text-center sm:text-left">
-                      <h4 className="text-xl font-black text-foreground tracking-tight">Estratégia de Destino</h4>
+                      <h4 className="text-xl font-black text-foreground tracking-tight">Simulador de Destino</h4>
                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Defina como sua riqueza será distribuída</p>
                     </div>
                     <div className="flex items-center gap-4 bg-secondary/50 p-3 rounded-2xl border">
@@ -636,7 +672,7 @@ export function CashFlowLedger({
                         <span className="text-[10px] font-black uppercase text-blue-500 tracking-widest">Liberdade (PF/CPF)</span>
                       </div>
                       <div className="text-2xl font-black text-foreground tabular-nums tracking-tighter">
-                        {formatCurrency(qProfitPF)}
+                        {formatCurrency(qProfitPF_Manual)}
                       </div>
                       <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">
                         Destinado a investimentos pessoais, lazer e construção de patrimônio no seu CPF.
@@ -651,7 +687,7 @@ export function CashFlowLedger({
                         <span className="text-[10px] font-black uppercase text-primary tracking-widest">Escala (PJ/CNPJ)</span>
                       </div>
                       <div className="text-2xl font-black text-foreground tabular-nums tracking-tighter">
-                        {formatCurrency(qProfitPJ)}
+                        {formatCurrency(qProfitPJ_Manual)}
                       </div>
                       <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">
                         Reinvestimento em marketing, ferramentas, infraestrutura ou reserva extra da empresa.
