@@ -87,17 +87,18 @@ export function FinancialDistribution({
   };
 
   const parseInput = (val: string) => {
-    return parseFloat(val.replace(/\./g, '').replace(',', '.')) || 0;
+    const raw = val.replace(/\D/g, '');
+    return parseFloat(raw) || 0;
   };
 
   return (
-    <div className="space-y-4 animate-in slide-in-from-bottom-4 duration-500 pb-12">
+    <div className="space-y-4 animate-in slide-in-from-bottom-4 duration-500 pb-2 overflow-x-hidden">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-5 space-y-4">
           <Card className="border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.3)] overflow-hidden bg-card/40 backdrop-blur-2xl relative group transition-all duration-700 h-full flex flex-col">
             <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-indigo-500 via-primary to-purple-500 shadow-[0_0_35px_rgba(34,197,94,1)] z-20" />
             
-            <CardHeader className="pb-4 pt-8 px-6 relative">
+            <CardHeader className="pb-4 pt-6 px-6 relative">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="p-2 bg-primary/20 rounded-lg text-primary shadow-[0_0_35px_rgba(34,197,94,0.7)] animate-pulse shrink-0">
@@ -110,7 +111,7 @@ export function FinancialDistribution({
               </div>
             </CardHeader>
 
-            <CardContent className="flex-1 space-y-8 px-6 pb-8 relative">
+            <CardContent className="flex-1 space-y-10 px-6 pb-6 relative">
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent" />
@@ -118,7 +119,7 @@ export function FinancialDistribution({
                   <div className="h-px flex-1 bg-gradient-to-l from-white/10 to-transparent" />
                 </div>
                 
-                <div className="group/item relative p-5 rounded-3xl bg-white/5 backdrop-blur-3xl border border-white/20 shadow-[0_0_30px_rgba(99,102,241,0.1),inset_0_0_20px_rgba(255,255,255,0.05)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
+                <div className="group/item relative p-5 rounded-3xl bg-white/5 backdrop-blur-3xl border border-white/20 shadow-[0_0_30px_rgba(99,102,241,0.1),inset_0_0_20px_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.1)_inset] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-indigo-400/10 via-transparent to-indigo-600/5 pointer-events-none" />
                   <div className="relative flex items-center justify-between gap-4 z-10">
                     <div className="flex items-center gap-4">
@@ -159,7 +160,7 @@ export function FinancialDistribution({
                 </div>
                 
                 <div className="grid gap-3 relative z-10">
-                  <div className="group/item relative flex items-center justify-between p-5 rounded-3xl bg-white/5 backdrop-blur-3xl border border-white/20 shadow-[0_0_30px_rgba(249,115,22,0.1),inset_0_0_20px_rgba(255,255,255,0.05)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
+                  <div className="group/item relative flex items-center justify-between p-5 rounded-3xl bg-white/5 backdrop-blur-3xl border border-white/20 shadow-[0_0_30px_rgba(249,115,22,0.1),inset_0_0_20px_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.1)_inset] hover:scale-[1.01] transition-all duration-500 overflow-hidden h-full">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-orange-400/10 via-transparent to-orange-600/5 pointer-events-none" />
                     <div className="flex items-center gap-3 relative z-10">
                        <div className="p-2.5 bg-black/40 border border-orange-500/20 rounded-xl text-orange-400 group-hover/item:bg-orange-500 group-hover/item:text-white transition-all duration-500 shadow-[0_0_10px_rgba(249,115,22,0.2)]">
@@ -188,7 +189,7 @@ export function FinancialDistribution({
                     </div>
                   </div>
 
-                  <div className="group/item relative flex items-center justify-between p-5 rounded-3xl bg-white/5 backdrop-blur-3xl border border-white/20 shadow-[0_0_30px_rgba(59,130,246,0.1),inset_0_0_20px_rgba(255,255,255,0.05)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
+                  <div className="group/item relative flex items-center justify-between p-5 rounded-3xl bg-white/5 backdrop-blur-3xl border border-white/20 shadow-[0_0_30px_rgba(59,130,246,0.1),inset_0_0_20px_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.1)_inset] hover:scale-[1.01] transition-all duration-500 overflow-hidden h-full">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-400/10 via-transparent to-blue-600/5 pointer-events-none" />
                     <div className="flex items-center gap-3 relative z-10">
                        <div className="p-2.5 bg-black/40 border border-blue-500/20 rounded-xl text-blue-400 group-hover/item:bg-blue-500 group-hover/item:text-white transition-all duration-500 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
@@ -217,7 +218,7 @@ export function FinancialDistribution({
                     </div>
                   </div>
 
-                  <div className="group/item relative flex items-center justify-between p-5 rounded-3xl bg-white/5 backdrop-blur-3xl border border-white/20 shadow-[0_0_30px_rgba(168,85,247,0.1),inset_0_0_20px_rgba(255,255,255,0.05)] hover:scale-[1.01] transition-all duration-500 overflow-hidden">
+                  <div className="group/item relative flex items-center justify-between p-5 rounded-3xl bg-white/5 backdrop-blur-3xl border border-white/20 shadow-[0_0_30px_rgba(168,85,247,0.1),inset_0_0_20px_rgba(255,255,255,0.05),0_0_0_1px_rgba(255,255,255,0.1)_inset] hover:scale-[1.01] transition-all duration-500 overflow-hidden h-full">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-purple-400/10 via-transparent to-purple-600/5 pointer-events-none" />
                     <div className="flex items-center gap-3 relative z-10">
                        <div className="p-2.5 bg-black/40 border border-purple-500/20 rounded-xl text-purple-400 group-hover/item:bg-purple-500 group-hover/item:text-white transition-all duration-500 shadow-[0_0_10px_rgba(168,85,247,0.2)]">
@@ -379,4 +380,3 @@ export function FinancialDistribution({
     </div>
   );
 }
-

@@ -72,7 +72,7 @@ export default function Home() {
   const mesesRestantes = fat > 0 ? Math.floor(restante / fat) : 12;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 md:py-12 space-y-8">
+    <div className="max-w-6xl mx-auto px-4 py-8 md:py-12 space-y-8 overflow-x-hidden">
       <header className="flex items-center gap-4 mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground shadow-xl shadow-primary/20">
           <Landmark className="w-8 h-8" />
@@ -119,7 +119,7 @@ export default function Home() {
           </TabsTrigger>
         </TabsList>
 
-        <div className="mt-8">
+        <div className="mt-2">
           <TabsContent value="distribuicao">
             <div className="w-full">
               <FinancialDistribution 
