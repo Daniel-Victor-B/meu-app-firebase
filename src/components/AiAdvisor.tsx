@@ -106,7 +106,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
                     <div className="flex gap-2">
                       <div className="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-lg border border-white/5 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
                         <Terminal className="w-3 h-3 text-primary" />
-                        DeepSeek-R1
+                        Intelligence Engine
                       </div>
                       <div className="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-lg border border-primary/10 text-[9px] font-bold text-primary uppercase tracking-widest">
                         <Target className="w-3 h-3" />
@@ -115,27 +115,23 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
                     </div>
                   </div>
                   
-                  <div className="flex gap-6 items-start">
-                    <div className="hidden md:flex flex-col items-center gap-2 shrink-0 pt-1">
-                      <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-inner">
-                        <MessageSquare className="w-5 h-5" />
+                  <div className="space-y-4">
+                    <div className="relative p-8 md:p-12 rounded-[2.5rem] bg-black/40 border border-primary/20 shadow-[0_0_50px_rgba(34,197,94,0.05)] overflow-hidden group">
+                      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50" />
+                      <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/10 blur-[60px] rounded-full animate-pulse" />
+                      
+                      <div className="absolute top-6 right-8 flex items-center gap-2">
+                         <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                         <span className="text-[8px] font-black text-primary uppercase tracking-[0.4em] opacity-60">Veredito do Consultor</span>
                       </div>
-                      <div className="w-0.5 h-20 bg-gradient-to-b from-primary/30 to-transparent rounded-full" />
-                    </div>
-                    
-                    <div className="space-y-4 flex-1">
-                      <div className="flex items-center gap-2">
-                        <div className="h-px flex-1 bg-primary/20" />
-                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.3em] whitespace-nowrap">Veredito do Consultor</span>
-                        <div className="h-px flex-1 bg-primary/20" />
-                      </div>
-                      <div className="relative p-6 rounded-2xl bg-secondary/20 border border-white/5 shadow-inner">
-                         <p className="text-lg md:text-xl font-bold leading-tight text-white tracking-tight font-code text-center md:text-left italic">
-                           "{advice.summary}"
-                         </p>
-                         <div className="absolute -bottom-2 -right-2 p-1.5 bg-primary rounded-lg shadow-lg">
-                            <Sparkles className="w-4 h-4 text-primary-foreground" />
-                         </div>
+
+                      <p className="relative z-10 text-xl md:text-2xl font-black leading-tight text-white tracking-tight text-center md:text-left italic drop-shadow-md">
+                        "{advice.summary}"
+                      </p>
+                      
+                      <div className="absolute bottom-6 left-8 flex items-center gap-2 opacity-40">
+                         <Sparkles className="w-3 h-3 text-primary" />
+                         <span className="text-[8px] font-black uppercase tracking-widest">AI Strategic Counsel</span>
                       </div>
                     </div>
                   </div>
