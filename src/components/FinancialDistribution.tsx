@@ -95,13 +95,14 @@ export function FinancialDistribution({
                     <div className="p-1.5 bg-primary/20 rounded-lg text-primary shadow-[0_0_20px_rgba(var(--primary),0.4)] animate-pulse">
                       <Shield className="w-4 h-4" />
                     </div>
-                    <span className="text-[9px] font-black uppercase tracking-[0.4em] text-primary/80">Sistema de Elite</span>
+                    <span className="text-[9px] font-black uppercase tracking-[0.4em] text-primary/80">Gestão de Elite</span>
                   </div>
                   <CardTitle className="text-xl font-black tracking-tighter text-foreground">Arquitetura de Blindagem</CardTitle>
                 </div>
                 <div className="flex flex-col items-end">
-                   <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5 text-[8px] font-black uppercase tracking-widest px-2 py-0.5">
-                     Protocolo Ativo
+                   <Badge variant="outline" className="border-primary/30 text-primary bg-primary/5 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 flex items-center gap-1.5">
+                     <ShieldCheck className="w-2.5 h-2.5" />
+                     Sistema de Elite
                    </Badge>
                    <CardDescription className="text-[10px] font-bold text-muted-foreground mt-1">Gestão de Fluxo Patrimonial</CardDescription>
                 </div>
