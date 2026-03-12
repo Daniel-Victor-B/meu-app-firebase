@@ -255,17 +255,17 @@ export function FinancialDistribution({
         <div className="lg:col-span-7 space-y-6">
           <Card className="border-border/50 shadow-xl overflow-hidden h-full flex flex-col">
             <CardHeader className="bg-secondary/20 border-b pr-3">
-              <div className="flex items-center justify-between">
+              <div className="flex items-start justify-between">
                 <div>
                   <CardTitle className="text-xl font-headline font-bold">Mapa do Capital</CardTitle>
                   <CardDescription className="text-xs">Distribuição proporcional do faturamento.</CardDescription>
                 </div>
                 <Badge variant="outline" className={cn(
-                  "font-black text-[10px] uppercase tracking-widest px-3 py-1 flex items-center gap-1.5",
+                  "font-black text-[10px] uppercase tracking-widest px-3 py-1 flex items-center gap-1.5 -mt-1",
                   sobra > 0 ? "bg-primary/20 text-primary border-primary/20" : "bg-destructive/20 text-destructive border-destructive/20"
                 )}>
-                  <Activity className={cn("w-3 h-3", sobra > 0 && "animate-pulse")} />
                   {sobra > 0 ? "Operação Saudável" : "Cuidado Fiscais"}
+                  <Activity className={cn("w-3 h-3", sobra > 0 && "animate-pulse")} />
                 </Badge>
               </div>
             </CardHeader>
