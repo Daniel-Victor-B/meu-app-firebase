@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Sparkles, Loader2, MessageSquare, Target, ShieldAlert, Zap, Info, ShieldCheck, Activity } from "lucide-react";
+import { Sparkles, Loader2, MessageSquare, Target, ShieldAlert, Zap, Info, ShieldCheck, Activity, BrainCircuit, Terminal, ChevronRight } from "lucide-react";
 import { personalizedMeiAdvice, type PersonalizedMeiAdviceOutput } from "@/ai/flows/personalized-mei-advice";
 
 interface AiAdvisorProps {
@@ -88,36 +88,81 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
 
       {advice && (
         <div className="space-y-6 animate-in fade-in zoom-in duration-500">
-          <Card className="overflow-hidden border-primary/20 shadow-2xl">
-            {/* Bloco de Diagnóstico Explosivo */}
-            <div className="relative bg-black/40 p-8 md:p-10 border-b border-primary/10 overflow-hidden">
-               <div className="absolute top-0 right-0 p-12 opacity-5 rotate-12 scale-150">
-                  <Target className="w-32 h-32 text-primary" />
+          <Card className="overflow-hidden border-primary/20 shadow-2xl bg-card">
+            {/* NOVO BLOCO DE DIAGNÓSTICO ESTRATÉGICO */}
+            <div className="relative overflow-hidden">
+               {/* Decoração de Fundo High-Tech */}
+               <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                  <BrainCircuit className="w-32 h-32 text-primary" />
                </div>
-               <div className="relative z-10 space-y-6">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-2 w-2 rounded-full bg-primary animate-ping" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/80">Protocolo de Diagnóstico em Tempo Real</span>
+               <div className="absolute -left-10 -top-10 w-40 h-40 bg-primary/5 blur-[80px] rounded-full" />
+
+               <div className="p-8 md:p-10 space-y-8 relative z-10">
+                  {/* Header do Briefing */}
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/50 pb-6">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Status: Análise de Elite</span>
+                      </div>
+                      <h3 className="text-xl font-black tracking-tight text-foreground uppercase">Diagnóstico Estratégico</h3>
+                    </div>
+                    <div className="flex gap-2">
+                      <div className="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-lg border border-white/5 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
+                        <Terminal className="w-3 h-3 text-primary" />
+                        DeepSeek-R1
+                      </div>
+                      <div className="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-lg border border-primary/10 text-[9px] font-bold text-primary uppercase tracking-widest">
+                        <Target className="w-3 h-3" />
+                        Live Intel
+                      </div>
+                    </div>
                   </div>
                   
-                  <h3 className="text-3xl md:text-4xl font-black tracking-tighter text-foreground leading-[1.1] max-w-4xl bg-gradient-to-br from-foreground via-foreground to-muted-foreground bg-clip-text">
-                    {advice.summary}
-                  </h3>
-
-                  <div className="flex flex-wrap gap-4 pt-4">
-                    <div className="flex items-center gap-2.5 bg-secondary/50 px-4 py-2 rounded-2xl border border-white/5 backdrop-blur-md">
-                      <Activity className="w-4 h-4 text-primary" />
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Status: Estratégico</span>
+                  {/* O "Puts" no Cérebro: Texto do Diagnóstico com Design Didático */}
+                  <div className="flex gap-6 items-start">
+                    <div className="hidden md:flex flex-col items-center gap-2 shrink-0 pt-1">
+                      <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-inner">
+                        <MessageSquare className="w-5 h-5" />
+                      </div>
+                      <div className="w-0.5 h-20 bg-gradient-to-b from-primary/30 to-transparent rounded-full" />
                     </div>
-                    <div className="flex items-center gap-2.5 bg-secondary/50 px-4 py-2 rounded-2xl border border-white/5 backdrop-blur-md">
-                      <Zap className="w-4 h-4 text-amber-500" />
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Motor: DeepSeek R1</span>
+                    
+                    <div className="space-y-4 flex-1">
+                      <div className="inline-block px-3 py-1 rounded-full bg-secondary text-[10px] font-black uppercase tracking-widest text-muted-foreground border border-border/50">
+                        Visão Geral do Negócio
+                      </div>
+                      <p className="text-lg md:text-xl font-medium leading-relaxed text-foreground/90 tracking-tight">
+                        {advice.summary}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Badges de Insight Rápido */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                    <div className="p-4 rounded-2xl bg-secondary/30 border border-border/50 flex items-center gap-4 group hover:bg-secondary/50 transition-all">
+                      <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-500">
+                        <Activity className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Fator de Risco</div>
+                        <div className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">Operação Calculada</div>
+                      </div>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-secondary/30 border border-border/50 flex items-center gap-4 group hover:bg-secondary/50 transition-all">
+                      <div className="p-2 bg-amber-500/10 rounded-xl text-amber-500">
+                        <Zap className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Alerta de Escala</div>
+                        <div className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">Otimização de Pró-labore</div>
+                      </div>
                     </div>
                   </div>
                </div>
             </div>
 
-            <CardContent className="space-y-8 p-8 md:p-10">
+            <CardContent className="space-y-8 p-8 md:p-10 border-t bg-secondary/10">
               <section className="space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="p-1.5 bg-blue-500/10 text-blue-500 rounded-md">
