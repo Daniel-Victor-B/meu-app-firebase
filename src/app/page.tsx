@@ -119,7 +119,7 @@ export default function Home() {
           </TabsTrigger>
         </TabsList>
 
-        <div className="mt-6">
+        <div className="mt-1">
           <TabsContent value="distribuicao">
             <div className="w-full">
               <FinancialDistribution 
