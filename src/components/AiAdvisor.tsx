@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Sparkles, Loader2, MessageSquare, Target, ShieldAlert, Zap, Activity, BrainCircuit, Terminal, ChevronRight } from "lucide-react";
+import { Sparkles, Loader2, Target, ShieldAlert, Zap, Activity, BrainCircuit, Terminal } from "lucide-react";
 import { personalizedMeiAdvice, type PersonalizedMeiAdviceOutput } from "@/ai/flows/personalized-mei-advice";
 
 interface AiAdvisorProps {
@@ -89,77 +89,70 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
         <div className="space-y-6 animate-in fade-in zoom-in duration-500">
           <Card className="overflow-hidden border-primary/20 shadow-2xl bg-card">
             <div className="relative overflow-hidden">
-               <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
-                  <BrainCircuit className="w-32 h-32 text-primary" />
+               {/* Background Elements */}
+               <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
+                  <BrainCircuit className="w-48 h-48 text-primary" />
                </div>
                <div className="absolute -left-10 -top-10 w-40 h-40 bg-primary/5 blur-[80px] rounded-full" />
 
-               <div className="p-8 md:p-10 space-y-8 relative z-10">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/50 pb-6">
+               <div className="p-6 md:p-8 space-y-6 relative z-10">
+                  {/* Header do Diagnóstico */}
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/50 pb-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Status: Análise de Elite</span>
+                        <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-primary">Veredito Estratégico</span>
                       </div>
-                      <h3 className="text-xl font-black tracking-tight text-foreground uppercase">Diagnóstico Estratégico</h3>
+                      <h3 className="text-lg font-black tracking-tight text-foreground uppercase">Diagnóstico do Consultor</h3>
                     </div>
                     <div className="flex gap-2">
-                      <div className="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-lg border border-white/5 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
+                      <div className="flex items-center gap-2 bg-black/40 px-2.5 py-1 rounded-lg border border-white/5 text-[8px] font-bold text-muted-foreground uppercase tracking-widest">
                         <Terminal className="w-3 h-3 text-primary" />
-                        Intelligence Engine
-                      </div>
-                      <div className="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-lg border border-primary/10 text-[9px] font-bold text-primary uppercase tracking-widest">
-                        <Target className="w-3 h-3" />
                         Live Intel
                       </div>
                     </div>
                   </div>
                   
-                  <div className="space-y-4">
-                    <div className="relative p-8 md:p-12 rounded-[2.5rem] bg-black/40 border border-primary/20 shadow-[0_0_50px_rgba(34,197,94,0.05)] overflow-hidden group">
-                      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50" />
-                      <div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/10 blur-[60px] rounded-full animate-pulse" />
-                      
-                      <div className="absolute top-6 right-8 flex items-center gap-2">
-                         <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                         <span className="text-[8px] font-black text-primary uppercase tracking-[0.4em] opacity-60">Veredito do Consultor</span>
-                      </div>
-
-                      <p className="relative z-10 text-xl md:text-2xl font-black leading-tight text-white tracking-tight text-center md:text-left italic drop-shadow-md">
-                        "{advice.summary}"
-                      </p>
-                      
-                      <div className="absolute bottom-6 left-8 flex items-center gap-2 opacity-40">
-                         <Sparkles className="w-3 h-3 text-primary" />
-                         <span className="text-[8px] font-black uppercase tracking-widest">AI Strategic Counsel</span>
-                      </div>
+                  {/* Bloco Central do Parecer */}
+                  <div className="relative p-6 md:p-8 rounded-3xl bg-black/30 border border-primary/20 shadow-inner overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50" />
+                    <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary/10 blur-[40px] rounded-full animate-pulse" />
+                    
+                    <div className="absolute top-4 right-6 flex items-center gap-1.5 opacity-40">
+                       <div className="h-1 w-1 rounded-full bg-primary" />
+                       <span className="text-[7px] font-black text-primary uppercase tracking-[0.3em]">AI Synthesis</span>
                     </div>
+
+                    <p className="relative z-10 text-base md:text-lg font-medium leading-relaxed text-white tracking-tight text-center md:text-left italic">
+                      "{advice.summary}"
+                    </p>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-                    <div className="p-4 rounded-2xl bg-secondary/30 border border-border/50 flex items-center gap-4 group hover:bg-secondary/50 transition-all">
-                      <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-500">
-                        <Activity className="w-5 h-5" />
+                  {/* Cards de Métricas Rápidas */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="p-4 rounded-2xl bg-secondary/30 border border-border/40 flex items-center gap-4 group hover:bg-secondary/50 transition-all shadow-sm">
+                      <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-500 group-hover:scale-110 transition-transform">
+                        <Activity className="w-4 h-4" />
                       </div>
-                      <div>
-                        <div className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Fator de Risco</div>
-                        <div className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">Operação Calculada</div>
+                      <div className="space-y-0.5">
+                        <div className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Fator de Risco</div>
+                        <div className="text-xs font-bold text-foreground">Operação Calculada</div>
                       </div>
                     </div>
-                    <div className="p-4 rounded-2xl bg-secondary/30 border border-border/50 flex items-center gap-4 group hover:bg-secondary/50 transition-all">
-                      <div className="p-2 bg-amber-500/10 rounded-xl text-amber-500">
-                        <Zap className="w-5 h-5" />
+                    <div className="p-4 rounded-2xl bg-secondary/30 border border-border/40 flex items-center gap-4 group hover:bg-secondary/50 transition-all shadow-sm">
+                      <div className="p-2 bg-amber-500/10 rounded-xl text-amber-500 group-hover:scale-110 transition-transform">
+                        <Zap className="w-4 h-4" />
                       </div>
-                      <div>
-                        <div className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">Alerta de Escala</div>
-                        <div className="text-xs font-bold text-foreground group-hover:text-primary transition-colors">Otimização de Pró-labore</div>
+                      <div className="space-y-0.5">
+                        <div className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Alerta de Escala</div>
+                        <div className="text-xs font-bold text-foreground">Otimização de Pró-labore</div>
                       </div>
                     </div>
                   </div>
                </div>
             </div>
 
-            <CardContent className="space-y-8 p-8 md:p-10 border-t bg-secondary/10">
+            <CardContent className="space-y-8 p-6 md:p-8 border-t bg-secondary/10">
               <section className="space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="p-1.5 bg-blue-500/10 text-blue-500 rounded-md">
