@@ -36,7 +36,8 @@ import {
   Calendar,
   Clock,
   BarChart3,
-  TrendingDown
+  TrendingDown,
+  Activity
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
