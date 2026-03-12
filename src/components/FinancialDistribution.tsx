@@ -98,43 +98,43 @@ export function FinancialDistribution({
               <CardDescription className="text-xs font-medium text-muted-foreground">Otimize seu fluxo com precisão tática.</CardDescription>
             </CardHeader>
 
-            <CardContent className="space-y-8 relative">
+            <CardContent className="space-y-12 relative">
               
               {/* Seção 1: Motor de Entrada */}
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center gap-3">
                   <div className="h-px flex-1 bg-gradient-to-r from-indigo-500/30 to-transparent" />
                   <span className="text-[9px] font-black text-indigo-500 uppercase tracking-[0.3em]">Motor de Entrada</span>
                   <div className="h-px flex-1 bg-gradient-to-l from-indigo-500/30 to-transparent" />
                 </div>
                 
-                <div className="group/item relative p-6 rounded-[28px] bg-gradient-to-br from-indigo-500/[0.05] to-transparent border border-indigo-500/10 hover:border-indigo-500/40 transition-all duration-500 shadow-[0_8px_32px_rgba(99,102,241,0.05)] hover:shadow-[0_8px_32px_rgba(99,102,241,0.12)]">
-                  <div className="flex items-center justify-between gap-6">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl text-white shadow-lg shadow-indigo-500/30 group-hover/item:scale-110 transition-transform duration-500">
-                        <TrendingUp className="w-5 h-5" />
+                <div className="group/item relative p-8 rounded-[32px] bg-indigo-500/[0.03] border border-indigo-500/10 hover:border-indigo-500/40 transition-all duration-500 shadow-inner group-hover:shadow-[0_0_40px_rgba(99,102,241,0.05)] overflow-hidden">
+                  <div className="absolute -inset-1 bg-gradient-to-br from-indigo-500/10 to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity duration-700" />
+                  <div className="relative flex items-center justify-between gap-6 z-10">
+                    <div className="flex items-center gap-5">
+                      <div className="p-4 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl text-white shadow-xl shadow-indigo-500/30 group-hover/item:scale-110 transition-transform duration-500">
+                        <TrendingUp className="w-6 h-6" />
                       </div>
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-black text-indigo-500 uppercase tracking-widest leading-none">Faturamento Mensal</label>
-                        <div className="text-[10px] text-muted-foreground font-medium italic opacity-60">Receita Bruta Total</div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-black text-indigo-500 uppercase tracking-[0.2em] leading-none">Faturamento Mensal</label>
+                        <div className="text-[10px] text-muted-foreground font-bold italic opacity-40">Receita Bruta Total</div>
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
                       <StepButtons 
                         onUp={() => setFat(fat + 100)} 
                         onDown={() => setFat(Math.max(0, fat - 100))} 
                         colorClass="text-indigo-500"
                       />
                       <div className="relative group/field">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-indigo-500/50">R$</span>
+                        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-indigo-500/50">R$</span>
                         <Input 
                           type="number" 
                           value={fat} 
                           onChange={(e) => setFat(parseFloat(e.target.value) || 0)}
-                          className="w-36 h-14 pl-9 pr-10 text-right font-code font-black text-xl text-indigo-500 bg-background/40 border-indigo-500/10 group-hover/field:border-indigo-500/40 focus-visible:ring-1 focus-visible:ring-indigo-500 transition-all rounded-2xl shadow-inner"
+                          className="w-40 h-16 pl-10 pr-10 text-right font-code font-black text-2xl text-indigo-500 bg-background/60 border-indigo-500/10 group-hover/field:border-indigo-500/40 focus-visible:ring-1 focus-visible:ring-indigo-500 transition-all rounded-2xl shadow-xl"
                         />
-                        <PenLine className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-500/20 pointer-events-none group-hover/field:text-indigo-500/40 transition-colors" />
                       </div>
                     </div>
                   </div>
@@ -142,26 +142,29 @@ export function FinancialDistribution({
               </div>
 
               {/* Seção 2: Drenos e Estratégia */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
+              <div className="space-y-6 relative">
+                <div className="absolute left-[38px] top-8 bottom-8 w-px bg-gradient-to-b from-indigo-500/40 via-orange-500/20 to-purple-500/40 border-l border-dashed border-border/40 z-0 hidden sm:block" />
+                
+                <div className="flex items-center gap-3 relative z-10">
                   <div className="h-px flex-1 bg-gradient-to-r from-primary/30 to-transparent" />
                   <span className="text-[9px] font-black text-primary uppercase tracking-[0.3em]">Drenos e Estratégia</span>
                   <div className="h-px flex-1 bg-gradient-to-l from-primary/30 to-transparent" />
                 </div>
                 
-                <div className="grid gap-4">
+                <div className="grid gap-5 relative z-10">
                   {/* Custos Operacionais */}
-                  <div className="group/item flex items-center justify-between p-4 rounded-2xl bg-gradient-to-br from-orange-500/[0.04] to-transparent border border-orange-500/10 hover:border-orange-500/40 transition-all duration-500 shadow-sm hover:shadow-md">
-                    <div className="flex items-center gap-4">
-                       <div className="p-3 bg-gradient-to-br from-orange-500/10 to-orange-500/20 rounded-xl text-orange-600 group-hover/item:bg-orange-500 group-hover/item:text-white transition-all duration-500 shadow-inner">
+                  <div className="group/item flex items-center justify-between p-5 rounded-[24px] bg-orange-500/[0.03] border border-orange-500/10 hover:border-orange-500/40 transition-all duration-500 shadow-sm hover:shadow-lg overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-orange-500/[0.05] to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                    <div className="flex items-center gap-5 relative z-10">
+                       <div className="p-3.5 bg-background border border-orange-500/20 rounded-xl text-orange-600 group-hover/item:bg-orange-500 group-hover/item:text-white transition-all duration-500 shadow-inner">
                          <Scale className="w-5 h-5" />
                        </div>
                        <div className="space-y-1">
                          <label className="text-[10px] font-black text-orange-600 uppercase tracking-widest leading-none">Operacional</label>
-                         <div className="text-[10px] text-muted-foreground font-medium italic opacity-60">Manutenção</div>
+                         <div className="text-[9px] text-muted-foreground font-bold opacity-30">Custo Fixo</div>
                        </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4 relative z-10">
                       <StepButtons 
                         onUp={() => setCustos(custos + 50)} 
                         onDown={() => setCustos(Math.max(0, custos - 50))} 
@@ -172,24 +175,25 @@ export function FinancialDistribution({
                           type="number" 
                           value={custos} 
                           onChange={(e) => setCustos(parseFloat(e.target.value) || 0)}
-                          className="w-28 h-12 text-right font-code font-black text-orange-600 bg-background/40 border-orange-500/10 group-hover/field:border-orange-500/40 focus-visible:ring-1 focus-visible:ring-orange-500 transition-all rounded-xl shadow-inner"
+                          className="w-32 h-14 text-right font-code font-black text-lg text-orange-600 bg-background/60 border-orange-500/10 group-hover/field:border-orange-500/40 transition-all rounded-xl shadow-md"
                         />
                       </div>
                     </div>
                   </div>
 
                   {/* Pró-labore */}
-                  <div className="group/item flex items-center justify-between p-4 rounded-2xl bg-gradient-to-br from-blue-500/[0.04] to-transparent border border-blue-500/10 hover:border-blue-500/40 transition-all duration-500 shadow-sm hover:shadow-md">
-                    <div className="flex items-center gap-4">
-                       <div className="p-3 bg-gradient-to-br from-blue-500/10 to-blue-500/20 rounded-xl text-blue-600 group-hover/item:bg-blue-500 group-hover/item:text-white transition-all duration-500 shadow-inner">
+                  <div className="group/item flex items-center justify-between p-5 rounded-[24px] bg-blue-500/[0.03] border border-blue-500/10 hover:border-blue-500/40 transition-all duration-500 shadow-sm hover:shadow-lg overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/[0.05] to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                    <div className="flex items-center gap-5 relative z-10">
+                       <div className="p-3.5 bg-background border border-blue-500/20 rounded-xl text-blue-600 group-hover/item:bg-blue-500 group-hover/item:text-white transition-all duration-500 shadow-inner">
                          <UserCircle className="w-5 h-5" />
                        </div>
                        <div className="space-y-1">
                          <label className="text-[10px] font-black text-blue-600 uppercase tracking-widest leading-none">Seu Salário</label>
-                         <div className="text-[10px] text-muted-foreground font-medium italic opacity-60">Pró-labore</div>
+                         <div className="text-[9px] text-muted-foreground font-bold opacity-30">Retirada PF</div>
                        </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4 relative z-10">
                       <StepButtons 
                         onUp={() => setProlabore(prolabore + 50)} 
                         onDown={() => setProlabore(Math.max(0, prolabore - 50))} 
@@ -200,36 +204,37 @@ export function FinancialDistribution({
                           type="number" 
                           value={prolabore} 
                           onChange={(e) => setProlabore(parseFloat(e.target.value) || 0)}
-                          className="w-28 h-12 text-right font-code font-black text-blue-600 bg-background/40 border-blue-500/10 group-hover/field:border-blue-500/40 focus-visible:ring-1 focus-visible:ring-blue-500 transition-all rounded-xl shadow-inner"
+                          className="w-32 h-14 text-right font-code font-black text-lg text-blue-600 bg-background/60 border-blue-500/10 group-hover/field:border-blue-500/40 transition-all rounded-xl shadow-md"
                         />
                       </div>
                     </div>
                   </div>
 
                   {/* Reserva Percentual */}
-                  <div className="group/item flex items-center justify-between p-4 rounded-2xl bg-gradient-to-br from-purple-500/[0.04] to-transparent border border-purple-500/10 hover:border-purple-500/40 transition-all duration-500 shadow-sm hover:shadow-md">
-                    <div className="flex items-center gap-4">
-                       <div className="p-3 bg-gradient-to-br from-purple-500/10 to-purple-500/20 rounded-xl text-purple-600 group-hover/item:bg-purple-500 group-hover/item:text-white transition-all duration-500 shadow-inner">
+                  <div className="group/item flex items-center justify-between p-5 rounded-[24px] bg-purple-500/[0.03] border border-purple-500/10 hover:border-purple-500/40 transition-all duration-500 shadow-sm hover:shadow-lg overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500/[0.05] to-transparent opacity-0 group-hover/item:opacity-100 transition-opacity" />
+                    <div className="flex items-center gap-5 relative z-10">
+                       <div className="p-3.5 bg-background border border-purple-500/20 rounded-xl text-purple-600 group-hover/item:bg-purple-500 group-hover/item:text-white transition-all duration-500 shadow-inner">
                          <ShieldCheck className="w-5 h-5" />
                        </div>
                        <div className="space-y-1">
                          <label className="text-[10px] font-black text-purple-600 uppercase tracking-widest leading-none">Blindagem PJ</label>
-                         <div className="text-[10px] text-muted-foreground font-medium italic opacity-60">Segurança</div>
+                         <div className="text-[9px] text-muted-foreground font-bold opacity-30">Segurança</div>
                        </div>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4 relative z-10">
                       <StepButtons 
                         onUp={() => setReservaPct(Math.min(100, reservaPct + 5))} 
                         onDown={() => setReservaPct(Math.max(0, reservaPct - 5))} 
                         colorClass="text-purple-500"
                       />
                       <div className="relative group/field">
-                        <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-purple-500/50">%</span>
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-purple-500/50">%</span>
                         <Input 
                           type="number" 
                           value={reservaPct} 
                           onChange={(e) => setReservaPct(parseFloat(e.target.value) || 0)}
-                          className="w-24 h-12 text-center font-code font-black text-purple-600 bg-background/40 border-purple-500/10 group-hover/field:border-purple-500/40 focus-visible:ring-1 focus-visible:ring-purple-500 transition-all rounded-xl pr-6 shadow-inner"
+                          className="w-28 h-14 text-center font-code font-black text-lg text-purple-600 bg-background/60 border-purple-500/10 group-hover/field:border-purple-500/40 transition-all rounded-xl pr-8 shadow-md"
                         />
                       </div>
                     </div>
@@ -312,7 +317,7 @@ export function FinancialDistribution({
                 <div className="pt-6 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-6">
                    <div className="flex items-center gap-3">
                       <div className="p-2.5 bg-amber-500/10 rounded-xl text-amber-500 shadow-inner">
-                        <Zap className="w-5 h-5" />
+                        <Zap className="w-5 h-5 text-amber-500" />
                       </div>
                       <div>
                         <div className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Sobra Real</div>
