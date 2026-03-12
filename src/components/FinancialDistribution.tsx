@@ -82,13 +82,23 @@ export function FinancialDistribution({
     </div>
   );
 
+  // Formata o valor do input para exibir o separador de milhar enquanto o tipo for "text"
+  const formatInput = (val: number) => {
+    return val.toLocaleString('pt-BR');
+  };
+
+  // Converte a string formatada de volta para número
+  const parseInput = (val: string) => {
+    return parseFloat(val.replace(/\./g, '').replace(',', '.')) || 0;
+  };
+
   return (
     <div className="space-y-4 animate-in slide-in-from-bottom-4 duration-500 pb-12">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Painel de Parâmetros Financeiros */}
         <div className="lg:col-span-5 space-y-4">
           <Card className="border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.3)] overflow-hidden bg-card/40 backdrop-blur-2xl relative group transition-all duration-700 h-full flex flex-col">
-            {/* Linha Gradiente de Borda com Brilho Intenso (Aumentado) */}
+            {/* Linha Gradiente de Borda com Brilho Intenso */}
             <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-indigo-500 via-primary to-purple-500 shadow-[0_0_35px_rgba(34,197,94,1)] z-20" />
             
             <CardHeader className="pb-4 pt-8 px-6 relative">
@@ -109,7 +119,7 @@ export function FinancialDistribution({
                 <div className="flex items-center gap-3">
                   <div className="h-px flex-1 bg-gradient-to-r from-indigo-500/60 to-transparent" />
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] drop-shadow-[0_0_15px_rgba(99,102,241,1)]">Projeção de Entrada</span>
+                    <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em] drop-shadow-[0_0_15px_rgba(99,102,241,1)]">Entrada</span>
                   </div>
                   <div className="h-px flex-1 bg-gradient-to-l from-indigo-500/60 to-transparent" />
                 </div>
@@ -123,10 +133,8 @@ export function FinancialDistribution({
                         <TrendingUp className="w-5 h-5" />
                       </div>
                       <div className="space-y-0.5">
-                        <div className="flex items-center gap-2">
-                          <label className="text-[10px] font-black text-indigo-400 uppercase tracking-widest leading-none drop-shadow-[0_0_12px_rgba(99,102,241,0.9)]">RECEITA</label>
-                        </div>
-                        <div className="text-[8px] text-muted-foreground font-bold uppercase tracking-tighter opacity-60">Faturamento Bruto</div>
+                        <label className="text-[10px] font-black text-indigo-400 uppercase tracking-widest leading-none drop-shadow-[0_0_12px_rgba(99,102,241,0.9)]">RECEITA</label>
+                        <div className="text-[8px] text-muted-foreground font-bold uppercase tracking-tighter opacity-60">Faturamento</div>
                       </div>
                     </div>
                     
@@ -139,9 +147,9 @@ export function FinancialDistribution({
                       <div className="relative group/field">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[10px] font-bold text-indigo-400">R$</span>
                         <Input 
-                          type="number" 
-                          value={fat} 
-                          onChange={(e) => setFat(parseFloat(e.target.value) || 0)}
+                          type="text" 
+                          value={formatInput(fat)} 
+                          onChange={(e) => setFat(parseInput(e.target.value))}
                           className="w-32 h-10 pl-9 pr-2 text-right font-code font-black text-lg text-indigo-300 bg-black/40 border-white/10 group-hover/field:border-indigo-400/40 focus-visible:ring-1 focus-visible:ring-indigo-400 transition-all rounded-xl"
                         />
                       </div>
@@ -182,9 +190,9 @@ export function FinancialDistribution({
                       <div className="relative group/field">
                         <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-orange-400">R$</span>
                         <Input 
-                          type="number" 
-                          value={custos} 
-                          onChange={(e) => setCustos(parseFloat(e.target.value) || 0)}
+                          type="text" 
+                          value={formatInput(custos)} 
+                          onChange={(e) => setCustos(parseInput(e.target.value))}
                           className="w-28 h-10 pl-8 text-right font-code font-black text-base text-orange-300 bg-black/40 border-white/10 group-hover/field:border-orange-400/40 transition-all rounded-lg"
                         />
                       </div>
@@ -212,9 +220,9 @@ export function FinancialDistribution({
                       <div className="relative group/field">
                         <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[10px] font-bold text-blue-400">R$</span>
                         <Input 
-                          type="number" 
-                          value={prolabore} 
-                          onChange={(e) => setProlabore(parseFloat(e.target.value) || 0)}
+                          type="text" 
+                          value={formatInput(prolabore)} 
+                          onChange={(e) => setProlabore(parseInput(e.target.value))}
                           className="w-28 h-10 pl-8 text-right font-code font-black text-base text-blue-300 bg-black/40 border-white/10 group-hover/field:border-blue-400/40 transition-all rounded-lg"
                         />
                       </div>
