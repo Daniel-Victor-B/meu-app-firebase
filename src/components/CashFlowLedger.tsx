@@ -13,18 +13,14 @@ import {
   ShieldCheck, 
   HelpCircle, 
   ArrowLeftRight, 
-  PenLine, 
   Wallet, 
-  TrendingUp, 
   PiggyBank, 
-  Scale, 
   Settings2, 
   UserCircle, 
   Percent, 
   Lightbulb,
   ChevronUp,
   ChevronDown,
-  CalendarClock,
   Info,
   ArrowRight,
   Target,
@@ -35,7 +31,6 @@ import {
   Zap,
   Calendar,
   Clock,
-  BarChart3,
   TrendingDown,
   Activity
 } from "lucide-react";
@@ -573,11 +568,11 @@ export function CashFlowLedger({
                       <>
                         <li className="flex gap-3 text-xs text-muted-foreground">
                           <ChevronRight className="w-3.5 h-3.5 text-primary shrink-0" />
-                          <span>Mover {distribuicaoLucroPct}% para sua <strong>Corretora PF</strong></span>
+                          <span>Mover <strong>{formatCurrency(qProfitPF)}</strong> ({distribuicaoLucroPct}%) para sua <strong>Corretora PF</strong></span>
                         </li>
                         <li className="flex gap-3 text-xs text-muted-foreground">
                           <ChevronRight className="w-3.5 h-3.5 text-primary shrink-0" />
-                          <span>Reinvestir {100-distribuicaoLucroPct}% na <strong>Escala PJ</strong></span>
+                          <span>Reinvestir <strong>{formatCurrency(qProfitPJ)}</strong> ({100 - distribuicaoLucroPct}%) na <strong>Escala PJ</strong></span>
                         </li>
                       </>
                     ) : (
