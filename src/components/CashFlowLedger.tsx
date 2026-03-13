@@ -268,10 +268,33 @@ export function CashFlowLedger({
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Card className="bg-primary/5 border-primary/20 shadow-md">
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
             <div className="flex items-center gap-2 text-primary">
               <ShieldCheck className="w-5 h-5" />
-              <CardTitle className="text-sm font-bold uppercase tracking-wider">Colchão de Segurança ({mesesReserva} meses)</CardTitle>
+              <CardTitle className="text-sm font-bold uppercase tracking-wider">Colchão de Segurança</CardTitle>
+            </div>
+            <div className="flex items-center gap-2 bg-background/50 px-2 py-1 rounded-lg border border-primary/20 shadow-sm">
+              <span className="text-[10px] font-black text-primary uppercase leading-none">Meta:</span>
+              <div className="flex items-center gap-1">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-5 w-5 rounded-md hover:bg-primary/20 text-primary"
+                  onClick={() => setMesesReserva(Math.max(1, mesesReserva - 1))}
+                >
+                  <ChevronDown className="w-3 h-3" />
+                </Button>
+                <span className="text-xs font-black w-4 text-center text-primary leading-none">{mesesReserva}</span>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-5 w-5 rounded-md hover:bg-primary/20 text-primary"
+                  onClick={() => setMesesReserva(Math.min(24, mesesReserva + 1))}
+                >
+                  <ChevronUp className="w-3 h-3" />
+                </Button>
+              </div>
+              <span className="text-[8px] font-bold text-muted-foreground uppercase leading-none">meses</span>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -282,7 +305,7 @@ export function CashFlowLedger({
               </div>
               <div className="text-right">
                 <div className="text-lg font-bold text-muted-foreground">{formatCurrency(metaTotal)}</div>
-                <div className="text-[10px] text-muted-foreground uppercase font-bold mt-1">Meta Personalizada</div>
+                <div className="text-[10px] text-muted-foreground uppercase font-bold mt-1">Alvo para {mesesReserva} meses</div>
               </div>
             </div>
             <div className="space-y-2">
