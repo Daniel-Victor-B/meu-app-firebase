@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Sparkles, Loader2, Target, ShieldAlert, Zap, Activity, BrainCircuit, Terminal } from "lucide-react";
+import { Sparkles, Loader2, Target, ShieldAlert, Zap, Activity, BrainCircuit, Terminal, ArrowRight, CheckCircle2 } from "lucide-react";
 import { personalizedMeiAdvice, type PersonalizedMeiAdviceOutput } from "@/ai/flows/personalized-mei-advice";
+import { cn } from "@/lib/utils";
 
 interface AiAdvisorProps {
   fat: number;
@@ -128,7 +129,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
                     </p>
                   </div>
 
-                  {/* Cards de Métricas Rápidas - Design Vivo e Didático */}
+                  {/* Cards de Métricas Rápidas */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="relative group overflow-hidden p-5 rounded-3xl bg-indigo-500/5 border border-indigo-500/20 transition-all hover:bg-indigo-500/10 hover:border-indigo-500/40 shadow-sm">
                       <div className="absolute top-0 right-0 -mr-4 -mt-4 w-20 h-20 bg-indigo-500/10 blur-2xl rounded-full" />
@@ -171,57 +172,90 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
                </div>
             </div>
 
-            <CardContent className="space-y-8 p-6 md:p-8 border-t bg-secondary/10">
-              <section className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 bg-blue-500/10 text-blue-500 rounded-md">
-                    <Target className="w-4 h-4" />
+            {/* Seções de Ação Estratégica - Redesign de Alta Performance */}
+            <CardContent className="space-y-12 p-6 md:p-8 border-t bg-secondary/10">
+              {/* Distribuição */}
+              <section className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-500/10 text-blue-500 rounded-xl shadow-inner border border-blue-500/20">
+                    <Target className="w-5 h-5" />
                   </div>
-                  <h4 className="font-bold text-sm uppercase tracking-wider">Estratégia de Distribuição</h4>
+                  <div className="space-y-0.5">
+                    <h4 className="font-black text-sm uppercase tracking-widest text-foreground">Plano de Alocação</h4>
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">Otimização de Fluxo de Caixa</p>
+                  </div>
                 </div>
-                <ul className="grid gap-3">
+                <div className="grid gap-3">
                   {advice.distributionAdvice.map((item, i) => (
-                    <li key={i} className="flex gap-3 text-sm text-muted-foreground bg-secondary/20 p-3 rounded-lg border border-border/50">
-                      <div className="w-1 h-full bg-blue-500 rounded-full shrink-0" />
-                      {item}
-                    </li>
+                    <div key={i} className="group relative overflow-hidden flex gap-4 items-center p-4 rounded-2xl bg-card border border-border/50 hover:border-blue-500/30 transition-all shadow-sm">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/10 group-hover:scale-110 transition-transform">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </div>
+                      <p className="text-sm text-muted-foreground font-medium group-hover:text-foreground transition-colors leading-relaxed">{item}</p>
+                      <div className="absolute right-0 top-0 h-full w-1 bg-blue-500/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
                   ))}
-                </ul>
+                </div>
               </section>
 
-              <section className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 bg-destructive/10 text-destructive rounded-md">
-                    <ShieldAlert className="w-4 h-4" />
+              {/* Limite Anual */}
+              <section className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-destructive/10 text-destructive rounded-xl shadow-inner border border-destructive/20">
+                    <ShieldAlert className="w-5 h-5" />
                   </div>
-                  <h4 className="font-bold text-sm uppercase tracking-wider">Gestão do Limite Anual</h4>
+                  <div className="space-y-0.5">
+                    <h4 className="font-black text-sm uppercase tracking-widest text-foreground">Gestão de Teto</h4>
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">Vigilância de Regime Tributário</p>
+                  </div>
                 </div>
-                <ul className="grid gap-3">
+                <div className="grid gap-3">
                   {advice.meiLimitAdvice.map((item, i) => (
-                    <li key={i} className="flex gap-3 text-sm text-muted-foreground bg-secondary/20 p-3 rounded-lg border border-border/50">
-                      <div className="w-1 h-full bg-destructive rounded-full shrink-0" />
-                      {item}
-                    </li>
+                    <div key={i} className="group relative overflow-hidden flex gap-4 items-center p-4 rounded-2xl bg-card border border-border/50 hover:border-destructive/30 transition-all shadow-sm">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center text-destructive border border-destructive/10 group-hover:scale-110 transition-transform">
+                        <ShieldAlert className="w-4 h-4" />
+                      </div>
+                      <p className="text-sm text-muted-foreground font-medium group-hover:text-foreground transition-colors leading-relaxed">{item}</p>
+                      <div className="absolute right-0 top-0 h-full w-1 bg-destructive/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
                   ))}
-                </ul>
+                </div>
               </section>
 
-              <section className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 bg-primary/10 text-primary rounded-md">
-                    <Sparkles className="w-4 h-4" />
+              {/* Otimização */}
+              <section className="space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-primary/10 text-primary rounded-xl shadow-inner border border-primary/20">
+                    <Sparkles className="w-5 h-5" />
                   </div>
-                  <h4 className="font-bold text-sm uppercase tracking-wider">Sugestões de Otimização</h4>
+                  <div className="space-y-0.5">
+                    <h4 className="font-black text-sm uppercase tracking-widest text-foreground">Fábrica de Riqueza</h4>
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">Aceleração de Lucro e Eficiência</p>
+                  </div>
                 </div>
-                <ul className="grid gap-3">
+                <div className="grid gap-3">
                   {advice.optimizationSuggestions.map((item, i) => (
-                    <li key={i} className="flex gap-3 text-sm text-muted-foreground bg-secondary/20 p-3 rounded-lg border border-border/50">
-                      <div className="w-1 h-full bg-primary rounded-full shrink-0" />
-                      {item}
-                    </li>
+                    <div key={i} className="group relative overflow-hidden flex gap-4 items-center p-4 rounded-2xl bg-card border border-border/50 hover:border-primary/30 transition-all shadow-sm">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/10 group-hover:scale-110 transition-transform">
+                        <Zap className="w-4 h-4" />
+                      </div>
+                      <p className="text-sm text-muted-foreground font-medium group-hover:text-foreground transition-colors leading-relaxed">{item}</p>
+                      <div className="absolute right-0 top-0 h-full w-1 bg-primary/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
                   ))}
-                </ul>
+                </div>
               </section>
+
+              {/* Footer de Autoridade do Relatório */}
+              <div className="pt-8 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-2 text-muted-foreground/40">
+                  <Terminal className="w-4 h-4" />
+                  <span className="text-[9px] font-black uppercase tracking-[0.3em]">Protocolo MEI Flow V2.5</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 border border-white/5 text-[9px] font-bold text-muted-foreground/60 uppercase tracking-widest">
+                  Geração de Dados em Tempo Real
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
