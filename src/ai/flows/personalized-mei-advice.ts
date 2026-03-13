@@ -43,6 +43,8 @@ export async function personalizedMeiAdvice(input: {
   desafio: string;
   meta: string;
 }): Promise<PersonalizedMeiAdviceOutput> {
+  console.log('Dados recebidos na Server Action:', input);
+
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     return {
@@ -62,23 +64,23 @@ Analise o negócio "${input.nomeNegocio || 'MEI sem nome'}".
 PERFIL ESTRATÉGICO:
 - Ramo: ${input.ramo}
 - Modelo: ${input.modeloNegocio}
-- Canais: ${input.canaisVenda.join(', ') || 'Não informados'}
+- Canais de Venda: ${input.canaisVenda?.join(', ') || 'Não informados'}
 - Ticket Médio: R$ ${input.ticketMedio}
 - Clientes Ativos: ${input.numClientes}
-- Maior Desafio: ${input.desafio}
+- Maior Desafio Atual: ${input.desafio}
 - Meta Principal: ${input.meta}
 
-DADOS FINANCEIROS:
-- Faturamento Médio: R$ ${input.faturamentoMensal}
+DADOS FINANCEIROS (MÉDIAS):
+- Faturamento: R$ ${input.faturamentoMensal}
 - Custos Operacionais: R$ ${input.custosOperacionais}
 - Pró-labore: R$ ${input.prolabore}
-- Meses Ativos: ${input.mesesFaturamento}
-- Teto MEI: R$ ${input.meiLimiteAnual}
+- Tempo de Operação: ${input.mesesFaturamento} meses
+- Limite MEI: R$ ${input.meiLimiteAnual}
 
 SUA MISSÃO:
-1. Gere um veredito tático baseado na combinação entre o Ramo (${input.ramo}) e o Desafio atual (${input.desafio}).
-2. Analise se o Ticket Médio de R$ ${input.ticketMedio} é condizente com a meta de "${input.meta}".
-3. Dê sugestões práticas de otimização de caixa focadas nos Canais de Venda utilizados.
+1. Gere um veredito tático baseado na combinação entre o Ramo (${input.ramo}), o Modelo (${input.modeloNegocio}) e o Desafio (${input.desafio}).
+2. Analise se o Ticket Médio de R$ ${input.ticketMedio} é condizente com a meta de "${input.meta}" para o ramo de ${input.ramo}.
+3. Dê sugestões práticas de otimização focadas nos Canais de Venda utilizados.
 4. No campo "summary", forneça um veredito direto, profissional e altamente estratégico.
 
 Responda APENAS um JSON válido com as chaves:
@@ -116,14 +118,20 @@ Responda APENAS um JSON válido com as chaves:
       content = content.replace(/^```/, "").replace(/```$/, "");
     }
     
-    return JSON.parse(content.trim());
+    const parsed = JSON.parse(content.trim());
+    return {
+      summary: parsed.summary || "Análise concluída.",
+      distributionAdvice: Array.isArray(parsed.distributionAdvice) ? parsed.distributionAdvice : ["Verifique sua alocação mensal."],
+      meiLimitAdvice: Array.isArray(parsed.meiLimitAdvice) ? parsed.meiLimitAdvice : ["Mantenha o faturamento sob controle."],
+      optimizationSuggestions: Array.isArray(parsed.optimizationSuggestions) ? parsed.optimizationSuggestions : ["Considere diversificar seus canais."]
+    };
   } catch (error: any) {
     console.error("Erro na Server Action:", error);
     return {
-      summary: "Erro técnico ao processar a análise. Verifique sua chave da API.",
+      summary: "Erro técnico ao processar a análise. Verifique sua chave da API e a conexão com o servidor.",
       distributionAdvice: ["Erro na consulta"],
       meiLimitAdvice: ["Falha técnica"],
-      optimizationSuggestions: ["Tente novamente"]
+      optimizationSuggestions: ["Tente novamente mais tarde"]
     };
   }
 }

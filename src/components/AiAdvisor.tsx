@@ -85,9 +85,9 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
         ramo: businessData.ramo,
         nomeNegocio: businessData.nomeNegocio,
         modeloNegocio: businessData.modeloNegocio,
-        canaisVenda: businessData.canaisVenda,
-        ticketMedio: businessData.ticketMedio,
-        numClientes: businessData.numClientes,
+        canaisVenda: businessData.canaisVenda || [],
+        ticketMedio: Number(businessData.ticketMedio) || 0,
+        numClientes: Number(businessData.numClientes) || 0,
         desafio: businessData.desafio,
         meta: businessData.meta,
       });
@@ -113,7 +113,6 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
         </CardHeader>
         <CardContent className="flex flex-col items-center pb-8 pt-4 space-y-8">
           
-          {/* Resumo Consolidado (Financeiro + Estratégico) */}
           <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl">
             <div className="p-4 rounded-2xl bg-background/50 border border-border/50 flex items-center gap-4">
               <div className="p-2.5 bg-indigo-500/10 rounded-xl text-indigo-500">
