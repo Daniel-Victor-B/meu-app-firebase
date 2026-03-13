@@ -1,7 +1,7 @@
 'use server';
 
 /**
- * @fileOverview Consultoria de IA para MEI.
+ * @fileOverview Consultoria de IA de Elite para MEI.
  */
 
 async function getAvailableFreeModel(apiKey: string): Promise<string> {
@@ -43,54 +43,58 @@ export async function personalizedMeiAdvice(input: {
   desafio: string;
   meta: string;
 }): Promise<PersonalizedMeiAdviceOutput> {
-  console.log('Dados recebidos na Server Action:', input);
+  try {
+    console.log('Dados recebidos na Server Action:', input);
 
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
-    return {
-      summary: "Erro: chave da API não configurada. Adicione OPENROUTER_API_KEY no .env.local",
-      distributionAdvice: ["Configure sua API Key"],
-      meiLimitAdvice: ["Chave ausente"],
-      optimizationSuggestions: ["Verifique o arquivo .env"]
-    };
-  }
+    const apiKey = process.env.OPENROUTER_API_KEY;
+    if (!apiKey) {
+      return {
+        summary: "Erro: chave da API não configurada. Adicione OPENROUTER_API_KEY no arquivo .env para ativar a inteligência.",
+        distributionAdvice: ["Configure sua API Key"],
+        meiLimitAdvice: ["Chave ausente"],
+        optimizationSuggestions: ["Verifique o arquivo .env"]
+      };
+    }
 
-  const model = await getAvailableFreeModel(apiKey);
-  
-  const prompt = `
-Você é um consultor financeiro de elite, especialista em Microempreendedores Individuais (MEI) brasileiros.
-Analise o negócio "${input.nomeNegocio || 'MEI sem nome'}".
+    const model = await getAvailableFreeModel(apiKey);
+    
+    const prompt = `
+Você é um consultor financeiro de elite, especialista em Microempreendedores Individuais (MEI) brasileiros. Sua análise deve ser cirúrgica, estratégica e focada em resultados de alto nível.
 
-PERFIL ESTRATÉGICO:
-- Ramo: ${input.ramo}
-- Modelo: ${input.modeloNegocio}
+Analise o negócio "${input.nomeNegocio || 'MEI em Ascensão'}".
+
+PERFIL ESTRATÉGICO DO NEGÓCIO:
+- Ramo de Atuação: ${input.ramo}
+- Modelo de Negócio: ${input.modeloNegocio}
 - Canais de Venda: ${input.canaisVenda?.join(', ') || 'Não informados'}
-- Ticket Médio: R$ ${input.ticketMedio}
-- Clientes Ativos: ${input.numClientes}
-- Maior Desafio Atual: ${input.desafio}
-- Meta Principal: ${input.meta}
+- Ticket Médio Atual: R$ ${input.ticketMedio}
+- Base de Clientes Ativos: ${input.numClientes}
+- Principal Gargalo/Desafio: ${input.desafio}
+- Objetivo Estratégico (Meta): ${input.meta}
 
-DADOS FINANCEIROS (MÉDIAS):
-- Faturamento: R$ ${input.faturamentoMensal}
-- Custos Operacionais: R$ ${input.custosOperacionais}
-- Pró-labore: R$ ${input.prolabore}
-- Tempo de Operação: ${input.mesesFaturamento} meses
-- Limite MEI: R$ ${input.meiLimiteAnual}
+INDICADORES FINANCEIROS REAIS (LIVRO DE CAIXA):
+- Faturamento Mensal Médio: R$ ${input.faturamentoMensal}
+- Custos Operacionais Totais: R$ ${input.custosOperacionais}
+- Pró-labore Definido: R$ ${input.prolabore}
+- Tempo de Operação Analisado: ${input.mesesFaturamento} meses
+- Teto MEI Restante: R$ ${input.meiLimiteAnual}
 
-SUA MISSÃO:
-1. Gere um veredito tático baseado na combinação entre o Ramo (${input.ramo}), o Modelo (${input.modeloNegocio}) e o Desafio (${input.desafio}).
-2. Analise se o Ticket Médio de R$ ${input.ticketMedio} é condizente com a meta de "${input.meta}" para o ramo de ${input.ramo}.
-3. Dê sugestões práticas de otimização focadas nos Canais de Venda utilizados.
-4. No campo "summary", forneça um veredito direto, profissional e altamente estratégico.
+SUA MISSÃO COMO CONSULTOR DE ELITE:
+1. Forneça um veredito tático direto no campo "summary". Analise se o Ticket Médio é condizente com o Ramo e o Modelo de Negócio para atingir a Meta de "${input.meta}". Seja incisivo.
+2. No campo "distributionAdvice", sugira uma alocação de capital agressiva baseada no Modelo de Negócio (Ex: B2B exige mais fôlego de caixa que B2C).
+3. No campo "meiLimitAdvice", avalie o risco de desenquadramento baseado no faturamento atual vs tempo restante no ano.
+4. No campo "optimizationSuggestions", dê 3 sugestões práticas focadas nos Canais de Venda para otimizar a margem de lucro.
 
-Responda APENAS um JSON válido com as chaves:
-- summary (string)
-- distributionAdvice (array de strings)
-- meiLimitAdvice (array de strings)
-- optimizationSuggestions (array de strings)
+IMPORTANTE: Responda APENAS um JSON válido. Não inclua explicações fora do JSON.
+Estrutura esperada:
+{
+  "summary": "String com veredito estratégico e justificado",
+  "distributionAdvice": ["Array de 3 strings"],
+  "meiLimitAdvice": ["Array de 2 strings"],
+  "optimizationSuggestions": ["Array de 3 strings"]
+}
 `;
 
-  try {
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -111,6 +115,7 @@ Responda APENAS um JSON válido com as chaves:
     const data = await response.json();
     let content = data.choices[0]?.message?.content || "";
     
+    // Limpeza de blocos de código se houver
     content = content.trim();
     if (content.startsWith("```json")) {
       content = content.replace(/^```json/, "").replace(/```$/, "");
@@ -119,19 +124,21 @@ Responda APENAS um JSON válido com as chaves:
     }
     
     const parsed = JSON.parse(content.trim());
+
     return {
-      summary: parsed.summary || "Análise concluída.",
-      distributionAdvice: Array.isArray(parsed.distributionAdvice) ? parsed.distributionAdvice : ["Verifique sua alocação mensal."],
+      summary: parsed.summary || "Análise concluída com sucesso.",
+      distributionAdvice: Array.isArray(parsed.distributionAdvice) ? parsed.distributionAdvice : ["Verifique sua alocação de custos."],
       meiLimitAdvice: Array.isArray(parsed.meiLimitAdvice) ? parsed.meiLimitAdvice : ["Mantenha o faturamento sob controle."],
       optimizationSuggestions: Array.isArray(parsed.optimizationSuggestions) ? parsed.optimizationSuggestions : ["Considere diversificar seus canais."]
     };
+
   } catch (error: any) {
-    console.error("Erro na Server Action:", error);
+    console.error("Erro crítico na Server Action:", error);
     return {
-      summary: "Erro técnico ao processar a análise. Verifique sua chave da API e a conexão com o servidor.",
+      summary: "Falha técnica ao processar a análise. O sistema não conseguiu processar os dados da IA no momento. Tente gerar novamente.",
       distributionAdvice: ["Erro na consulta"],
       meiLimitAdvice: ["Falha técnica"],
-      optimizationSuggestions: ["Tente novamente mais tarde"]
+      optimizationSuggestions: ["Tente novamente em instantes"]
     };
   }
 }

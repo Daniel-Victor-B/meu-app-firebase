@@ -23,6 +23,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
   const [advice, setAdvice] = useState<PersonalizedMeiAdviceOutput | null>(null);
   const { businessData } = useBusiness();
 
+  // Sincronização viva com os dados da planilha
   const spreadsheetMetrics = useMemo(() => {
     const activeMonths = monthlyData.filter(m => m.active);
     if (activeMonths.length === 0) return { avgFat: fat, avgCustos: custos, totalMonths: mesesFat };
@@ -108,7 +109,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
           </div>
           <CardTitle className="text-2xl font-headline text-primary">Consultoria de IA</CardTitle>
           <CardDescription className="text-xs uppercase tracking-widest font-bold">
-            Inteligência Estratégica Baseada no Perfil do seu Negócio
+            Inteligência Estratégica Sincronizada com o Livro de Caixa
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center pb-8 pt-4 space-y-8">
@@ -119,8 +120,8 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
                 <Briefcase className="w-5 h-5" />
               </div>
               <div className="space-y-0.5 min-w-0">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Identidade</p>
-                <p className="text-xs font-bold text-foreground truncate">{businessData.nomeNegocio || 'MEI sem nome'}</p>
+                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Negócio</p>
+                <p className="text-xs font-bold text-foreground truncate">{businessData.nomeNegocio || 'MEI em Ascensão'}</p>
                 <p className="text-[9px] font-medium text-muted-foreground truncate opacity-70">{businessData.ramo}</p>
               </div>
             </div>
@@ -141,16 +142,16 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
                 <Users className="w-5 h-5" />
               </div>
               <div className="space-y-0.5">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Volume & Ticket</p>
+                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Ticket & Volume</p>
                 <p className="text-xs font-bold text-foreground">{businessData.numClientes} Clientes</p>
-                <p className="text-[9px] font-medium text-muted-foreground opacity-70">Ticket: {formatCurrency(businessData.ticketMedio)}</p>
+                <p className="text-[9px] font-medium text-muted-foreground opacity-70">R$ {businessData.ticketMedio}/ticket</p>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
             <Activity className="w-3.5 h-3.5 text-primary" />
-            <span className="text-[10px] font-black text-primary uppercase tracking-tight">Análise cruzada com Livro de Caixa e Perfil Estratégico</span>
+            <span className="text-[10px] font-black text-primary uppercase tracking-tight">Análise cruzada com dados reais de faturamento</span>
           </div>
 
           <Button 
@@ -181,17 +182,17 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-primary">Protocolo de Elite</span>
+                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-primary">Veredito Estratégico</span>
                       </div>
-                      <h3 className="text-lg font-black tracking-tight text-foreground uppercase">Veredito do Consultor</h3>
+                      <h3 className="text-lg font-black tracking-tight text-foreground uppercase">Parecer do Consultor</h3>
                     </div>
                     <div className="flex items-center gap-2 bg-black/40 px-3 py-1 rounded-lg border border-white/5 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
                       <Terminal className="w-3.5 h-3.5 text-primary" />
-                      Strategic Analysis
+                      Protocolo de Blindagem
                     </div>
                   </div>
                   
-                  <div className="relative p-8 rounded-3xl bg-black/40 border border-primary/20 shadow-inner flex items-center justify-center min-h-[140px] overflow-hidden">
+                  <div className="relative p-10 rounded-3xl bg-black/40 border border-primary/20 shadow-inner flex items-center justify-center min-h-[160px] overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50" />
                     <p className="relative z-10 text-[11px] md:text-xs font-medium leading-relaxed text-white/90 tracking-tight text-justify italic max-w-2xl">
                       "{advice.summary}"
@@ -206,14 +207,14 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
                         </div>
                         <div className="space-y-1.5 flex-1">
                           <div className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.2em] leading-none">Saúde Operacional</div>
-                          <div className="text-sm font-black text-foreground">Estabilidade de Caixa</div>
+                          <div className="text-sm font-black text-foreground">Sobrevivência do Caixa</div>
                           <div className="flex items-center gap-2 pt-1">
                             <div className="h-1.5 flex-1 bg-indigo-500/20 rounded-full overflow-hidden">
                               <div className="h-full bg-indigo-400 transition-all duration-1000" style={{ width: `${visualMetrics.saudeScore}%` }} />
                             </div>
                             <span className="text-[10px] font-black text-indigo-400">{visualMetrics.saudeLabel}</span>
                           </div>
-                          <div className="text-[8px] font-bold text-muted-foreground uppercase tracking-wider">{visualMetrics.margin.toFixed(1)}% de sobra real</div>
+                          <div className="text-[8px] font-bold text-muted-foreground uppercase tracking-wider">{visualMetrics.margin.toFixed(1)}% de margem real</div>
                         </div>
                       </div>
                     </div>
@@ -225,14 +226,14 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
                         </div>
                         <div className="space-y-1.5 flex-1">
                           <div className="text-[9px] font-black text-amber-400 uppercase tracking-[0.2em] leading-none">Potencial de Escala</div>
-                          <div className="text-sm font-black text-foreground">Capacidade de Expansão</div>
+                          <div className="text-sm font-black text-foreground">Aderência ao Teto MEI</div>
                           <div className="flex items-center gap-2 pt-1">
                             <div className="h-1.5 flex-1 bg-amber-500/20 rounded-full overflow-hidden">
                               <div className="h-full bg-amber-400 transition-all duration-1000" style={{ width: `${visualMetrics.escalaScore}%` }} />
                             </div>
                             <span className="text-[10px] font-black text-amber-400">{visualMetrics.escalaLabel}</span>
                           </div>
-                          <div className="text-[8px] font-bold text-muted-foreground uppercase tracking-wider">{visualMetrics.usage.toFixed(1)}% do teto utilizado</div>
+                          <div className="text-[8px] font-bold text-muted-foreground uppercase tracking-wider">{visualMetrics.usage.toFixed(1)}% do limite consumido</div>
                         </div>
                       </div>
                     </div>
@@ -246,7 +247,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
                   <div className="p-2 bg-blue-500/10 text-blue-500 rounded-xl border border-blue-500/20 shadow-inner">
                     <Target className="w-5 h-5" />
                   </div>
-                  <h4 className="font-black text-sm uppercase tracking-widest text-foreground">Plano de Alocação</h4>
+                  <h4 className="font-black text-sm uppercase tracking-widest text-foreground">Plano de Alocação de Riqueza</h4>
                 </div>
                 <div className="grid gap-3">
                   {advice.distributionAdvice.map((item, i) => (
@@ -265,7 +266,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
                   <div className="p-2 bg-destructive/10 text-destructive rounded-xl border border-destructive/20 shadow-inner">
                     <ShieldAlert className="w-5 h-5" />
                   </div>
-                  <h4 className="font-black text-sm uppercase tracking-widest text-foreground">Gestão de Teto</h4>
+                  <h4 className="font-black text-sm uppercase tracking-widest text-foreground">Blindagem do Teto MEI</h4>
                 </div>
                 <div className="grid gap-3">
                   {advice.meiLimitAdvice.map((item, i) => (
@@ -284,7 +285,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
                   <div className="p-2 bg-primary/10 text-primary rounded-xl border border-primary/20 shadow-inner">
                     <Sparkles className="w-5 h-5" />
                   </div>
-                  <h4 className="font-black text-sm uppercase tracking-widest text-foreground">Aceleração de Lucro</h4>
+                  <h4 className="font-black text-sm uppercase tracking-widest text-foreground">Sugestões de Otimização Tática</h4>
                 </div>
                 <div className="grid gap-3">
                   {advice.optimizationSuggestions.map((item, i) => (
