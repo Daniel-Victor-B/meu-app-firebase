@@ -402,13 +402,18 @@ export function CashFlowLedger({
                   <Clock className="w-3 h-3" />
                   Duração
                 </div>
-                <Input 
-                  className="h-9 px-2 text-xs font-bold bg-background/80 border-emerald-500/30 text-center" 
-                  type="number" 
-                  min="1" max="12"
-                  value={duration}
-                  onChange={(e) => setDuration(Math.min(12, Math.max(1, parseInt(e.target.value) || 1)))}
-                />
+                <Select value={duration.toString()} onValueChange={(v) => setDuration(parseInt(v))}>
+                  <SelectTrigger className="h-9 text-xs font-bold bg-background/80 border-emerald-500/30">
+                    <SelectValue placeholder="Meses" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => (
+                      <SelectItem key={num} value={num.toString()} className="text-xs font-medium">
+                        {num} {num === 1 ? 'mês' : 'meses'}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </CardContent>
