@@ -3,9 +3,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Sparkles, Loader2, Target, ShieldAlert, Zap, Activity, BrainCircuit, Terminal, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Sparkles, Loader2, Target, ShieldAlert, Zap, Activity, BrainCircuit, Terminal, CheckCircle2 } from "lucide-react";
 import { personalizedMeiAdvice, type PersonalizedMeiAdviceOutput } from "@/ai/flows/personalized-mei-advice";
-import { cn } from "@/lib/utils";
+import { type MonthlyData } from "@/app/page";
 
 interface AiAdvisorProps {
   fat: number;
@@ -13,50 +13,60 @@ interface AiAdvisorProps {
   prolabore: number;
   reservaPct: number;
   mesesFat: number;
+  monthlyData: MonthlyData[];
 }
 
-export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAdvisorProps) {
+export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthlyData }: AiAdvisorProps) {
   const [loading, setLoading] = useState(false);
   const [advice, setAdvice] = useState<PersonalizedMeiAdviceOutput | null>(null);
 
-  // Cálculos de Coerência para os Cards Táticos
-  const metrics = useMemo(() => {
+  // Sincronização: Calcula médias reais da planilha para a IA
+  const spreadsheetMetrics = useMemo(() => {
+    const activeMonths = monthlyData.filter(m => m.active);
+    if (activeMonths.length === 0) return { avgFat: fat, avgCustos: custos, totalMonths: mesesFat };
+    
+    const sumFat = activeMonths.reduce((acc, curr) => acc + curr.receita, 0);
+    const sumCustos = activeMonths.reduce((acc, curr) => acc + curr.custos, 0);
+    
+    return {
+      avgFat: Math.round(sumFat / activeMonths.length),
+      avgCustos: Math.round(sumCustos / activeMonths.length),
+      totalMonths: activeMonths.length
+    };
+  }, [monthlyData, fat, custos, mesesFat]);
+
+  const visualMetrics = useMemo(() => {
     const das = 76;
-    const sobra = Math.max(0, fat - (custos + das + prolabore));
+    const currentFat = spreadsheetMetrics.avgFat;
+    const totalOut = spreadsheetMetrics.avgCustos + das + prolabore;
+    const margin = currentFat > 0 ? ((currentFat - totalOut) / currentFat) * 100 : 0;
     
-    // Saúde Operacional: Baseada na Margem de Sobra (Meta de 30% para ser SAFE)
-    const saudeScore = fat > 0 ? Math.min(100, (sobra / fat) * 333) : 0; // 30% margin = 100 score
-    let saudeLabel = "CRITICAL";
-    if (saudeScore > 40) saudeLabel = "STABLE";
-    if (saudeScore > 80) saudeLabel = "SAFE";
+    const saudeScore = Math.min(100, Math.max(0, margin * 2.5)); // 40% margin = 100% score
+    const saudeLabel = margin > 30 ? "SAFE" : margin > 15 ? "STABLE" : "CRITICAL";
 
-    // Potencial de Escala: Baseado no teto restante do MEI
-    const limiteTotal = 81000;
-    const acumulado = fat * mesesFat;
-    const restante = Math.max(0, limiteTotal - acumulado);
-    const escalaScore = Math.min(100, (restante / limiteTotal) * 100);
-    
-    let escalaLabel = "LOW";
-    if (escalaScore > 30) escalaLabel = "MODERATE";
-    if (escalaScore > 70) escalaLabel = "HIGH";
+    const limiteMEI = 81000;
+    const acumulado = currentFat * spreadsheetMetrics.totalMonths;
+    const usage = (acumulado / limiteMEI) * 100;
+    const escalaScore = Math.min(100, 100 - usage); // Mais espaço = mais potencial
+    const escalaLabel = usage < 50 ? "HIGH" : usage < 85 ? "MODERATE" : "RISK";
 
-    return { saudeScore, saudeLabel, escalaScore, escalaLabel };
-  }, [fat, custos, prolabore, mesesFat]);
+    return { saudeScore, saudeLabel, escalaScore, escalaLabel, margin, usage };
+  }, [spreadsheetMetrics, prolabore]);
 
   useEffect(() => {
-    const saved = localStorage.getItem("mei-flow-ai-advice");
+    const saved = localStorage.getItem("mei-flow-ai-advice-v2");
     if (saved) {
       try {
         setAdvice(JSON.parse(saved));
       } catch (e) {
-        console.error("Erro ao carregar conselho da IA", e);
+        console.error("Erro ao carregar conselho", e);
       }
     }
   }, []);
 
   useEffect(() => {
     if (advice) {
-      localStorage.setItem("mei-flow-ai-advice", JSON.stringify(advice));
+      localStorage.setItem("mei-flow-ai-advice-v2", JSON.stringify(advice));
     }
   }, [advice]);
 
@@ -64,11 +74,11 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
     setLoading(true);
     try {
       const result = await personalizedMeiAdvice({
-        faturamentoMensal: fat,
-        custosOperacionais: custos,
+        faturamentoMensal: spreadsheetMetrics.avgFat,
+        custosOperacionais: spreadsheetMetrics.avgCustos,
         prolabore: prolabore,
         reservaPct: reservaPct,
-        mesesFaturamento: mesesFat,
+        mesesFaturamento: spreadsheetMetrics.totalMonths,
         meiLimiteAnual: 81000,
       });
       setAdvice(result);
@@ -80,31 +90,32 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
   };
 
   return (
-    <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-10">
       <Card className="border-primary/30 bg-primary/5">
-        <CardHeader className="text-center">
-          <div className="mx-auto bg-primary/20 p-3 rounded-full w-fit mb-4 text-primary">
+        <CardHeader className="text-center pb-2">
+          <div className="mx-auto bg-primary/20 p-3 rounded-full w-fit mb-4 text-primary animate-pulse">
             <Sparkles className="w-8 h-8" />
           </div>
           <CardTitle className="text-2xl font-headline text-primary">Consultoria de IA</CardTitle>
-          <CardDescription>
-            Receba uma análise detalhada e personalizada baseada nos seus números atuais.
+          <CardDescription className="text-xs uppercase tracking-widest font-bold">
+            Sincronizado com seu Livro de Caixa
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex justify-center pb-8">
+        <CardContent className="flex flex-col items-center pb-8 pt-4">
+          <div className="flex items-center gap-2 mb-6 px-3 py-1 bg-primary/10 rounded-full border border-primary/20">
+            <Activity className="w-3 h-3 text-primary" />
+            <span className="text-[10px] font-black text-primary uppercase tracking-tight">Análise baseada em {spreadsheetMetrics.totalMonths} meses ativos</span>
+          </div>
           <Button 
             size="lg" 
             onClick={getAdvice} 
             disabled={loading}
-            className="rounded-full px-8 shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all font-bold"
+            className="rounded-full px-10 shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all font-black uppercase tracking-widest text-xs h-12"
           >
             {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Analisando Cenário...
-              </>
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processando Inteligência...</>
             ) : (
-              "Gerar Aconselhamento"
+              "Gerar Diagnóstico Estratégico"
             )}
           </Button>
         </CardContent>
@@ -112,89 +123,72 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
 
       {advice && (
         <div className="space-y-6 animate-in fade-in zoom-in duration-500">
-          <Card className="overflow-hidden border-primary/20 shadow-2xl bg-card">
-            <div className="relative overflow-hidden">
-               {/* Background Elements */}
+          <Card className="overflow-hidden border-border/50 shadow-2xl bg-card">
+            <div className="relative">
                <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none">
                   <BrainCircuit className="w-48 h-48 text-primary" />
                </div>
-               <div className="absolute -left-10 -top-10 w-40 h-40 bg-primary/5 blur-[80px] rounded-full" />
 
-               <div className="p-6 md:p-8 space-y-6 relative z-10">
-                  {/* Header do Diagnóstico */}
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/50 pb-4">
+               <div className="p-6 md:p-8 space-y-6">
+                  {/* Header Tático */}
+                  <div className="flex items-center justify-between border-b border-border/50 pb-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-primary">Veredito Estratégico</span>
+                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-primary">Protocolo de Elite</span>
                       </div>
-                      <h3 className="text-lg font-black tracking-tight text-foreground uppercase">Diagnóstico do Consultor</h3>
+                      <h3 className="text-lg font-black tracking-tight text-foreground uppercase">Veredito do Consultor</h3>
                     </div>
-                    <div className="flex gap-2">
-                      <div className="flex items-center gap-2 bg-black/40 px-2.5 py-1 rounded-lg border border-white/5 text-[8px] font-bold text-muted-foreground uppercase tracking-widest">
-                        <Terminal className="w-3 h-3 text-primary" />
-                        Live Intel
-                      </div>
+                    <div className="flex items-center gap-2 bg-black/40 px-3 py-1 rounded-lg border border-white/5 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
+                      <Terminal className="w-3.5 h-3.5 text-primary" />
+                      Live Analysis
                     </div>
                   </div>
                   
-                  {/* Bloco Central do Parecer - Alinhado Perfeitamente */}
-                  <div className="relative p-6 md:p-10 rounded-3xl bg-black/40 border border-primary/20 shadow-inner overflow-hidden flex items-center justify-center min-h-[160px]">
+                  {/* Bloco Perfeito de Veredito */}
+                  <div className="relative p-8 rounded-3xl bg-black/40 border border-primary/20 shadow-inner flex items-center justify-center min-h-[140px] overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50" />
-                    <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/10 blur-[50px] rounded-full animate-pulse" />
-                    
-                    <div className="absolute top-4 right-5 flex items-center gap-1.5 opacity-40">
-                       <div className="h-1 w-1 rounded-full bg-primary" />
-                       <span className="text-[7px] font-black text-primary uppercase tracking-[0.3em]">AI Synthesis</span>
-                    </div>
-
-                    <p className="relative z-10 text-xs md:text-sm font-medium leading-relaxed text-white/90 tracking-tight text-justify italic">
+                    <p className="relative z-10 text-[11px] md:text-xs font-medium leading-relaxed text-white/90 tracking-tight text-justify italic max-w-2xl">
                       "{advice.summary}"
                     </p>
                   </div>
 
-                  {/* Cards de Métricas Reais e Coerentes */}
+                  {/* Cards de Métricas Vivas e Didáticas */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="relative group overflow-hidden p-5 rounded-3xl bg-indigo-500/5 border border-indigo-500/20 transition-all hover:bg-indigo-500/10 hover:border-indigo-500/40 shadow-sm">
-                      <div className="absolute top-0 right-0 -mr-4 -mt-4 w-20 h-20 bg-indigo-500/10 blur-2xl rounded-full" />
+                    <div className="relative overflow-hidden p-5 rounded-3xl bg-indigo-500/5 border border-indigo-500/20 transition-all hover:bg-indigo-500/10 shadow-sm">
                       <div className="flex items-center gap-5 relative z-10">
-                        <div className="p-3.5 bg-gradient-to-br from-indigo-500/20 to-indigo-600/5 rounded-2xl text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.2)] border border-indigo-500/10">
+                        <div className="p-3.5 bg-indigo-500/20 rounded-2xl text-indigo-400 border border-indigo-500/10 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
                           <Activity className="w-5 h-5" />
                         </div>
                         <div className="space-y-1.5 flex-1">
-                          <div className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.25em] leading-none">Saúde Operacional</div>
-                          <div className="text-sm font-black text-foreground tracking-tight">Estabilidade de Caixa</div>
+                          <div className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.2em] leading-none">Saúde Operacional</div>
+                          <div className="text-sm font-black text-foreground">Estabilidade de Caixa</div>
                           <div className="flex items-center gap-2 pt-1">
                             <div className="h-1.5 flex-1 bg-indigo-500/20 rounded-full overflow-hidden">
-                              <div 
-                                className="h-full bg-indigo-500 transition-all duration-1000" 
-                                style={{ width: `${metrics.saudeScore}%` }}
-                              />
+                              <div className="h-full bg-indigo-400 transition-all duration-1000" style={{ width: `${visualMetrics.saudeScore}%` }} />
                             </div>
-                            <span className="text-[9px] font-black text-indigo-400">{metrics.saudeLabel}</span>
+                            <span className="text-[10px] font-black text-indigo-400">{visualMetrics.saudeLabel}</span>
                           </div>
+                          <div className="text-[8px] font-bold text-muted-foreground uppercase tracking-wider">{visualMetrics.margin.toFixed(1)}% de sobra real</div>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="relative group overflow-hidden p-5 rounded-3xl bg-amber-500/5 border border-amber-500/20 transition-all hover:bg-amber-500/10 hover:border-amber-500/40 shadow-sm">
-                      <div className="absolute top-0 right-0 -mr-4 -mt-4 w-20 h-20 bg-amber-500/10 blur-2xl rounded-full" />
+                    <div className="relative overflow-hidden p-5 rounded-3xl bg-amber-500/5 border border-amber-500/20 transition-all hover:bg-amber-500/10 shadow-sm">
                       <div className="flex items-center gap-5 relative z-10">
-                        <div className="p-3.5 bg-gradient-to-br from-amber-500/20 to-amber-600/5 rounded-2xl text-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.2)] border border-amber-500/10">
+                        <div className="p-3.5 bg-amber-500/20 rounded-2xl text-amber-400 border border-amber-500/10 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
                           <Zap className="w-5 h-5" />
                         </div>
                         <div className="space-y-1.5 flex-1">
-                          <div className="text-[9px] font-black text-amber-400 uppercase tracking-[0.25em] leading-none">Potencial de Escala</div>
-                          <div className="text-sm font-black text-foreground tracking-tight">Capacidade de Expansão</div>
+                          <div className="text-[9px] font-black text-amber-400 uppercase tracking-[0.2em] leading-none">Potencial de Escala</div>
+                          <div className="text-sm font-black text-foreground">Capacidade de Expansão</div>
                           <div className="flex items-center gap-2 pt-1">
                             <div className="h-1.5 flex-1 bg-amber-500/20 rounded-full overflow-hidden">
-                              <div 
-                                className="h-full bg-amber-500 transition-all duration-1000" 
-                                style={{ width: `${metrics.escalaScore}%` }}
-                              />
+                              <div className="h-full bg-amber-400 transition-all duration-1000" style={{ width: `${visualMetrics.escalaScore}%` }} />
                             </div>
-                            <span className="text-[9px] font-black text-amber-400">{metrics.escalaLabel}</span>
+                            <span className="text-[10px] font-black text-amber-400">{visualMetrics.escalaLabel}</span>
                           </div>
+                          <div className="text-[8px] font-bold text-muted-foreground uppercase tracking-wider">{visualMetrics.usage.toFixed(1)}% do teto utilizado</div>
                         </div>
                       </div>
                     </div>
@@ -202,90 +196,64 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
                </div>
             </div>
 
-            {/* Seções de Ação Estratégica */}
-            <CardContent className="space-y-12 p-6 md:p-8 border-t bg-secondary/10">
-              {/* Distribuição */}
-              <section className="space-y-6">
+            {/* Recomendações Táticas */}
+            <CardContent className="space-y-10 p-6 md:p-8 border-t bg-secondary/10">
+              <section className="space-y-5">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-500/10 text-blue-500 rounded-xl shadow-inner border border-blue-500/20">
+                  <div className="p-2 bg-blue-500/10 text-blue-500 rounded-xl border border-blue-500/20 shadow-inner">
                     <Target className="w-5 h-5" />
                   </div>
-                  <div className="space-y-0.5">
-                    <h4 className="font-black text-sm uppercase tracking-widest text-foreground">Plano de Alocação</h4>
-                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">Otimização de Fluxo de Caixa</p>
-                  </div>
+                  <h4 className="font-black text-sm uppercase tracking-widest text-foreground">Plano de Alocação</h4>
                 </div>
                 <div className="grid gap-3">
                   {advice.distributionAdvice.map((item, i) => (
-                    <div key={i} className="group relative overflow-hidden flex gap-4 items-center p-4 rounded-2xl bg-card border border-border/50 hover:border-blue-500/30 transition-all shadow-sm">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 border border-blue-500/10 group-hover:scale-110 transition-transform">
+                    <div key={i} className="group flex gap-4 items-center p-4 rounded-2xl bg-card border border-border/50 hover:border-blue-500/30 transition-all shadow-sm">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
                         <CheckCircle2 className="w-4 h-4" />
                       </div>
-                      <p className="text-sm text-muted-foreground font-medium group-hover:text-foreground transition-colors leading-relaxed">{item}</p>
-                      <div className="absolute right-0 top-0 h-full w-1 bg-blue-500/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <p className="text-sm text-muted-foreground font-medium group-hover:text-foreground transition-colors">{item}</p>
                     </div>
                   ))}
                 </div>
               </section>
 
-              {/* Limite Anual */}
-              <section className="space-y-6">
+              <section className="space-y-5">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-destructive/10 text-destructive rounded-xl shadow-inner border border-destructive/20">
+                  <div className="p-2 bg-destructive/10 text-destructive rounded-xl border border-destructive/20 shadow-inner">
                     <ShieldAlert className="w-5 h-5" />
                   </div>
-                  <div className="space-y-0.5">
-                    <h4 className="font-black text-sm uppercase tracking-widest text-foreground">Gestão de Teto</h4>
-                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">Vigilância de Regime Tributário</p>
-                  </div>
+                  <h4 className="font-black text-sm uppercase tracking-widest text-foreground">Gestão de Teto</h4>
                 </div>
                 <div className="grid gap-3">
                   {advice.meiLimitAdvice.map((item, i) => (
-                    <div key={i} className="group relative overflow-hidden flex gap-4 items-center p-4 rounded-2xl bg-card border border-border/50 hover:border-destructive/30 transition-all shadow-sm">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center text-destructive border border-destructive/10 group-hover:scale-110 transition-transform">
+                    <div key={i} className="group flex gap-4 items-center p-4 rounded-2xl bg-card border border-border/50 hover:border-destructive/30 transition-all shadow-sm">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center text-destructive group-hover:scale-110 transition-transform">
                         <ShieldAlert className="w-4 h-4" />
                       </div>
-                      <p className="text-sm text-muted-foreground font-medium group-hover:text-foreground transition-colors leading-relaxed">{item}</p>
-                      <div className="absolute right-0 top-0 h-full w-1 bg-destructive/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <p className="text-sm text-muted-foreground font-medium group-hover:text-foreground transition-colors">{item}</p>
                     </div>
                   ))}
                 </div>
               </section>
 
-              {/* Otimização */}
-              <section className="space-y-6">
+              <section className="space-y-5">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-primary/10 text-primary rounded-xl shadow-inner border border-primary/20">
+                  <div className="p-2 bg-primary/10 text-primary rounded-xl border border-primary/20 shadow-inner">
                     <Sparkles className="w-5 h-5" />
                   </div>
-                  <div className="space-y-0.5">
-                    <h4 className="font-black text-sm uppercase tracking-widest text-foreground">Fábrica de Riqueza</h4>
-                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">Aceleração de Lucro e Eficiência</p>
-                  </div>
+                  <h4 className="font-black text-sm uppercase tracking-widest text-foreground">Aceleração de Lucro</h4>
                 </div>
                 <div className="grid gap-3">
                   {advice.optimizationSuggestions.map((item, i) => (
-                    <div key={i} className="group relative overflow-hidden flex gap-4 items-center p-4 rounded-2xl bg-card border border-border/50 hover:border-primary/30 transition-all shadow-sm">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/10 group-hover:scale-110 transition-transform">
+                    <div key={i} className="group flex gap-4 items-center p-4 rounded-2xl bg-card border border-border/50 hover:border-primary/30 transition-all shadow-sm">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                         <Zap className="w-4 h-4" />
                       </div>
-                      <p className="text-sm text-muted-foreground font-medium group-hover:text-foreground transition-colors leading-relaxed">{item}</p>
-                      <div className="absolute right-0 top-0 h-full w-1 bg-primary/30 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <p className="text-sm text-muted-foreground font-medium group-hover:text-foreground transition-colors">{item}</p>
                     </div>
                   ))}
                 </div>
               </section>
-
-              {/* Footer de Autoridade */}
-              <div className="pt-8 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-2 text-muted-foreground/40">
-                  <Terminal className="w-4 h-4" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.3em]">Protocolo MEI Flow V2.5</span>
-                </div>
-                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 border border-white/5 text-[9px] font-bold text-muted-foreground/60 uppercase tracking-widest">
-                  Análise Estratégica Real
-                </div>
-              </div>
             </CardContent>
           </Card>
         </div>

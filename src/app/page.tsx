@@ -33,7 +33,6 @@ export default function Home() {
 
   const LIMITE_MEI_ANUAL = 81000;
 
-  // Persistência de Dados: Carregar ao montar
   useEffect(() => {
     const saved = localStorage.getItem("mei-flow-main-state");
     if (saved) {
@@ -47,12 +46,11 @@ export default function Home() {
         if (data.activeTab !== undefined) setActiveTab(data.activeTab);
         if (data.monthlyData !== undefined) setMonthlyData(data.monthlyData);
       } catch (e) {
-        console.error("Erro ao carregar dados persistidos", e);
+        console.error("Erro ao carregar dados", e);
       }
     }
   }, []);
 
-  // Persistência de Dados: Salvar ao mudar
   useEffect(() => {
     localStorage.setItem("mei-flow-main-state", JSON.stringify({
       fat, custos, prolabore, reservaPct, mesesFat, activeTab, monthlyData
@@ -120,24 +118,17 @@ export default function Home() {
 
         <div className="mt-0">
           <TabsContent value="distribuicao">
-            <div className="w-full">
-              <FinancialDistribution 
-                fat={fat} setFat={setFat}
-                custos={custos} setCustos={setCustos}
-                prolabore={prolabore} setProlabore={setProlabore}
-                reservaPct={reservaPct} setReservaPct={setReservaPct}
-                setActiveTab={setActiveTab}
-              />
-            </div>
+            <FinancialDistribution 
+              fat={fat} setFat={setFat}
+              custos={custos} setCustos={setCustos}
+              prolabore={prolabore} setProlabore={setProlabore}
+              reservaPct={reservaPct} setReservaPct={setReservaPct}
+              setActiveTab={setActiveTab}
+            />
           </TabsContent>
 
           <TabsContent value="gestao">
-            <ProfessionalDashboard 
-              fat={fat}
-              custos={custos}
-              prolabore={prolabore}
-              reservaPct={reservaPct}
-            />
+            <ProfessionalDashboard fat={fat} custos={custos} prolabore={prolabore} reservaPct={reservaPct} />
           </TabsContent>
 
           <TabsContent value="planilha">
@@ -151,18 +142,11 @@ export default function Home() {
           </TabsContent>
 
           <TabsContent value="limite">
-            <div className="w-full">
-              <MeiLimitTracker 
-                fatAcum={fatAcum}
-                fatMensal={fat}
-                setFatMensal={setFat}
-                limiteAnual={LIMITE_MEI_ANUAL}
-                mesesFat={mesesFat}
-                setMesesFat={setMesesFat}
-                mesesRestantes={mesesRestantes}
-                monthlySpreadsheetData={monthlyData}
-              />
-            </div>
+            <MeiLimitTracker 
+              fatAcum={fatAcum} fatMensal={fat} setFatMensal={setFat}
+              limiteAnual={LIMITE_MEI_ANUAL} mesesFat={mesesFat} setMesesFat={setMesesFat}
+              mesesRestantes={mesesRestantes} monthlySpreadsheetData={monthlyData}
+            />
           </TabsContent>
 
           <TabsContent value="contas">
@@ -179,11 +163,8 @@ export default function Home() {
 
           <TabsContent value="ia">
             <AiAdvisor 
-              fat={fat}
-              custos={custos}
-              prolabore={prolabore}
-              reservaPct={reservaPct}
-              mesesFat={mesesFat}
+              fat={fat} custos={custos} prolabore={prolabore}
+              reservaPct={reservaPct} mesesFat={mesesFat} monthlyData={monthlyData}
             />
           </TabsContent>
         </div>
