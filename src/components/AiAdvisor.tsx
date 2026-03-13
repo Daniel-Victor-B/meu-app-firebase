@@ -28,8 +28,8 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
   const [loading, setLoading] = useState(false);
   const [advice, setAdvice] = useState<PersonalizedMeiAdviceOutput | null>(null);
   
-  // Estado para o Ramo de Atividade
-  const [ramo, setRamo] = useState("Serviços (consultoria, estética, etc.)");
+  // Estado para o Ramo de Atividade com as novas categorias
+  const [ramo, setRamo] = useState("Serviços presenciais (consultoria, estética, oficina)");
 
   // Sincronização: Calcula médias reais da planilha para a IA
   const spreadsheetMetrics = useMemo(() => {
@@ -91,7 +91,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
         reservaPct: reservaPct,
         mesesFaturamento: spreadsheetMetrics.totalMonths,
         meiLimiteAnual: 81000,
-        ramo: ramo, // Agora enviamos o ramo selecionado
+        ramo: ramo,
       });
       setAdvice(result);
     } catch (error) {
@@ -128,11 +128,13 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
                 <SelectValue placeholder="Selecione o ramo" />
               </SelectTrigger>
               <SelectContent className="bg-background border-border shadow-xl">
-                <SelectItem value="Alimentação" className="text-xs font-medium">Alimentação</SelectItem>
-                <SelectItem value="Comércio varejista" className="text-xs font-medium">Comércio varejista</SelectItem>
-                <SelectItem value="Serviços (consultoria, estética, etc.)" className="text-xs font-medium">Serviços (consultoria, estética, etc.)</SelectItem>
+                <SelectItem value="Alimentação (restaurante, lanchonete, delivery)" className="text-xs font-medium">Alimentação (restaurante, lanchonete, delivery)</SelectItem>
+                <SelectItem value="Comércio varejista (loja física)" className="text-xs font-medium">Comércio varejista (loja física)</SelectItem>
+                <SelectItem value="E-commerce / Negócio digital (loja virtual, infoprodutos)" className="text-xs font-medium">E-commerce / Negócio digital (loja virtual, infoprodutos)</SelectItem>
+                <SelectItem value="Serviços presenciais (consultoria, estética, oficina)" className="text-xs font-medium">Serviços presenciais (consultoria, estética, oficina)</SelectItem>
+                <SelectItem value="Serviços online (freelancer, consultoria online, desenvolvimento)" className="text-xs font-medium">Serviços online (freelancer, consultoria online, desenvolvimento)</SelectItem>
                 <SelectItem value="Indústria / Artesanato" className="text-xs font-medium">Indústria / Artesanato</SelectItem>
-                <SelectItem value="Transporte" className="text-xs font-medium">Transporte</SelectItem>
+                <SelectItem value="Transporte / Mobilidade" className="text-xs font-medium">Transporte / Mobilidade</SelectItem>
                 <SelectItem value="Outros" className="text-xs font-medium">Outros</SelectItem>
               </SelectContent>
             </Select>
