@@ -35,6 +35,13 @@ export async function personalizedMeiAdvice(input: {
   mesesFaturamento: number;
   meiLimiteAnual: number;
   ramo: string;
+  nomeNegocio: string;
+  modeloNegocio: string;
+  canaisVenda: string[];
+  ticketMedio: number;
+  numClientes: number;
+  desafio: string;
+  meta: string;
 }): Promise<PersonalizedMeiAdviceOutput> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
@@ -50,23 +57,29 @@ export async function personalizedMeiAdvice(input: {
   
   const prompt = `
 Você é um consultor financeiro de elite, especialista em Microempreendedores Individuais (MEI) brasileiros.
-O negócio atua no ramo de: ${input.ramo}.
+Analise o negócio "${input.nomeNegocio || 'MEI sem nome'}".
 
-Sua missão é dar um veredito tático REAL baseado nos números e no contexto específico deste setor.
+PERFIL ESTRATÉGICO:
+- Ramo: ${input.ramo}
+- Modelo: ${input.modeloNegocio}
+- Canais: ${input.canaisVenda.join(', ') || 'Não informados'}
+- Ticket Médio: R$ ${input.ticketMedio}
+- Clientes Ativos: ${input.numClientes}
+- Maior Desafio: ${input.desafio}
+- Meta Principal: ${input.meta}
 
-DADOS DO NEGÓCIO:
-- Ramo de Atividade: ${input.ramo}
-- Faturamento Médio Mensal: R$ ${input.faturamentoMensal}
+DADOS FINANCEIROS:
+- Faturamento Médio: R$ ${input.faturamentoMensal}
 - Custos Operacionais: R$ ${input.custosOperacionais}
-- Pró-labore (Salário): R$ ${input.prolabore}
-- Meses Ativos no Ano: ${input.mesesFaturamento}
-- Teto MEI Anual: R$ ${input.meiLimiteAnual}
+- Pró-labore: R$ ${input.prolabore}
+- Meses Ativos: ${input.mesesFaturamento}
+- Teto MEI: R$ ${input.meiLimiteAnual}
 
-INSTRUÇÕES ESTRATÉGICAS:
-1. Adapte todas as sugestões e o veredito às particularidades e desafios do ramo de "${input.ramo}".
-2. Analise se a margem de lucro está adequada para este setor específico.
-3. Identifique o gargalo principal (custos, teto MEI ou retirada pessoal).
-4. No campo "summary", forneça um veredito direto, profissional e altamente estratégico sobre a saúde do negócio. Use alinhamento direto e sem enrolação.
+SUA MISSÃO:
+1. Gere um veredito tático baseado na combinação entre o Ramo (${input.ramo}) e o Desafio atual (${input.desafio}).
+2. Analise se o Ticket Médio de R$ ${input.ticketMedio} é condizente com a meta de "${input.meta}".
+3. Dê sugestões práticas de otimização de caixa focadas nos Canais de Venda utilizados.
+4. No campo "summary", forneça um veredito direto, profissional e altamente estratégico.
 
 Responda APENAS um JSON válido com as chaves:
 - summary (string)
@@ -96,7 +109,6 @@ Responda APENAS um JSON válido com as chaves:
     const data = await response.json();
     let content = data.choices[0]?.message?.content || "";
     
-    // Limpeza básica para garantir que o conteúdo seja apenas o JSON
     content = content.trim();
     if (content.startsWith("```json")) {
       content = content.replace(/^```json/, "").replace(/```$/, "");
@@ -108,10 +120,10 @@ Responda APENAS um JSON válido com as chaves:
   } catch (error: any) {
     console.error("Erro na Server Action:", error);
     return {
-      summary: "Ocorreu um erro na análise estratégica. Verifique sua conexão ou a chave da API.",
+      summary: "Erro técnico ao processar a análise. Verifique sua chave da API.",
       distributionAdvice: ["Erro na consulta"],
       meiLimitAdvice: ["Falha técnica"],
-      optimizationSuggestions: ["Tente novamente em instantes"]
+      optimizationSuggestions: ["Tente novamente"]
     };
   }
 }

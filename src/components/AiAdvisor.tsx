@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Sparkles, Loader2, Target, ShieldAlert, Zap, Activity, BrainCircuit, Terminal, CheckCircle2, Briefcase, TrendingUp } from "lucide-react";
+import { Sparkles, Loader2, Target, ShieldAlert, Zap, Activity, BrainCircuit, Terminal, CheckCircle2, Briefcase, TrendingUp, Target as TargetIcon, Users } from "lucide-react";
 import { personalizedMeiAdvice, type PersonalizedMeiAdviceOutput } from "@/ai/flows/personalized-mei-advice";
 import { type MonthlyData } from "@/app/page";
 import { useBusiness } from "@/contexts/BusinessContext";
@@ -56,7 +56,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
   }, [spreadsheetMetrics, prolabore]);
 
   useEffect(() => {
-    const saved = localStorage.getItem("mei-flow-ai-advice-v2");
+    const saved = localStorage.getItem("mei-flow-ai-advice-v3");
     if (saved) {
       try {
         setAdvice(JSON.parse(saved));
@@ -68,7 +68,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
 
   useEffect(() => {
     if (advice) {
-      localStorage.setItem("mei-flow-ai-advice-v2", JSON.stringify(advice));
+      localStorage.setItem("mei-flow-ai-advice-v3", JSON.stringify(advice));
     }
   }, [advice]);
 
@@ -82,7 +82,14 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
         reservaPct: reservaPct,
         mesesFaturamento: spreadsheetMetrics.totalMonths,
         meiLimiteAnual: 81000,
-        ramo: businessData.ramo === "Outros" && businessData.outroRamo ? businessData.outroRamo : businessData.ramo,
+        ramo: businessData.ramo,
+        nomeNegocio: businessData.nomeNegocio,
+        modeloNegocio: businessData.modeloNegocio,
+        canaisVenda: businessData.canaisVenda,
+        ticketMedio: businessData.ticketMedio,
+        numClientes: businessData.numClientes,
+        desafio: businessData.desafio,
+        meta: businessData.meta,
       });
       setAdvice(result);
     } catch (error) {
@@ -101,36 +108,50 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
           </div>
           <CardTitle className="text-2xl font-headline text-primary">Consultoria de IA</CardTitle>
           <CardDescription className="text-xs uppercase tracking-widest font-bold">
-            Inteligência Estratégica Baseada em Dados Reais
+            Inteligência Estratégica Baseada no Perfil do seu Negócio
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col items-center pb-8 pt-4 space-y-8">
           
-          {/* Resumo de Dados de Entrada */}
-          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+          {/* Resumo Consolidado (Financeiro + Estratégico) */}
+          <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl">
             <div className="p-4 rounded-2xl bg-background/50 border border-border/50 flex items-center gap-4">
               <div className="p-2.5 bg-indigo-500/10 rounded-xl text-indigo-500">
                 <Briefcase className="w-5 h-5" />
               </div>
-              <div className="space-y-0.5">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Ramo Ativo</p>
-                <p className="text-xs font-bold text-foreground line-clamp-1">{businessData.ramo === "Outros" ? businessData.outroRamo : businessData.ramo}</p>
+              <div className="space-y-0.5 min-w-0">
+                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Identidade</p>
+                <p className="text-xs font-bold text-foreground truncate">{businessData.nomeNegocio || 'MEI sem nome'}</p>
+                <p className="text-[9px] font-medium text-muted-foreground truncate opacity-70">{businessData.ramo}</p>
               </div>
             </div>
+
             <div className="p-4 rounded-2xl bg-background/50 border border-border/50 flex items-center gap-4">
-              <div className="p-2.5 bg-primary/10 rounded-xl text-primary">
-                <TrendingUp className="w-5 h-5" />
+              <div className="p-2.5 bg-amber-500/10 rounded-xl text-amber-500">
+                <TargetIcon className="w-5 h-5" />
               </div>
               <div className="space-y-0.5">
-                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Fat. Médio Mensal</p>
-                <p className="text-xs font-bold text-foreground">{formatCurrency(spreadsheetMetrics.avgFat)}</p>
+                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Meta & Modelo</p>
+                <p className="text-xs font-bold text-foreground">{businessData.meta}</p>
+                <p className="text-[9px] font-medium text-muted-foreground opacity-70">{businessData.modeloNegocio}</p>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-background/50 border border-border/50 flex items-center gap-4">
+              <div className="p-2.5 bg-primary/10 rounded-xl text-primary">
+                <Users className="w-5 h-5" />
+              </div>
+              <div className="space-y-0.5">
+                <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Volume & Ticket</p>
+                <p className="text-xs font-bold text-foreground">{businessData.numClientes} Clientes</p>
+                <p className="text-[9px] font-medium text-muted-foreground opacity-70">Ticket: {formatCurrency(businessData.ticketMedio)}</p>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
             <Activity className="w-3.5 h-3.5 text-primary" />
-            <span className="text-[10px] font-black text-primary uppercase tracking-tight">Sincronizado: {spreadsheetMetrics.totalMonths} meses de histórico</span>
+            <span className="text-[10px] font-black text-primary uppercase tracking-tight">Análise cruzada com Livro de Caixa e Perfil Estratégico</span>
           </div>
 
           <Button 
@@ -140,7 +161,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
             className="rounded-full px-12 shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all font-black uppercase tracking-widest text-xs h-14"
           >
             {loading ? (
-              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processando...</>
+              <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Mapeando Mercado...</>
             ) : (
               "Gerar Diagnóstico de Elite"
             )}
@@ -167,7 +188,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
                     </div>
                     <div className="flex items-center gap-2 bg-black/40 px-3 py-1 rounded-lg border border-white/5 text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
                       <Terminal className="w-3.5 h-3.5 text-primary" />
-                      Live Analysis
+                      Strategic Analysis
                     </div>
                   </div>
                   
