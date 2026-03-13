@@ -619,24 +619,27 @@ export function CashFlowLedger({
       </div>
 
       <section className="space-y-6 pt-6">
-        <div className="flex items-center gap-2">
-          <div className="p-2 bg-secondary rounded-lg">
-            <HelpCircle className="w-5 h-5 text-muted-foreground" />
+        <div className="flex items-center gap-3 px-1">
+          <div className="p-2.5 bg-primary/10 rounded-xl text-primary shadow-inner">
+            <HelpCircle className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="font-headline font-bold text-lg">Guia do Livro de Caixa</h3>
-            <p className="text-xs text-muted-foreground">Orientações para o registro fiel das suas finanças.</p>
+            <h3 className="font-headline font-bold text-xl tracking-tight">FAQ de Gestão</h3>
+            <p className="text-xs text-muted-foreground font-medium mt-1">Orientações para o registro fiel das suas finanças e proteção do lucro.</p>
           </div>
         </div>
 
-        <Accordion type="single" collapsible className="w-full space-y-2">
+        <Accordion type="single" collapsible className="w-full space-y-3">
           {FAQS_PLANILHA.map((faq, idx) => (
-            <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-xl px-4 bg-card shadow-sm hover:shadow-md transition-shadow">
-              <AccordionTrigger className="text-sm font-bold text-left hover:no-underline py-4">
-                {faq.q}
+            <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-2xl px-5 bg-card/40 shadow-sm hover:shadow-md transition-all hover:bg-card">
+              <AccordionTrigger className="text-sm font-bold text-left hover:no-underline py-5 leading-relaxed group">
+                <span className="group-hover:text-primary transition-colors">{faq.q}</span>
               </AccordionTrigger>
-              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-4">
-                {faq.a}
+              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-6 pt-2 font-medium">
+                <div className="flex gap-4">
+                  <div className="w-1 h-full bg-primary/20 rounded-full shrink-0" />
+                  {faq.a}
+                </div>
               </AccordionContent>
             </AccordionItem>
           ))}
