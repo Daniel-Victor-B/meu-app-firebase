@@ -530,11 +530,11 @@ export function CashFlowLedger({
                       <>
                         <li className="flex gap-3 text-xs text-muted-foreground">
                           <ChevronRight className="w-3.5 h-3.5 text-primary shrink-0" />
-                          <span>Mover <strong>{formatCurrency(qProfitPF_Recommended)}</strong> para sua <strong>Corretora PF</strong></span>
+                          <span>Mover <strong>{formatCurrency(qProfitPF_Recommended)}</strong> ({smartTarget.pf}%) para sua <strong>Corretora PF</strong></span>
                         </li>
                         <li className="flex gap-3 text-xs text-muted-foreground">
                           <ChevronRight className="w-3.5 h-3.5 text-primary shrink-0" />
-                          <span>Manter <strong>{formatCurrency(qProfitPJ_Recommended)}</strong> para <strong>Escala PJ</strong></span>
+                          <span>Manter <strong>{formatCurrency(qProfitPJ_Recommended)}</strong> ({smartTarget.pj}%) para <strong>Escala PJ</strong></span>
                         </li>
                       </>
                     ) : (
@@ -554,6 +554,15 @@ export function CashFlowLedger({
                       <h4 className="text-xl font-black text-foreground tracking-tight">Distribuição de Resultados</h4>
                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Organize o destino da sua riqueza</p>
                     </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setDistribuicaoLucroPct(smartTarget.pf)}
+                      className="rounded-full gap-2 border-amber-500/30 text-amber-500 hover:bg-amber-500/10 h-9 px-4"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      Sincronizar IA ({smartTarget.pf}%)
+                    </Button>
                   </div>
 
                   <div className="space-y-6">
