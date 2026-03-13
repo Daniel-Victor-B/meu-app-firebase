@@ -32,7 +32,8 @@ import {
   Calendar,
   Clock,
   TrendingDown,
-  Activity
+  Activity,
+  BookOpen
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -42,20 +43,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { type MonthlyData } from "@/app/page";
 
 const MESES = [
-  "Jan", "Fev", "Mar", "Abr", "Mai", "Jun", 
-  "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+  "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
+  "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
 ];
 
 interface CashFlowLedgerProps {
@@ -98,8 +92,6 @@ export function CashFlowLedger({
   monthlyData, setMonthlyData
 }: CashFlowLedgerProps) {
   const [mesesReserva, setMesesReserva] = useState(6);
-  const [startMonth, setStartMonth] = useState(0);
-  const [duration, setDuration] = useState(12);
   const [distribuicaoLucroPct, setDistribuicaoLucroPct] = useState(50);
   const [selectedQuarter, setSelectedQuarter] = useState(0);
   const das = 76;
@@ -108,12 +100,6 @@ export function CashFlowLedger({
     const savedReserva = localStorage.getItem("mei-flow-ledger-meses-reserva");
     if (savedReserva) setMesesReserva(parseInt(savedReserva, 10) || 6);
     
-    const savedStartMonth = localStorage.getItem("mei-flow-ledger-start-month");
-    if (savedStartMonth) setStartMonth(parseInt(savedStartMonth, 10) || 0);
-
-    const savedDuration = localStorage.getItem("mei-flow-ledger-duration");
-    if (savedDuration) setDuration(parseInt(savedDuration, 10) || 12);
-
     const savedDist = localStorage.getItem("mei-flow-ledger-dist-lucro");
     if (savedDist) setDistribuicaoLucroPct(parseInt(savedDist, 10) || 50);
   }, []);
@@ -123,22 +109,8 @@ export function CashFlowLedger({
   }, [mesesReserva]);
 
   useEffect(() => {
-    localStorage.setItem("mei-flow-ledger-start-month", startMonth.toString());
-  }, [startMonth]);
-
-  useEffect(() => {
-    localStorage.setItem("mei-flow-ledger-duration", duration.toString());
-  }, [duration]);
-
-  useEffect(() => {
     localStorage.setItem("mei-flow-ledger-dist-lucro", distribuicaoLucroPct.toString());
   }, [distribuicaoLucroPct]);
-
-  useEffect(() => {
-    if (monthlyData.every(m => m.receita === 5000 && m.custos === 1500)) {
-        setMonthlyData(monthlyData.map(m => ({ ...m, receita: fat, custos: custos })));
-    }
-  }, []);
 
   const updateMonth = (index: number, field: keyof MonthlyData, value: any) => {
     const newData = [...monthlyData];
@@ -156,11 +128,7 @@ export function CashFlowLedger({
     let acumuladoReceitaTotal = 0;
     let acumuladoLucroTotal = 0;
 
-    let periodReserva = 0;
-    let periodReceita = 0;
-    let periodLucro = 0;
-
-    const rows = monthlyData.slice(0, 12).map((m, i) => {
+    const rows = monthlyData.map((m) => {
       if (!m.active) {
         return {
           ...m,
@@ -180,13 +148,6 @@ export function CashFlowLedger({
       acumuladoReceitaTotal += m.receita;
       acumuladoLucroTotal += lucro;
 
-      // Soma apenas se estiver dentro da duração definida para o Planejamento (Período)
-      if (i < duration) {
-        periodReserva += reserva;
-        periodReceita += m.receita;
-        periodLucro += lucro;
-      }
-
       return {
         ...m,
         sobra,
@@ -201,12 +162,9 @@ export function CashFlowLedger({
       rows, 
       acumuladoReserva: acumuladoReservaTotal, 
       acumuladoReceita: acumuladoReceitaTotal, 
-      acumuladoLucro: acumuladoLucroTotal,
-      periodReserva,
-      periodReceita,
-      periodLucro
+      acumuladoLucro: acumuladoLucroTotal
     };
-  }, [monthlyData, fat, custos, prolabore, reservaPct, duration]);
+  }, [monthlyData, das, prolabore, reservaPct]);
 
   const quarterlyTotals = useMemo(() => {
     const quarters = [
@@ -237,8 +195,7 @@ export function CashFlowLedger({
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
   const LIMITE_MEI = 81000;
   
-  // Percentual do teto baseado no período selecionado
-  const percentualLimite = Math.min(100, (totals.periodReceita / LIMITE_MEI) * 100);
+  const percentualLimite = Math.min(100, (totals.acumuladoReceita / LIMITE_MEI) * 100);
 
   const smartTarget = useMemo(() => {
     if (progressoMeta < 100) {
@@ -333,17 +290,17 @@ export function CashFlowLedger({
             <div className="flex items-center gap-2 text-foreground">
               <Settings2 className="w-5 h-5 text-primary" />
               <div>
-                <CardTitle className="text-sm font-bold uppercase tracking-wider">Regras de Cálculo</CardTitle>
-                <CardDescription className="text-[10px] uppercase font-bold text-muted-foreground">Sincronizado com Config. Mensais</CardDescription>
+                <CardTitle className="text-sm font-bold uppercase tracking-wider">Parâmetros de Gestão</CardTitle>
+                <CardDescription className="text-[10px] uppercase font-bold text-muted-foreground">Configurações globais do negócio</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5 text-[10px] text-blue-500 font-black uppercase">
                   <UserCircle className="w-3 h-3" />
-                  Salário PF
+                  Salário PF (Pró-labore)
                 </div>
                 <div className="flex items-center gap-2">
                   <StepButtons 
@@ -363,7 +320,7 @@ export function CashFlowLedger({
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5 text-[10px] text-purple-500 font-black uppercase">
                   <Percent className="w-3 h-3" />
-                  Reserva PJ
+                  Reserva PJ (%)
                 </div>
                 <div className="flex items-center gap-2">
                   <StepButtons 
@@ -379,42 +336,6 @@ export function CashFlowLedger({
                   />
                 </div>
               </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center gap-1.5 text-[10px] text-amber-500 font-black uppercase">
-                  <Calendar className="w-3 h-3" />
-                  Início
-                </div>
-                <Select value={startMonth.toString()} onValueChange={(v) => setStartMonth(parseInt(v))}>
-                  <SelectTrigger className="h-9 text-xs font-bold bg-background/80 border-amber-500/30">
-                    <SelectValue placeholder="Mês" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {MESES.map((mes, idx) => (
-                      <SelectItem key={idx} value={idx.toString()} className="text-xs font-medium">{mes}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center gap-1.5 text-[10px] text-emerald-500 font-black uppercase">
-                  <Clock className="w-3 h-3" />
-                  Duração
-                </div>
-                <Select value={duration.toString()} onValueChange={(v) => setDuration(parseInt(v))}>
-                  <SelectTrigger className="h-9 text-xs font-bold bg-background/80 border-emerald-500/30">
-                    <SelectValue placeholder="Meses" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => (
-                      <SelectItem key={num} value={num.toString()} className="text-xs font-medium">
-                        {num} {num === 1 ? 'mês' : 'meses'}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
           </CardContent>
         </Card>
@@ -424,25 +345,25 @@ export function CashFlowLedger({
         <CardHeader className="flex flex-col lg:flex-row lg:items-center justify-between bg-card pb-4 gap-4 px-6 pt-6 border-b">
           <div className="flex-shrink-0">
             <CardTitle className="text-lg flex items-center gap-2">
-              <FileSpreadsheet className="w-5 h-5 text-primary" />
-              Planejamento de Fluxo Anual
+              <BookOpen className="w-5 h-5 text-primary" />
+              Livro de Caixa Anual
             </CardTitle>
-            <CardDescription className="text-xs">Simule o ano fiscal baseado nos parâmetros globais</CardDescription>
+            <CardDescription className="text-xs">Registro oficial de faturamento e custos do exercício</CardDescription>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl">
             <div className="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
-              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Faturamento (Período)</div>
-              <div className="text-lg font-bold text-indigo-500 leading-tight">{formatCurrency(totals.periodReceita || 0)}</div>
+              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Faturamento Acumulado</div>
+              <div className="text-lg font-bold text-indigo-500 leading-tight">{formatCurrency(totals.acumuladoReceita || 0)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-indigo-500/70">
                 <ShieldCheck className="w-2.5 h-2.5" />
-                {percentualLimite.toFixed(1)}% do Teto
+                {percentualLimite.toFixed(1)}% do Teto MEI
               </div>
             </div>
 
             <div className="p-3 bg-primary/10 rounded-xl border border-primary/20">
               <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Lucro Real Acumulado</div>
-              <div className="text-lg font-bold text-primary leading-tight">{formatCurrency(totals.periodLucro || 0)}</div>
+              <div className="text-lg font-bold text-primary leading-tight">{formatCurrency(totals.acumuladoLucro || 0)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-primary/70">
                 <Wallet className="w-2.5 h-2.5" />
                 Disponibilidade Total
@@ -450,11 +371,11 @@ export function CashFlowLedger({
             </div>
 
             <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
-              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Reserva (Caixa Empresa)</div>
-              <div className="text-lg font-bold text-purple-500 leading-tight">{formatCurrency(totals.periodReserva || 0)}</div>
+              <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Patrimônio PJ Acumulado</div>
+              <div className="text-lg font-bold text-purple-500 leading-tight">{formatCurrency(totals.acumuladoReserva || 0)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-purple-500/70">
                 <PiggyBank className="w-2.5 h-2.5" />
-                Patrimônio Acumulado
+                Blindagem de Caixa
               </div>
             </div>
           </div>
@@ -469,7 +390,7 @@ export function CashFlowLedger({
                     <div className="flex items-center justify-between px-8 text-[10px] font-bold uppercase tracking-[0.4em] text-primary/80">
                       <div className="flex items-center gap-4">
                         <ArrowLeftRight className="w-4 h-4" />
-                        Área de Rolagem Lateral
+                        Registro Mensal de Faturamento (Fonte de Verdade)
                         <ArrowLeftRight className="w-4 h-4" />
                       </div>
                     </div>
@@ -477,9 +398,9 @@ export function CashFlowLedger({
                 </TableRow>
                 
                 <TableRow className="hover:bg-transparent border-b">
-                  <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r bg-secondary/10">Status</TableHead>
-                  <TableHead className="w-[90px] font-bold text-[10px] uppercase border-r text-center bg-secondary/10">Mês</TableHead>
-                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-indigo-500 bg-indigo-500/5">Faturamento (R$)</TableHead>
+                  <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r bg-secondary/10">Ativo</TableHead>
+                  <TableHead className="w-[120px] font-bold text-[10px] uppercase border-r text-center bg-secondary/10">Mês</TableHead>
+                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-indigo-500 bg-indigo-500/5">Receita Bruta (R$)</TableHead>
                   <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-orange-500 bg-orange-500/5">Custos Op. (R$)</TableHead>
                   <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase px-6">Sobra Bruta</TableHead>
                   <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-purple-500 px-6">Reserva PJ</TableHead>
@@ -489,7 +410,7 @@ export function CashFlowLedger({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {totals.rows.slice(0, duration).map((row, i) => (
+                {totals.rows.map((row, i) => (
                   <TableRow key={i} className={cn(
                     "transition-all duration-300",
                     !row.active ? "opacity-20 grayscale scale-[0.98]" : "hover:bg-primary/5"
@@ -504,7 +425,7 @@ export function CashFlowLedger({
                       </div>
                     </TableCell>
                     <TableCell className="font-bold text-xs py-3 border-r text-center bg-card">
-                      {MESES[(i + startMonth) % 12]}
+                      {MESES[i]}
                     </TableCell>
                     <TableCell className="py-2 px-6 bg-indigo-500/5">
                       <Input 
@@ -562,7 +483,7 @@ export function CashFlowLedger({
                   Gestão de <span className="text-amber-500">90 Dias</span>
                 </h3>
                 <p className="text-sm text-muted-foreground font-medium max-w-md leading-relaxed">
-                  Analise o acúmulo real e defina as ações táticas para o seu lucro trimestral.
+                  Consolide o lucro real do trimestre e defina sua distribuição tática.
                 </p>
               </div>
               
@@ -588,36 +509,18 @@ export function CashFlowLedger({
               <div className="lg:col-span-4 space-y-6">
                 <div className="p-6 rounded-3xl bg-secondary/30 border-2 border-amber-500/20 space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Lucro Total do Ciclo</span>
+                    <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Lucro do Ciclo</span>
                     <Target className="w-4 h-4 text-amber-500" />
                   </div>
                   <div className="text-4xl font-black text-foreground tabular-nums tracking-tighter">
                     {formatCurrency(currentQ.profit)}
-                  </div>
-                  <div className="pt-4 border-t border-amber-500/10 space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "p-2 rounded-lg",
-                        currentQ.profit > (fat * 1.5) ? "bg-emerald-500/10 text-emerald-500" : "bg-blue-500/10 text-blue-500"
-                      )}>
-                        <Activity className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <div className="text-[10px] font-black uppercase text-muted-foreground leading-none">Contexto Tático</div>
-                        <div className="text-xs font-bold mt-1">
-                          {currentQ.profit === 0 ? "Sem lucro acumulado" : 
-                           currentQ.profit > (fat * 2) ? "Escala Exponencial" : 
-                           currentQ.profit < (fat * 0.5) ? "Ajuste Operacional" : "Crescimento Estável"}
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </div>
 
                 <div className="space-y-4 p-6 rounded-3xl bg-primary/5 border border-primary/20">
                   <div className="flex items-center gap-2 mb-2">
                     <Sparkles className="w-4 h-4 text-primary" />
-                    <span className="text-[10px] font-black uppercase text-primary tracking-widest">Sugestão Tática (Real)</span>
+                    <span className="text-[10px] font-black uppercase text-primary tracking-widest">Recomendação de Elite</span>
                   </div>
                   <div className="text-[10px] text-muted-foreground font-bold italic mb-2">
                     {smartTarget.motive}
@@ -627,30 +530,20 @@ export function CashFlowLedger({
                       <>
                         <li className="flex gap-3 text-xs text-muted-foreground">
                           <ChevronRight className="w-3.5 h-3.5 text-primary shrink-0" />
-                          <span>Mover <strong>{formatCurrency(qProfitPF_Recommended)}</strong> ({smartTarget.pf}%) para sua <strong>Corretora PF</strong></span>
+                          <span>Mover <strong>{formatCurrency(qProfitPF_Recommended)}</strong> para sua <strong>Corretora PF</strong></span>
                         </li>
                         <li className="flex gap-3 text-xs text-muted-foreground">
                           <ChevronRight className="w-3.5 h-3.5 text-primary shrink-0" />
-                          <span>Reinvestir <strong>{formatCurrency(qProfitPJ_Recommended)}</strong> ({smartTarget.pj}%) na <strong>Escala PJ</strong></span>
+                          <span>Manter <strong>{formatCurrency(qProfitPJ_Recommended)}</strong> para <strong>Escala PJ</strong></span>
                         </li>
                       </>
                     ) : (
                       <li className="flex gap-3 text-xs text-muted-foreground italic">
                         <TrendingDown className="w-3.5 h-3.5 text-destructive shrink-0" />
-                        <span>Focar em reduzir custos operacionais no próximo ciclo.</span>
+                        <span>Focar na margem de lucro para o próximo trimestre.</span>
                       </li>
                     )}
                   </ul>
-                  {currentQ.profit > 0 && (
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full text-[10px] font-black uppercase tracking-widest h-8 mt-2"
-                      onClick={() => setDistribuicaoLucroPct(smartTarget.pf)}
-                    >
-                      Aplicar Sugestão no Simulador
-                    </Button>
-                  )}
                 </div>
               </div>
 
@@ -658,19 +551,8 @@ export function CashFlowLedger({
                 <div className="p-8 rounded-[40px] bg-background/40 border-2 border-dashed border-amber-500/20 space-y-10">
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
                     <div className="space-y-1 text-center sm:text-left">
-                      <h4 className="text-xl font-black text-foreground tracking-tight">Simulador de Destino</h4>
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Defina como sua riqueza será distribuída</p>
-                    </div>
-                    <div className="flex items-center gap-4 bg-secondary/50 p-3 rounded-2xl border">
-                      <div className="text-center">
-                        <div className="text-xs font-black text-blue-500">{distribuicaoLucroPct}%</div>
-                        <div className="text-[8px] font-bold text-muted-foreground uppercase">Liberdade (PF)</div>
-                      </div>
-                      <div className="w-px h-6 bg-border" />
-                      <div className="text-center">
-                        <div className="text-xs font-black text-primary">{100 - distribuicaoLucroPct}%</div>
-                        <div className="text-[8px] font-bold text-muted-foreground uppercase">Escala (PJ)</div>
-                      </div>
+                      <h4 className="text-xl font-black text-foreground tracking-tight">Distribuição de Resultados</h4>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Organize o destino da sua riqueza</p>
                     </div>
                   </div>
 
@@ -686,10 +568,10 @@ export function CashFlowLedger({
                     <div className="flex justify-between text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-blue-500" />
-                        Retirada Pessoal
+                        Saque PF ({distribuicaoLucroPct}%)
                       </div>
                       <div className="flex items-center gap-2">
-                        Investimento Empresa
+                        Retenção PJ ({100 - distribuicaoLucroPct}%)
                         <div className="w-2 h-2 rounded-full bg-primary" />
                       </div>
                     </div>
@@ -701,14 +583,11 @@ export function CashFlowLedger({
                         <div className="p-2 bg-blue-500/20 rounded-xl text-blue-500">
                           <Landmark className="w-5 h-5" />
                         </div>
-                        <span className="text-[10px] font-black uppercase text-blue-500 tracking-widest">Liberdade (PF/CPF)</span>
+                        <span className="text-[10px] font-black uppercase text-blue-500 tracking-widest">Liberdade (CPF)</span>
                       </div>
                       <div className="text-2xl font-black text-foreground tabular-nums tracking-tighter">
                         {formatCurrency(qProfitPF_Manual)}
                       </div>
-                      <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">
-                        Destinado a investimentos pessoais, lazer e construção de patrimônio no seu CPF.
-                      </p>
                     </div>
 
                     <div className="p-6 rounded-3xl bg-primary/5 border border-primary/20 group hover:bg-primary/10 transition-all">
@@ -716,31 +595,15 @@ export function CashFlowLedger({
                         <div className="p-2 bg-primary/20 rounded-xl text-primary">
                           <Rocket className="w-5 h-5" />
                         </div>
-                        <span className="text-[10px] font-black uppercase text-primary tracking-widest">Escala (PJ/CNPJ)</span>
+                        <span className="text-[10px] font-black uppercase text-primary tracking-widest">Escala (CNPJ)</span>
                       </div>
                       <div className="text-2xl font-black text-foreground tabular-nums tracking-tighter">
                         {formatCurrency(qProfitPJ_Manual)}
                       </div>
-                      <p className="text-[10px] text-muted-foreground mt-2 leading-relaxed">
-                        Reinvestimento em marketing, ferramentas, infraestrutura ou reserva extra da empresa.
-                      </p>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div className="pt-8 border-t border-amber-500/10 relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
-               <div className="flex items-center gap-3">
-                  <div className="p-2 bg-amber-500/20 rounded-lg text-amber-600">
-                    <Lightbulb className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-black uppercase text-foreground">Protocolo Trimestral de Excelência</h4>
-                    <p className="text-[10px] text-muted-foreground leading-tight">Mantenha a reserva intocada e distribua apenas o lucro real a cada 90 dias.</p>
-                  </div>
-               </div>
-               <div className="text-[10px] font-black text-amber-600/50 uppercase tracking-[0.4em]">MEI Flow Strategy Engine</div>
             </div>
           </div>
         </div>
@@ -752,8 +615,8 @@ export function CashFlowLedger({
             <HelpCircle className="w-5 h-5 text-muted-foreground" />
           </div>
           <div>
-            <h3 className="font-headline font-bold text-lg">Perguntas sobre o Planejamento</h3>
-            <p className="text-xs text-muted-foreground">Como usar os dados da planilha na vida real.</p>
+            <h3 className="font-headline font-bold text-lg">Guia do Livro de Caixa</h3>
+            <p className="text-xs text-muted-foreground">Orientações para o registro fiel das suas finanças.</p>
           </div>
         </div>
 
