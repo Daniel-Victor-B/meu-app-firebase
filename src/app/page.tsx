@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react";
@@ -92,7 +93,7 @@ export default function Home() {
       </header>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-3 md:grid-cols-9 h-auto p-1 bg-background/80 backdrop-blur-md border sticky top-0 z-50 shadow-lg">
+        <TabsList className="grid grid-cols-5 md:grid-cols-9 h-auto p-1 bg-background/80 backdrop-blur-md border sticky top-0 z-50 shadow-lg">
           <TabsTrigger value="distribuicao" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs">
             <DollarSign className="w-4 h-4" />
             <span className="hidden sm:inline">Mensal</span>
