@@ -6,6 +6,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Sparkles, Loader2, Target, ShieldAlert, Zap, Activity, BrainCircuit, Terminal, CheckCircle2 } from "lucide-react";
 import { personalizedMeiAdvice, type PersonalizedMeiAdviceOutput } from "@/ai/flows/personalized-mei-advice";
 import { type MonthlyData } from "@/app/page";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 interface AiAdvisorProps {
   fat: number;
@@ -19,6 +27,9 @@ interface AiAdvisorProps {
 export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthlyData }: AiAdvisorProps) {
   const [loading, setLoading] = useState(false);
   const [advice, setAdvice] = useState<PersonalizedMeiAdviceOutput | null>(null);
+  
+  // Passo 1: Estado para o Ramo de Atividade
+  const [ramo, setRamo] = useState("Serviços (consultoria, estética, etc.)");
 
   // Sincronização: Calcula médias reais da planilha para a IA
   const spreadsheetMetrics = useMemo(() => {
@@ -80,6 +91,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
         reservaPct: reservaPct,
         mesesFaturamento: spreadsheetMetrics.totalMonths,
         meiLimiteAnual: 81000,
+        // O campo 'ramo' será enviado no Passo 2
       });
       setAdvice(result);
     } catch (error) {
@@ -106,6 +118,27 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
             <Activity className="w-3 h-3 text-primary" />
             <span className="text-[10px] font-black text-primary uppercase tracking-tight">Análise baseada em {spreadsheetMetrics.totalMonths} meses ativos</span>
           </div>
+
+          {/* Passo 1: Interface de Seleção de Ramo */}
+          <div className="w-full max-w-sm space-y-2 mb-8 animate-in fade-in slide-in-from-top-2 duration-500">
+            <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">
+              Ramo de atividade:
+            </Label>
+            <Select value={ramo} onValueChange={setRamo}>
+              <SelectTrigger className="w-full bg-background/50 border-primary/20 h-12 rounded-xl text-xs font-bold transition-all focus:ring-primary/40">
+                <SelectValue placeholder="Selecione o ramo" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border-border shadow-xl">
+                <SelectItem value="Alimentação" className="text-xs font-medium">Alimentação</SelectItem>
+                <SelectItem value="Comércio varejista" className="text-xs font-medium">Comércio varejista</SelectItem>
+                <SelectItem value="Serviços (consultoria, estética, etc.)" className="text-xs font-medium">Serviços (consultoria, estética, etc.)</SelectItem>
+                <SelectItem value="Indústria / Artesanato" className="text-xs font-medium">Indústria / Artesanato</SelectItem>
+                <SelectItem value="Transporte" className="text-xs font-medium">Transporte</SelectItem>
+                <SelectItem value="Outros" className="text-xs font-medium">Outros</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <Button 
             size="lg" 
             onClick={getAdvice} 
