@@ -34,6 +34,7 @@ export async function personalizedMeiAdvice(input: {
   reservaPct: number;
   mesesFaturamento: number;
   meiLimiteAnual: number;
+  ramo: string;
 }): Promise<PersonalizedMeiAdviceOutput> {
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
@@ -46,30 +47,24 @@ export async function personalizedMeiAdvice(input: {
   }
 
   const model = await getAvailableFreeModel(apiKey);
-  const MEI_DAS_FIXO = 76;
-  const totalDespesas = input.custosOperacionais + MEI_DAS_FIXO + input.prolabore;
-  const sobra = Math.max(0, input.faturamentoMensal - totalDespesas);
   
-  const faturamentoAnualProjetado = input.faturamentoMensal * 12;
-  const faturamentoAcumulado = input.faturamentoMensal * input.mesesFaturamento;
-
   const prompt = `
-Você é um consultor financeiro de elite, estilo Wall Street, focado em Microempreendedores Individuais (MEI) brasileiros.
-Sua missão é dar um veredito tático REAL baseado nos números.
+Você é um consultor financeiro de elite, focado em Microempreendedores Individuais (MEI) brasileiros.
+Sua missão é dar um veredito tático REAL baseado nos números e no contexto do setor.
 
 DADOS DO NEGÓCIO:
+- Ramo de Atividade: ${input.ramo}
 - Faturamento Médio: R$ ${input.faturamentoMensal}
 - Custos: R$ ${input.custosOperacionais}
 - Pró-labore: R$ ${input.prolabore}
 - Meses Ativos: ${input.mesesFaturamento}
 - Teto MEI: R$ ${input.meiLimiteAnual}
 
-REGRAS PARA O "summary":
-1. NÃO repita os números brutos.
-2. Dê um VEREDITO: o negócio é sustentável ou um "castelo de cartas"?
-3. Identifique o GARGALO principal.
-4. Use linguagem direta, profissional e impactante. Foque no "pulo do gato".
-5. Texto curto e denso.
+INSTRUÇÕES ESTRATÉGICAS:
+1. Analise se a margem de lucro está adequada para o ramo de "${input.ramo}".
+2. Identifique o GARGALO principal (ex: custos fixos altos, faturamento próximo ao teto, pró-labore desajustado).
+3. No campo "summary", dê um veredito curto, profissional e direto sobre a saúde do negócio.
+4. Gere conselhos específicos para o ramo de "${input.ramo}".
 
 Responda APENAS um JSON válido com as chaves:
 - summary (string)

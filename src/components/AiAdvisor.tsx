@@ -28,7 +28,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
   const [loading, setLoading] = useState(false);
   const [advice, setAdvice] = useState<PersonalizedMeiAdviceOutput | null>(null);
   
-  // Passo 1: Estado para o Ramo de Atividade
+  // Estado para o Ramo de Atividade
   const [ramo, setRamo] = useState("Serviços (consultoria, estética, etc.)");
 
   // Sincronização: Calcula médias reais da planilha para a IA
@@ -91,7 +91,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
         reservaPct: reservaPct,
         mesesFaturamento: spreadsheetMetrics.totalMonths,
         meiLimiteAnual: 81000,
-        // O campo 'ramo' será enviado no Passo 2
+        ramo: ramo, // Agora enviamos o ramo selecionado
       });
       setAdvice(result);
     } catch (error) {
@@ -119,7 +119,6 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
             <span className="text-[10px] font-black text-primary uppercase tracking-tight">Análise baseada em {spreadsheetMetrics.totalMonths} meses ativos</span>
           </div>
 
-          {/* Passo 1: Interface de Seleção de Ramo */}
           <div className="w-full max-w-sm space-y-2 mb-8 animate-in fade-in slide-in-from-top-2 duration-500">
             <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">
               Ramo de atividade:
@@ -163,7 +162,6 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
                </div>
 
                <div className="p-6 md:p-8 space-y-6">
-                  {/* Header Tático */}
                   <div className="flex items-center justify-between border-b border-border/50 pb-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
@@ -178,7 +176,6 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
                     </div>
                   </div>
                   
-                  {/* Bloco Perfeito de Veredito */}
                   <div className="relative p-8 rounded-3xl bg-black/40 border border-primary/20 shadow-inner flex items-center justify-center min-h-[140px] overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50" />
                     <p className="relative z-10 text-[11px] md:text-xs font-medium leading-relaxed text-white/90 tracking-tight text-justify italic max-w-2xl">
@@ -186,7 +183,6 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
                     </p>
                   </div>
 
-                  {/* Cards de Métricas Vivas e Didáticas */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="relative overflow-hidden p-5 rounded-3xl bg-indigo-500/5 border border-indigo-500/20 transition-all hover:bg-indigo-500/10 shadow-sm">
                       <div className="flex items-center gap-5 relative z-10">
@@ -229,7 +225,6 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
                </div>
             </div>
 
-            {/* Recomendações Táticas */}
             <CardContent className="space-y-10 p-6 md:p-8 border-t bg-secondary/10">
               <section className="space-y-5">
                 <div className="flex items-center gap-3">
