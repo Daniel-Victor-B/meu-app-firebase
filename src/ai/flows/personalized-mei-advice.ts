@@ -49,22 +49,24 @@ export async function personalizedMeiAdvice(input: {
   const model = await getAvailableFreeModel(apiKey);
   
   const prompt = `
-Você é um consultor financeiro de elite, focado em Microempreendedores Individuais (MEI) brasileiros.
-Sua missão é dar um veredito tático REAL baseado nos números e no contexto do setor.
+Você é um consultor financeiro de elite, especialista em Microempreendedores Individuais (MEI) brasileiros.
+O negócio atua no ramo de: ${input.ramo}.
+
+Sua missão é dar um veredito tático REAL baseado nos números e no contexto específico deste setor.
 
 DADOS DO NEGÓCIO:
 - Ramo de Atividade: ${input.ramo}
-- Faturamento Médio: R$ ${input.faturamentoMensal}
-- Custos: R$ ${input.custosOperacionais}
-- Pró-labore: R$ ${input.prolabore}
-- Meses Ativos: ${input.mesesFaturamento}
-- Teto MEI: R$ ${input.meiLimiteAnual}
+- Faturamento Médio Mensal: R$ ${input.faturamentoMensal}
+- Custos Operacionais: R$ ${input.custosOperacionais}
+- Pró-labore (Salário): R$ ${input.prolabore}
+- Meses Ativos no Ano: ${input.mesesFaturamento}
+- Teto MEI Anual: R$ ${input.meiLimiteAnual}
 
 INSTRUÇÕES ESTRATÉGICAS:
-1. Analise se a margem de lucro está adequada para o ramo de "${input.ramo}".
-2. Identifique o GARGALO principal (ex: custos fixos altos, faturamento próximo ao teto, pró-labore desajustado).
-3. No campo "summary", dê um veredito curto, profissional e direto sobre a saúde do negócio.
-4. Gere conselhos específicos para o ramo de "${input.ramo}".
+1. Adapte todas as sugestões e o veredito às particularidades e desafios do ramo de "${input.ramo}".
+2. Analise se a margem de lucro está adequada para este setor específico.
+3. Identifique o gargalo principal (custos, teto MEI ou retirada pessoal).
+4. No campo "summary", forneça um veredito direto, profissional e altamente estratégico sobre a saúde do negócio.
 
 Responda APENAS um JSON válido com as chaves:
 - summary (string)

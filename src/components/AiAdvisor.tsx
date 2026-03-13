@@ -28,10 +28,8 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
   const [loading, setLoading] = useState(false);
   const [advice, setAdvice] = useState<PersonalizedMeiAdviceOutput | null>(null);
   
-  // Estado para o Ramo de Atividade com as novas categorias
   const [ramo, setRamo] = useState("Serviços presenciais (consultoria, estética, oficina)");
 
-  // Sincronização: Calcula médias reais da planilha para a IA
   const spreadsheetMetrics = useMemo(() => {
     const activeMonths = monthlyData.filter(m => m.active);
     if (activeMonths.length === 0) return { avgFat: fat, avgCustos: custos, totalMonths: mesesFat };
@@ -52,13 +50,13 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
     const totalOut = spreadsheetMetrics.avgCustos + das + prolabore;
     const margin = currentFat > 0 ? ((currentFat - totalOut) / currentFat) * 100 : 0;
     
-    const saudeScore = Math.min(100, Math.max(0, margin * 2.5)); // 40% margin = 100% score
+    const saudeScore = Math.min(100, Math.max(0, margin * 2.5));
     const saudeLabel = margin > 30 ? "SAFE" : margin > 15 ? "STABLE" : "CRITICAL";
 
     const limiteMEI = 81000;
     const acumulado = currentFat * spreadsheetMetrics.totalMonths;
     const usage = (acumulado / limiteMEI) * 100;
-    const escalaScore = Math.min(100, 100 - usage); // Mais espaço = mais potencial
+    const escalaScore = Math.min(100, 100 - usage);
     const escalaLabel = usage < 50 ? "HIGH" : usage < 85 ? "MODERATE" : "RISK";
 
     return { saudeScore, saudeLabel, escalaScore, escalaLabel, margin, usage };
