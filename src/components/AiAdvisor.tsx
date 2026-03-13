@@ -113,39 +113,58 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
                     </div>
                   </div>
                   
-                  {/* Bloco Central do Parecer - Alinhamento 100% */}
-                  <div className="relative p-6 md:p-8 rounded-2xl bg-black/30 border border-primary/20 shadow-inner overflow-hidden group min-h-[140px] flex items-center justify-center">
+                  {/* Bloco Central do Parecer - Bloco Perfeito */}
+                  <div className="relative p-6 md:p-10 rounded-3xl bg-black/40 border border-primary/20 shadow-inner overflow-hidden flex items-center justify-center min-h-[160px]">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50" />
-                    <div className="absolute -top-10 -right-10 w-20 h-20 bg-primary/10 blur-[40px] rounded-full animate-pulse" />
+                    <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/10 blur-[50px] rounded-full animate-pulse" />
                     
-                    <div className="absolute top-3 right-4 flex items-center gap-1.5 opacity-40">
+                    <div className="absolute top-4 right-5 flex items-center gap-1.5 opacity-40">
                        <div className="h-1 w-1 rounded-full bg-primary" />
                        <span className="text-[7px] font-black text-primary uppercase tracking-[0.3em]">AI Synthesis</span>
                     </div>
 
-                    <p className="relative z-10 text-[13px] md:text-[14px] font-medium leading-relaxed text-white/90 tracking-tight text-justify italic">
+                    <p className="relative z-10 text-xs md:text-sm font-medium leading-relaxed text-white/90 tracking-tight text-justify italic">
                       "{advice.summary}"
                     </p>
                   </div>
 
-                  {/* Cards de Métricas Rápidas */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="p-4 rounded-2xl bg-secondary/30 border border-border/40 flex items-center gap-4 group hover:bg-secondary/50 transition-all shadow-sm">
-                      <div className="p-2 bg-indigo-500/10 rounded-xl text-indigo-500 group-hover:scale-110 transition-transform">
-                        <Activity className="w-4 h-4" />
-                      </div>
-                      <div className="space-y-0.5">
-                        <div className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Fator de Risco</div>
-                        <div className="text-xs font-bold text-foreground">Operação Calculada</div>
+                  {/* Cards de Métricas Rápidas - Design Vivo e Didático */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="relative group overflow-hidden p-5 rounded-3xl bg-indigo-500/5 border border-indigo-500/20 transition-all hover:bg-indigo-500/10 hover:border-indigo-500/40 shadow-sm">
+                      <div className="absolute top-0 right-0 -mr-4 -mt-4 w-20 h-20 bg-indigo-500/10 blur-2xl rounded-full" />
+                      <div className="flex items-center gap-5 relative z-10">
+                        <div className="p-3.5 bg-gradient-to-br from-indigo-500/20 to-indigo-600/5 rounded-2xl text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.2)] border border-indigo-500/10">
+                          <Activity className="w-5 h-5" />
+                        </div>
+                        <div className="space-y-1.5 flex-1">
+                          <div className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.25em] leading-none">Saúde Operacional</div>
+                          <div className="text-sm font-black text-foreground tracking-tight">Estabilidade de Caixa</div>
+                          <div className="flex items-center gap-2 pt-1">
+                            <div className="h-1.5 flex-1 bg-indigo-500/20 rounded-full overflow-hidden">
+                              <div className="h-full w-[85%] bg-indigo-500 animate-in slide-in-from-left duration-1000" />
+                            </div>
+                            <span className="text-[9px] font-black text-indigo-400">SAFE</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div className="p-4 rounded-2xl bg-secondary/30 border border-border/40 flex items-center gap-4 group hover:bg-secondary/50 transition-all shadow-sm">
-                      <div className="p-2 bg-amber-500/10 rounded-xl text-amber-500 group-hover:scale-110 transition-transform">
-                        <Zap className="w-4 h-4" />
-                      </div>
-                      <div className="space-y-0.5">
-                        <div className="text-[8px] font-black text-muted-foreground uppercase tracking-widest">Alerta de Escala</div>
-                        <div className="text-xs font-bold text-foreground">Otimização de Pró-labore</div>
+                    
+                    <div className="relative group overflow-hidden p-5 rounded-3xl bg-amber-500/5 border border-amber-500/20 transition-all hover:bg-amber-500/10 hover:border-amber-500/40 shadow-sm">
+                      <div className="absolute top-0 right-0 -mr-4 -mt-4 w-20 h-20 bg-amber-500/10 blur-2xl rounded-full" />
+                      <div className="flex items-center gap-5 relative z-10">
+                        <div className="p-3.5 bg-gradient-to-br from-amber-500/20 to-amber-600/5 rounded-2xl text-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.2)] border border-amber-500/10">
+                          <Zap className="w-5 h-5" />
+                        </div>
+                        <div className="space-y-1.5 flex-1">
+                          <div className="text-[9px] font-black text-amber-400 uppercase tracking-[0.25em] leading-none">Potencial de Escala</div>
+                          <div className="text-sm font-black text-foreground tracking-tight">Capacidade de Expansão</div>
+                          <div className="flex items-center gap-2 pt-1">
+                            <div className="h-1.5 flex-1 bg-amber-500/20 rounded-full overflow-hidden">
+                              <div className="h-full w-[65%] bg-amber-500 animate-in slide-in-from-left duration-1000" />
+                            </div>
+                            <span className="text-[9px] font-black text-amber-400">HIGH</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
