@@ -100,11 +100,10 @@ export function CashFlowLedger({
   const [mesesReserva, setMesesReserva] = useState(6);
   const [startMonth, setStartMonth] = useState(0);
   const [duration, setDuration] = useState(12);
-  const [distribuicaoLucroPct, setDistribuicaoLucroPct] = useState(50); // 50% PF / 50% PJ (Manual/Simulador)
+  const [distribuicaoLucroPct, setDistribuicaoLucroPct] = useState(50);
   const [selectedQuarter, setSelectedQuarter] = useState(0);
   const das = 76;
 
-  // Persistência local
   useEffect(() => {
     const savedReserva = localStorage.getItem("mei-flow-ledger-meses-reserva");
     if (savedReserva) setMesesReserva(parseInt(savedReserva, 10) || 6);
@@ -153,18 +152,22 @@ export function CashFlowLedger({
   };
 
   const totals = useMemo(() => {
-    let acumuladoReserva = 0;
-    let acumuladoReceita = 0;
+    let acumuladoReservaTotal = 0;
+    let acumuladoReceitaTotal = 0;
     let acumuladoLucroTotal = 0;
 
-    const rows = monthlyData.slice(0, 12).map((m) => {
+    let periodReserva = 0;
+    let periodReceita = 0;
+    let periodLucro = 0;
+
+    const rows = monthlyData.slice(0, 12).map((m, i) => {
       if (!m.active) {
         return {
           ...m,
           sobra: 0,
           reserva: 0,
           lucro: 0,
-          acumuladoReserva,
+          acumuladoReserva: acumuladoReservaTotal,
           acumuladoLucro: acumuladoLucroTotal
         };
       }
@@ -173,22 +176,37 @@ export function CashFlowLedger({
       const reserva = Math.round((sobra * reservaPct) / 100);
       const lucro = sobra - reserva;
       
-      acumuladoReserva += reserva;
-      acumuladoReceita += m.receita;
+      acumuladoReservaTotal += reserva;
+      acumuladoReceitaTotal += m.receita;
       acumuladoLucroTotal += lucro;
+
+      // Soma apenas se estiver dentro da duração definida para o Planejamento (Período)
+      if (i < duration) {
+        periodReserva += reserva;
+        periodReceita += m.receita;
+        periodLucro += lucro;
+      }
 
       return {
         ...m,
         sobra,
         reserva,
         lucro,
-        acumuladoReserva,
+        acumuladoReserva: acumuladoReservaTotal,
         acumuladoLucro: acumuladoLucroTotal
       };
     });
 
-    return { rows, acumuladoReserva, acumuladoReceita, acumuladoLucro: acumuladoLucroTotal };
-  }, [monthlyData, fat, custos, prolabore, reservaPct]);
+    return { 
+      rows, 
+      acumuladoReserva: acumuladoReservaTotal, 
+      acumuladoReceita: acumuladoReceitaTotal, 
+      acumuladoLucro: acumuladoLucroTotal,
+      periodReserva,
+      periodReceita,
+      periodLucro
+    };
+  }, [monthlyData, fat, custos, prolabore, reservaPct, duration]);
 
   const quarterlyTotals = useMemo(() => {
     const quarters = [
@@ -212,32 +230,21 @@ export function CashFlowLedger({
   }, [totals.rows]);
 
   const currentQ = quarterlyTotals[selectedQuarter];
-  
-  // Valores manuais baseados no Slider (Simulador)
   const qProfitPF_Manual = (currentQ.profit * distribuicaoLucroPct) / 100;
   const qProfitPJ_Manual = currentQ.profit - qProfitPF_Manual;
 
   const metaTotal = (custos + das + prolabore) * mesesReserva;
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
   const LIMITE_MEI = 81000;
-  const percentualLimite = Math.min(100, (totals.acumuladoReceita / LIMITE_MEI) * 100);
+  
+  // Percentual do teto baseado no período selecionado
+  const percentualLimite = Math.min(100, (totals.periodReceita / LIMITE_MEI) * 100);
 
-  // Lógica de Sugestão Tática Real
   const smartTarget = useMemo(() => {
     if (progressoMeta < 100) {
-      return { 
-        pf: 20, 
-        pj: 80, 
-        label: "Foco em Segurança", 
-        motive: "Reserva incompleta. Blinde o caixa da empresa." 
-      };
+      return { pf: 20, pj: 80, label: "Foco em Segurança", motive: "Reserva incompleta. Blinde o caixa da empresa." };
     }
-    return { 
-      pf: 60, 
-      pj: 40, 
-      label: "Eficiência Máxima", 
-      motive: "Reserva concluída! Priorize sua recompensa pessoal." 
-    };
+    return { pf: 60, pj: 40, label: "Eficiência Máxima", motive: "Reserva concluída! Priorize sua recompensa pessoal." };
   }, [progressoMeta]);
 
   const qProfitPF_Recommended = (currentQ.profit * smartTarget.pf) / 100;
@@ -421,7 +428,7 @@ export function CashFlowLedger({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl">
             <div className="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
               <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Faturamento (Período)</div>
-              <div className="text-lg font-bold text-indigo-500 leading-tight">{formatCurrency(totals.acumuladoReceita || 0)}</div>
+              <div className="text-lg font-bold text-indigo-500 leading-tight">{formatCurrency(totals.periodReceita || 0)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-indigo-500/70">
                 <ShieldCheck className="w-2.5 h-2.5" />
                 {percentualLimite.toFixed(1)}% do Teto
@@ -430,7 +437,7 @@ export function CashFlowLedger({
 
             <div className="p-3 bg-primary/10 rounded-xl border border-primary/20">
               <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Lucro Real Acumulado</div>
-              <div className="text-lg font-bold text-primary leading-tight">{formatCurrency(totals.acumuladoLucro || 0)}</div>
+              <div className="text-lg font-bold text-primary leading-tight">{formatCurrency(totals.periodLucro || 0)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-primary/70">
                 <Wallet className="w-2.5 h-2.5" />
                 Disponibilidade Total
@@ -439,7 +446,7 @@ export function CashFlowLedger({
 
             <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
               <div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Reserva (Caixa Empresa)</div>
-              <div className="text-lg font-bold text-purple-500 leading-tight">{formatCurrency(totals.acumuladoReserva || 0)}</div>
+              <div className="text-lg font-bold text-purple-500 leading-tight">{formatCurrency(totals.periodReserva || 0)}</div>
               <div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-purple-500/70">
                 <PiggyBank className="w-2.5 h-2.5" />
                 Patrimônio Acumulado
@@ -535,7 +542,6 @@ export function CashFlowLedger({
         </CardContent>
       </Card>
 
-      {/* SISTEMA DE CICLO DE RIQUEZA TRIMESTRAL */}
       <div className="grid grid-cols-1 gap-6">
         <div className="p-1 rounded-[40px] bg-gradient-to-br from-amber-500/30 via-primary/20 to-indigo-500/20 shadow-2xl">
           <div className="bg-card/90 backdrop-blur-xl rounded-[39px] p-8 space-y-10 overflow-hidden relative">
@@ -574,7 +580,6 @@ export function CashFlowLedger({
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10">
-              {/* Diagnóstico do Trimestre */}
               <div className="lg:col-span-4 space-y-6">
                 <div className="p-6 rounded-3xl bg-secondary/30 border-2 border-amber-500/20 space-y-4">
                   <div className="flex items-center justify-between">
@@ -644,7 +649,6 @@ export function CashFlowLedger({
                 </div>
               </div>
 
-              {/* Simulador de Destino */}
               <div className="lg:col-span-8 space-y-8">
                 <div className="p-8 rounded-[40px] bg-background/40 border-2 border-dashed border-amber-500/20 space-y-10">
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
@@ -767,8 +771,8 @@ export function CashFlowLedger({
           display: none;
         }
         .no-scrollbar {
-          -ms-overflow-style: none;  /* IE and Edge */
-          scrollbar-width: none;  /* Firefox */
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
       `}</style>
     </div>
