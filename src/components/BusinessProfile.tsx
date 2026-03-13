@@ -27,20 +27,20 @@ import {
 
 const FAQS_BUSINESS = [
   {
-    q: "Por que definir meu Ramo de Atividade com precisão?",
-    a: "O ramo define sua natureza jurídica e obrigações (ISS para serviços ou ICMS para comércio). No MEI Flow, essa informação permite que a IA compare sua performance com benchmarks reais do seu setor, entregando conselhos muito mais cirúrgicos."
+    q: "O que é Ticket Médio e como calculá-lo?",
+    a: "Ticket médio é o valor médio das vendas. Some o faturamento do mês e divida pelo número de vendas. A IA usa esse dado para recomendar estratégias de aumento de valor por venda e otimização de preços."
   },
   {
-    q: "Qual a importância do Ticket Médio na estratégia do MEI?",
-    a: "O Ticket Médio (valor médio por venda) é o acelerador do seu teto de R$ 81k. Se seu ticket é baixo, você precisa de um volume operacional exaustivo. Aumentar o ticket estratégico permite atingir suas metas com menos esforço e maior margem de lucro."
+    q: "O que significa B2B e B2C?",
+    a: "B2B é quando você vende para outras empresas; B2C é quando vende para consumidor final. Se atende os dois, marque ambos. A IA considera isso para recomendar estratégias de relacionamento, prazos de pagamento e volume de vendas."
   },
   {
-    q: "Como escolher os Canais de Venda ideais?",
-    a: "Depende do seu Modelo de Negócio. Se você é B2B, canais diretos e LinkedIn são fundamentais. Se é B2C, redes sociais e marketplaces garantem escala. Diversificar canais protege seu faturamento contra instabilidades em uma única plataforma."
+    q: "Como definir meu principal desafio?",
+    a: "Selecione o desafio que mais impacta seu dia a dia. Se não tiver certeza, observe onde você gasta mais tempo ou tem mais dificuldade. A IA priorizará esse ponto nas recomendações (ex: se é fluxo de caixa, as sugestões focarão em controle financeiro)."
   },
   {
-    q: "B2B vs B2C: Qual o impacto na minha gestão financeira?",
-    a: "Negócios B2B costumam ter ciclos de venda longos e tickets altos, exigindo mais capital de giro. Negócios B2C focam em volume e giro rápido. A IA utiliza essa distinção para sugerir como você deve alocar sua reserva e seu lucro."
+    q: "Como escolher minha meta principal?",
+    a: "Pense no que você mais deseja alcançar nos próximos meses. A IA usará essa meta para alinhar as sugestões (ex: se a meta é aumentar faturamento, as dicas serão voltadas para vendas; se é reduzir custos, focará em economia)."
   }
 ];
 
