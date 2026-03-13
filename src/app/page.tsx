@@ -10,7 +10,18 @@ import { Checklist } from "@/components/Checklist";
 import { AiAdvisor } from "@/components/AiAdvisor";
 import { NfseGuide } from "@/components/NfseGuide";
 import { CashFlowLedger } from "@/components/CashFlowLedger";
-import { DollarSign, Landmark, LayoutList, ShieldCheck, Sparkles, FileText, BarChart3, FileSpreadsheet } from "lucide-react";
+import { BusinessProfile } from "@/components/BusinessProfile";
+import { 
+  DollarSign, 
+  Landmark, 
+  LayoutList, 
+  ShieldCheck, 
+  Sparkles, 
+  FileText, 
+  BarChart3, 
+  FileSpreadsheet,
+  Briefcase
+} from "lucide-react";
 
 export interface MonthlyData {
   receita: number;
@@ -81,10 +92,14 @@ export default function Home() {
       </header>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-4 md:grid-cols-8 h-auto p-1 bg-background/80 backdrop-blur-md border sticky top-0 z-50 shadow-lg">
+        <TabsList className="grid grid-cols-3 md:grid-cols-9 h-auto p-1 bg-background/80 backdrop-blur-md border sticky top-0 z-50 shadow-lg">
           <TabsTrigger value="distribuicao" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs">
             <DollarSign className="w-4 h-4" />
             <span className="hidden sm:inline">Mensal</span>
+          </TabsTrigger>
+          <TabsTrigger value="negocio" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs">
+            <Briefcase className="w-4 h-4" />
+            <span className="hidden sm:inline">Negócio</span>
           </TabsTrigger>
           <TabsTrigger value="gestao" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs text-blue-500 data-[state=active]:bg-blue-500/20">
             <BarChart3 className="w-4 h-4" />
@@ -125,6 +140,10 @@ export default function Home() {
               reservaPct={reservaPct} setReservaPct={setReservaPct}
               setActiveTab={setActiveTab}
             />
+          </TabsContent>
+
+          <TabsContent value="negocio">
+            <BusinessProfile />
           </TabsContent>
 
           <TabsContent value="gestao">
