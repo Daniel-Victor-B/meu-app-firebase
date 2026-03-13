@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Sparkles, Loader2, Target, ShieldAlert, Zap, Activity, BrainCircuit, Terminal, ArrowRight, CheckCircle2 } from "lucide-react";
@@ -18,6 +18,30 @@ interface AiAdvisorProps {
 export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAdvisorProps) {
   const [loading, setLoading] = useState(false);
   const [advice, setAdvice] = useState<PersonalizedMeiAdviceOutput | null>(null);
+
+  // Cálculos de Coerência para os Cards Táticos
+  const metrics = useMemo(() => {
+    const das = 76;
+    const sobra = Math.max(0, fat - (custos + das + prolabore));
+    
+    // Saúde Operacional: Baseada na Margem de Sobra (Meta de 30% para ser SAFE)
+    const saudeScore = fat > 0 ? Math.min(100, (sobra / fat) * 333) : 0; // 30% margin = 100 score
+    let saudeLabel = "CRITICAL";
+    if (saudeScore > 40) saudeLabel = "STABLE";
+    if (saudeScore > 80) saudeLabel = "SAFE";
+
+    // Potencial de Escala: Baseado no teto restante do MEI
+    const limiteTotal = 81000;
+    const acumulado = fat * mesesFat;
+    const restante = Math.max(0, limiteTotal - acumulado);
+    const escalaScore = Math.min(100, (restante / limiteTotal) * 100);
+    
+    let escalaLabel = "LOW";
+    if (escalaScore > 30) escalaLabel = "MODERATE";
+    if (escalaScore > 70) escalaLabel = "HIGH";
+
+    return { saudeScore, saudeLabel, escalaScore, escalaLabel };
+  }, [fat, custos, prolabore, mesesFat]);
 
   useEffect(() => {
     const saved = localStorage.getItem("mei-flow-ai-advice");
@@ -114,7 +138,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
                     </div>
                   </div>
                   
-                  {/* Bloco Central do Parecer - Bloco Perfeito */}
+                  {/* Bloco Central do Parecer - Alinhado Perfeitamente */}
                   <div className="relative p-6 md:p-10 rounded-3xl bg-black/40 border border-primary/20 shadow-inner overflow-hidden flex items-center justify-center min-h-[160px]">
                     <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50" />
                     <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/10 blur-[50px] rounded-full animate-pulse" />
@@ -129,7 +153,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
                     </p>
                   </div>
 
-                  {/* Cards de Métricas Rápidas */}
+                  {/* Cards de Métricas Reais e Coerentes */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="relative group overflow-hidden p-5 rounded-3xl bg-indigo-500/5 border border-indigo-500/20 transition-all hover:bg-indigo-500/10 hover:border-indigo-500/40 shadow-sm">
                       <div className="absolute top-0 right-0 -mr-4 -mt-4 w-20 h-20 bg-indigo-500/10 blur-2xl rounded-full" />
@@ -142,9 +166,12 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
                           <div className="text-sm font-black text-foreground tracking-tight">Estabilidade de Caixa</div>
                           <div className="flex items-center gap-2 pt-1">
                             <div className="h-1.5 flex-1 bg-indigo-500/20 rounded-full overflow-hidden">
-                              <div className="h-full w-[85%] bg-indigo-500 animate-in slide-in-from-left duration-1000" />
+                              <div 
+                                className="h-full bg-indigo-500 transition-all duration-1000" 
+                                style={{ width: `${metrics.saudeScore}%` }}
+                              />
                             </div>
-                            <span className="text-[9px] font-black text-indigo-400">SAFE</span>
+                            <span className="text-[9px] font-black text-indigo-400">{metrics.saudeLabel}</span>
                           </div>
                         </div>
                       </div>
@@ -161,9 +188,12 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
                           <div className="text-sm font-black text-foreground tracking-tight">Capacidade de Expansão</div>
                           <div className="flex items-center gap-2 pt-1">
                             <div className="h-1.5 flex-1 bg-amber-500/20 rounded-full overflow-hidden">
-                              <div className="h-full w-[65%] bg-amber-500 animate-in slide-in-from-left duration-1000" />
+                              <div 
+                                className="h-full bg-amber-500 transition-all duration-1000" 
+                                style={{ width: `${metrics.escalaScore}%` }}
+                              />
                             </div>
-                            <span className="text-[9px] font-black text-amber-400">HIGH</span>
+                            <span className="text-[9px] font-black text-amber-400">{metrics.escalaLabel}</span>
                           </div>
                         </div>
                       </div>
@@ -172,7 +202,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
                </div>
             </div>
 
-            {/* Seções de Ação Estratégica - Redesign de Alta Performance */}
+            {/* Seções de Ação Estratégica */}
             <CardContent className="space-y-12 p-6 md:p-8 border-t bg-secondary/10">
               {/* Distribuição */}
               <section className="space-y-6">
@@ -246,14 +276,14 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat }: AiAd
                 </div>
               </section>
 
-              {/* Footer de Autoridade do Relatório */}
+              {/* Footer de Autoridade */}
               <div className="pt-8 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-2 text-muted-foreground/40">
                   <Terminal className="w-4 h-4" />
                   <span className="text-[9px] font-black uppercase tracking-[0.3em]">Protocolo MEI Flow V2.5</span>
                 </div>
                 <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/40 border border-white/5 text-[9px] font-bold text-muted-foreground/60 uppercase tracking-widest">
-                  Geração de Dados em Tempo Real
+                  Análise Estratégica Real
                 </div>
               </div>
             </CardContent>
