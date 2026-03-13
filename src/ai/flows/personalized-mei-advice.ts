@@ -66,7 +66,7 @@ INSTRUÇÕES ESTRATÉGICAS:
 1. Adapte todas as sugestões e o veredito às particularidades e desafios do ramo de "${input.ramo}".
 2. Analise se a margem de lucro está adequada para este setor específico.
 3. Identifique o gargalo principal (custos, teto MEI ou retirada pessoal).
-4. No campo "summary", forneça um veredito direto, profissional e altamente estratégico sobre a saúde do negócio.
+4. No campo "summary", forneça um veredito direto, profissional e altamente estratégico sobre a saúde do negócio. Use alinhamento direto e sem enrolação.
 
 Responda APENAS um JSON válido com as chaves:
 - summary (string)
@@ -94,10 +94,19 @@ Responda APENAS um JSON válido com as chaves:
     }
 
     const data = await response.json();
-    const content = data.choices[0]?.message?.content;
+    let content = data.choices[0]?.message?.content || "";
     
-    return JSON.parse(content);
+    // Limpeza básica para garantir que o conteúdo seja apenas o JSON
+    content = content.trim();
+    if (content.startsWith("```json")) {
+      content = content.replace(/^```json/, "").replace(/```$/, "");
+    } else if (content.startsWith("```")) {
+      content = content.replace(/^```/, "").replace(/```$/, "");
+    }
+    
+    return JSON.parse(content.trim());
   } catch (error: any) {
+    console.error("Erro na Server Action:", error);
     return {
       summary: "Ocorreu um erro na análise estratégica. Verifique sua conexão ou a chave da API.",
       distributionAdvice: ["Erro na consulta"],
