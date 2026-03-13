@@ -6,7 +6,43 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useBusiness } from "@/contexts/BusinessContext";
-import { Briefcase, Info, Zap, ShieldCheck, Target, Users, TrendingUp, Store, AlertCircle } from "lucide-react";
+import { 
+  Briefcase, 
+  Info, 
+  Zap, 
+  ShieldCheck, 
+  Target, 
+  Users, 
+  TrendingUp, 
+  Store, 
+  AlertCircle,
+  HelpCircle 
+} from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
+const FAQS_BUSINESS = [
+  {
+    q: "Por que definir meu Ramo de Atividade com precisão?",
+    a: "O ramo define sua natureza jurídica e obrigações (ISS para serviços ou ICMS para comércio). No MEI Flow, essa informação permite que a IA compare sua performance com benchmarks reais do seu setor, entregando conselhos muito mais cirúrgicos."
+  },
+  {
+    q: "Qual a importância do Ticket Médio na estratégia do MEI?",
+    a: "O Ticket Médio (valor médio por venda) é o acelerador do seu teto de R$ 81k. Se seu ticket é baixo, você precisa de um volume operacional exaustivo. Aumentar o ticket estratégico permite atingir suas metas com menos esforço e maior margem de lucro."
+  },
+  {
+    q: "Como escolher os Canais de Venda ideais?",
+    a: "Depende do seu Modelo de Negócio. Se você é B2B, canais diretos e LinkedIn são fundamentais. Se é B2C, redes sociais e marketplaces garantem escala. Diversificar canais protege seu faturamento contra instabilidades em uma única plataforma."
+  },
+  {
+    q: "B2B vs B2C: Qual o impacto na minha gestão financeira?",
+    a: "Negócios B2B costumam ter ciclos de venda longos e tickets altos, exigindo mais capital de giro. Negócios B2C focam em volume e giro rápido. A IA utiliza essa distinção para sugerir como você deve alocar sua reserva e seu lucro."
+  }
+];
 
 export function BusinessProfile() {
   const { businessData, updateBusinessData } = useBusiness();
@@ -53,7 +89,6 @@ export function BusinessProfile() {
         <CardContent className="px-6 pb-10 space-y-10">
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Nome e Ramo */}
             <div className="space-y-6">
               <div className="space-y-3">
                 <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">Nome do Negócio</Label>
@@ -78,7 +113,6 @@ export function BusinessProfile() {
               </div>
             </div>
 
-            {/* Modelo e Metas */}
             <div className="space-y-6">
               <div className="space-y-3">
                 <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] ml-1">Modelo de Negócio</Label>
@@ -106,7 +140,6 @@ export function BusinessProfile() {
             </div>
           </div>
 
-          {/* Canais de Venda */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 px-1">
               <Store className="w-4 h-4 text-primary" />
@@ -133,7 +166,6 @@ export function BusinessProfile() {
             </div>
           </div>
 
-          {/* Métricas e Desafios */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
             <div className="space-y-3">
               <div className="flex items-center gap-2">
@@ -188,6 +220,34 @@ export function BusinessProfile() {
           </div>
         </CardContent>
       </Card>
+
+      <section className="space-y-6 pt-6">
+        <div className="flex items-center gap-3 px-1">
+          <div className="p-2.5 bg-primary/10 rounded-xl text-primary shadow-inner">
+            <HelpCircle className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="font-headline font-bold text-xl tracking-tight">FAQ Estratégica</h3>
+            <p className="text-xs text-muted-foreground font-medium mt-1">Entenda como seu perfil de negócio impulsiona seu crescimento.</p>
+          </div>
+        </div>
+
+        <Accordion type="single" collapsible className="w-full space-y-3">
+          {FAQS_BUSINESS.map((faq, idx) => (
+            <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-2xl px-5 bg-card/40 shadow-sm hover:shadow-md transition-all hover:bg-card">
+              <AccordionTrigger className="text-sm font-bold text-left hover:no-underline py-5 leading-relaxed group">
+                <span className="group-hover:text-primary transition-colors">{faq.q}</span>
+              </AccordionTrigger>
+              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-6 pt-2 font-medium">
+                <div className="flex gap-4">
+                  <div className="w-1 h-full bg-primary/20 rounded-full shrink-0" />
+                  {faq.a}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </section>
 
       <section className="p-8 rounded-[32px] bg-primary/5 border border-primary/20 flex flex-col md:flex-row items-center gap-6">
         <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center text-primary shrink-0">
