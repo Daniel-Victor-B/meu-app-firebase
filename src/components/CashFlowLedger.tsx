@@ -18,22 +18,21 @@ import {
   Settings2, 
   UserCircle, 
   Percent, 
-  Lightbulb,
   ChevronUp,
   ChevronDown,
-  Info,
-  ArrowRight,
   Target,
   Rocket,
   Landmark,
   Sparkles,
   ChevronRight,
   Zap,
-  Calendar,
-  Clock,
   TrendingDown,
-  Activity,
-  BookOpen
+  BookOpen,
+  RefreshCw,
+  PlusCircle,
+  Banknote,
+  CheckCircle2,
+  XCircle
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -46,11 +45,21 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { type MonthlyData } from "@/app/page";
+import { toast } from "@/hooks/use-toast";
 
 const MESES = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
 ];
+
+interface BankTransaction {
+  id: string;
+  date: string;
+  description: string;
+  amount: number;
+  type: "CREDIT" | "DEBIT";
+  category: string;
+}
 
 interface CashFlowLedgerProps {
   fat: number;
@@ -67,20 +76,16 @@ interface CashFlowLedgerProps {
 
 const FAQS_PLANILHA = [
   {
+    q: "Como funciona a Integração Bancária?",
+    a: "O MEI Flow se conecta à sua conta PJ via Open Banking. Nós apenas lemos as transações para automatizar o preenchimento da sua planilha. Suas credenciais nunca são armazenadas."
+  },
+  {
     q: "Qual o valor ideal para o Colchão de Segurança?",
-    a: "Para um MEI, o ideal é ter entre 6 a 12 meses de custos totais (Custos Operacionais + DAS + Pró-labore) guardados. Isso garante que, se as vendas caírem ou você precisar de uma pausa, as contas da empresa e o seu salário pessoal continuem pagos sem gerar dívidas."
+    a: "Para um MEI, o ideal é ter entre 6 a 12 meses de custos totais guardados. Isso garante que as contas continuem pagas mesmo em meses de baixa."
   },
   {
     q: "O lucro deve ser sacado mensalmente?",
-    a: "Não! A regra de ouro é: Pró-labore é mensal, Lucro é trimestral. Use a planilha para ver a sobra mensal, mas só decida o que fazer com esse dinheiro a cada 90 dias. Isso garante que você tenha fôlego financeiro para meses de baixa."
-  },
-  {
-    q: "Como projetar meses com faturamento incerto?",
-    a: "No MEI, a sazonalidade é comum. Use a média dos últimos 3 meses para os meses futuros ou, se for comércio, projete 20-30% a mais em meses como Dezembro (Natal). A planilha serve justamente para você ver o impacto desses picos na sua reserva."
-  },
-  {
-    q: "Por que separar a 'Reserva' do 'Lucro Disponível'?",
-    a: "O Lucro Disponível é o dinheiro que você pode gastar com você (além do salário) ou reinvestir. A Reserva é o dinheiro da empresa para emergências. Sem essa separação, você corre o risco de ficar sem caixa no primeiro mês que o faturamento cair."
+    a: "Não! A regra de ouro é: Pró-labore é mensal, Lucro é trimestral. Isso garante fôlego financeiro para o seu negócio."
   }
 ];
 
@@ -94,6 +99,9 @@ export function CashFlowLedger({
   const [mesesReserva, setMesesReserva] = useState(6);
   const [distribuicaoLucroPct, setDistribuicaoLucroPct] = useState(50);
   const [selectedQuarter, setSelectedQuarter] = useState(0);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [pendingTransactions, setPendingTransactions] = useState<BankTransaction[]>([]);
+  const [isBankConnected, setIsBankConnected] = useState(false);
   const das = 76;
 
   useEffect(() => {
@@ -102,6 +110,9 @@ export function CashFlowLedger({
     
     const savedDist = localStorage.getItem("mei-flow-ledger-dist-lucro");
     if (savedDist) setDistribuicaoLucroPct(parseInt(savedDist, 10) || 50);
+
+    const connected = localStorage.getItem("mei-flow-bank-connected");
+    if (connected === "true") setIsBankConnected(true);
   }, []);
 
   useEffect(() => {
@@ -121,6 +132,55 @@ export function CashFlowLedger({
       newData[index] = { ...newData[index], [field]: newValue };
     }
     setMonthlyData(newData);
+  };
+
+  const syncBank = async () => {
+    if (!isBankConnected) {
+      setIsBankConnected(true);
+      localStorage.setItem("mei-flow-bank-connected", "true");
+      toast({
+        title: "Banco Conectado",
+        description: "Sua conta Nubank PJ foi vinculada com sucesso.",
+      });
+    }
+
+    setIsSyncing(true);
+    try {
+      const res = await fetch('/api/bank/sync');
+      const data = await res.json();
+      setPendingTransactions(data.transactions);
+      toast({
+        title: "Sincronização Concluída",
+        description: `${data.transactions.length} novas transações encontradas.`,
+      });
+    } catch (error) {
+      toast({
+        title: "Erro na Sincronização",
+        description: "Não foi possível buscar os dados do banco.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  const importTransaction = (tx: BankTransaction) => {
+    const currentMonthIndex = new Date().getMonth();
+    const newData = [...monthlyData];
+    
+    if (tx.type === "CREDIT") {
+      newData[currentMonthIndex].receita += tx.amount;
+    } else {
+      newData[currentMonthIndex].custos += Math.abs(tx.amount);
+    }
+    
+    setMonthlyData(newData);
+    setPendingTransactions(prev => prev.filter(t => t.id !== tx.id));
+    
+    toast({
+      title: "Transação Importada",
+      description: `${tx.description} adicionada ao mês de ${MESES[currentMonthIndex]}.`,
+    });
   };
 
   const totals = useMemo(() => {
@@ -194,7 +254,6 @@ export function CashFlowLedger({
   const metaTotal = (custos + das + prolabore) * mesesReserva;
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
   const LIMITE_MEI = 81000;
-  
   const percentualLimite = Math.min(100, (totals.acumuladoReceita / LIMITE_MEI) * 100);
 
   const smartTarget = useMemo(() => {
@@ -230,6 +289,84 @@ export function CashFlowLedger({
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
+      {/* Seção de Integração Bancária */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-8">
+          <Card className="border-primary/20 bg-primary/5 overflow-hidden relative">
+            <div className="absolute top-0 right-0 p-8 opacity-5">
+              <Landmark className="w-32 h-32" />
+            </div>
+            <CardContent className="p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+              <div className="space-y-2 text-center md:text-left">
+                <div className="flex items-center justify-center md:justify-start gap-2 text-primary">
+                  <RefreshCw className={cn("w-5 h-5", isSyncing && "animate-spin")} />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em]">Automação Bancária</span>
+                </div>
+                <h3 className="text-xl font-bold tracking-tight">Sincronize seu Fluxo de Caixa</h3>
+                <p className="text-xs text-muted-foreground font-medium max-w-sm">
+                  Conecte sua conta PJ para importar transações automaticamente e economizar tempo no preenchimento.
+                </p>
+              </div>
+              <div className="flex flex-col gap-3 w-full md:w-auto">
+                <Button 
+                  onClick={syncBank} 
+                  disabled={isSyncing}
+                  className="rounded-xl h-12 px-8 font-black uppercase tracking-widest text-[10px] gap-2 shadow-xl shadow-primary/20"
+                >
+                  {isSyncing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+                  {isBankConnected ? "Sincronizar Agora" : "Conectar Conta PJ"}
+                </Button>
+                {isBankConnected && (
+                  <div className="flex items-center justify-center gap-2 text-[10px] font-bold text-primary">
+                    <CheckCircle2 className="w-3 h-3" />
+                    Nubank PJ • Conectado
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="lg:col-span-4">
+          <Card className="h-full border-border/50 bg-card/40 backdrop-blur-sm">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-bold flex items-center gap-2">
+                <Banknote className="w-4 h-4 text-primary" />
+                Pendentes ({pendingTransactions.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="max-h-[140px] overflow-y-auto px-4 pb-4 space-y-2 no-scrollbar">
+                {pendingTransactions.length === 0 ? (
+                  <div className="py-8 text-center text-[10px] font-bold text-muted-foreground uppercase opacity-40">
+                    Nenhuma transação pendente
+                  </div>
+                ) : (
+                  pendingTransactions.map((tx) => (
+                    <div key={tx.id} className="flex items-center justify-between p-2 rounded-lg bg-background border border-border/50 group hover:border-primary/30 transition-all">
+                      <div className="min-w-0">
+                        <div className="text-[10px] font-bold truncate pr-2 uppercase">{tx.description}</div>
+                        <div className={cn("text-[10px] font-black", tx.type === "CREDIT" ? "text-primary" : "text-orange-500")}>
+                          {tx.type === "CREDIT" ? "+" : "-"}{formatCurrency(Math.abs(tx.amount))}
+                        </div>
+                      </div>
+                      <Button 
+                        size="icon" 
+                        variant="ghost" 
+                        onClick={() => importTransaction(tx)}
+                        className="h-7 w-7 rounded-full hover:bg-primary/20 text-primary shrink-0"
+                      >
+                        <PlusCircle className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Card className="bg-primary/5 border-primary/20 shadow-md">
           <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
