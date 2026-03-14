@@ -466,7 +466,7 @@ export function CashFlowLedger({
               {activityLog.length === 0 ? (
                 <div className="py-12 text-center text-[10px] font-black uppercase text-muted-foreground opacity-30 tracking-[0.2em]">Sem movimentações registradas</div>
               ) : (
-                activityLog.slice().reverse().map((entry) => (
+                activityLog.map((entry) => (
                   <div key={entry.id} className="p-4 rounded-xl bg-background border border-border/50 flex flex-col gap-2 group hover:border-primary/30 transition-all">
                     <div className="flex justify-between items-start">
                       <div className="space-y-1">
