@@ -105,87 +105,138 @@ export function BusinessProfile() {
   ];
 
   return (
-    <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500 pb-16">
-      <Card className="border-primary/20 bg-card/40 backdrop-blur-xl shadow-xl overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/50 via-primary to-primary/50" />
-        <CardHeader className="pt-8 px-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-primary/20 rounded-2xl text-primary shadow-lg shadow-primary/10"><Briefcase className="w-6 h-6" /></div>
-            <div>
-              <CardTitle className="text-xl font-headline font-bold">Identidade Estratégica</CardTitle>
-              <CardDescription className="text-xs uppercase tracking-widest font-bold">Perfil do Negócio</CardDescription>
-            </div>
+    <div className="space-y-12 animate-in slide-in-from-bottom-4 duration-500 pb-16">
+      <Card className="border-none bg-transparent shadow-none">
+        <CardHeader className="px-0 pb-8">
+          <div className="space-y-1">
+            <CardTitle className="text-2xl font-headline font-bold tracking-tight">Identidade Estratégica</CardTitle>
+            <CardDescription className="text-xs font-medium text-muted-foreground/60 uppercase tracking-[0.2em]">Configuração do Perfil do Negócio</CardDescription>
           </div>
         </CardHeader>
-        <CardContent className="px-6 pb-10 space-y-10">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Nome do Negócio</Label>
-                <Input placeholder="Ex: Minha Empresa MEI" value={businessData.nomeNegocio} onChange={(e) => updateBusinessData({ nomeNegocio: e.target.value })} className="h-12 bg-background/50 border-primary/20 rounded-xl font-bold" />
+        <CardContent className="px-0 space-y-12">
+          {/* Sessão: Fundação */}
+          <div className="space-y-8">
+            <div className="flex items-center gap-2">
+              <div className="h-px flex-1 bg-border/40" />
+              <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.3em]">Fundação</span>
+              <div className="h-px flex-1 bg-border/40" />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+              <div className="space-y-2.5">
+                <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">Nome Comercial</Label>
+                <Input 
+                  placeholder="Nome da sua marca" 
+                  value={businessData.nomeNegocio} 
+                  onChange={(e) => updateBusinessData({ nomeNegocio: e.target.value })} 
+                  className="h-11 bg-secondary/20 border-border/40 rounded-lg font-medium focus:ring-1 focus:ring-primary/40 transition-all" 
+                />
               </div>
-              <div className="space-y-3">
-                <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Ramo de Atividade</Label>
+
+              <div className="space-y-2.5">
+                <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">Ramo de Atividade</Label>
                 <Select value={businessData.ramo} onValueChange={(val) => updateBusinessData({ ramo: val })}>
-                  <SelectTrigger className="h-12 bg-background/50 border-primary/20 rounded-xl font-bold">
+                  <SelectTrigger className="h-11 bg-secondary/20 border-border/40 rounded-lg font-medium">
                     <SelectValue placeholder="Selecione o ramo" />
                   </SelectTrigger>
                   <SelectContent>
                     {Object.entries(ramosCategorizados).map(([categoria, lista]) => (
                       <SelectGroup key={categoria}>
-                        <SelectLabel className="text-[10px] font-black uppercase text-primary/60 tracking-widest pt-4 pb-2">{categoria}</SelectLabel>
+                        <SelectLabel className="text-[10px] font-bold uppercase text-primary/40 tracking-widest pt-4 pb-2">{categoria}</SelectLabel>
                         {lista.map((r) => <SelectItem key={r} value={r} className="font-medium">{r}</SelectItem>)}
                       </SelectGroup>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Nicho do Negócio (Ex: Moda Praia, Dev React)</Label>
-                <div className="relative">
-                  <Input placeholder="Qual seu público específico?" value={businessData.nicho} onChange={(e) => updateBusinessData({ nicho: e.target.value })} className="h-12 bg-background/50 border-primary/20 rounded-xl font-bold pl-10" />
-                  <Target className="w-4 h-4 text-primary absolute left-3.5 top-1/2 -translate-y-1/2" />
-                </div>
+
+              <div className="space-y-2.5">
+                <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">Nicho / Especialidade</Label>
+                <Input 
+                  placeholder="Ex: Consultoria para Médicos" 
+                  value={businessData.nicho} 
+                  onChange={(e) => updateBusinessData({ nicho: e.target.value })} 
+                  className="h-11 bg-secondary/20 border-border/40 rounded-lg font-medium" 
+                />
               </div>
-              <div className="space-y-3">
-                <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Modelo de Negócio</Label>
+
+              <div className="space-y-2.5">
+                <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">Modelo Comercial</Label>
                 <Select value={businessData.modeloNegocio} onValueChange={(val) => updateBusinessData({ modeloNegocio: val })}>
-                  <SelectTrigger className="h-12 bg-background/50 border-primary/20 rounded-xl font-bold"><SelectValue /></SelectTrigger>
-                  <SelectContent>{modelos.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent>
+                  <SelectTrigger className="h-11 bg-secondary/20 border-border/40 rounded-lg font-medium">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {modelos.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                  </SelectContent>
                 </Select>
               </div>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Canais de Venda Ativos</Label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {/* Sessão: Canais */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-2">
+              <div className="h-px flex-1 bg-border/40" />
+              <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.3em]">Presença Digital</span>
+              <div className="h-px flex-1 bg-border/40" />
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
               {canaisOpcoes.map((canal) => (
-                <div key={canal} onClick={() => toggleCanal(canal)} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${businessData.canaisVenda?.includes(canal) ? "bg-primary/10 border-primary/40 text-primary" : "bg-background/40 border-border/50"}`}>
-                  <Checkbox checked={businessData.canaisVenda?.includes(canal)} />
-                  <span className="text-xs font-bold">{canal}</span>
+                <div 
+                  key={canal} 
+                  onClick={() => toggleCanal(canal)} 
+                  className={`flex items-center justify-center p-3 rounded-lg border text-center cursor-pointer transition-all duration-300 ${
+                    businessData.canaisVenda?.includes(canal) 
+                      ? "bg-primary/5 border-primary/40 text-primary" 
+                      : "bg-transparent border-border/40 text-muted-foreground/60 hover:border-border"
+                  }`}
+                >
+                  <span className="text-[11px] font-bold uppercase tracking-tighter">{canal}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
-            <div className="space-y-3">
-              <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Ticket Médio (R$)</Label>
-              <Input type="number" value={businessData.ticketMedio} onChange={(e) => updateBusinessData({ ticketMedio: parseFloat(e.target.value) || 0 })} className="h-12 bg-background/50 border-primary/20 rounded-xl font-bold" />
+          {/* Sessão: Métricas */}
+          <div className="space-y-8">
+            <div className="flex items-center gap-2">
+              <div className="h-px flex-1 bg-border/40" />
+              <span className="text-[10px] font-bold text-muted-foreground/40 uppercase tracking-[0.3em]">Operação</span>
+              <div className="h-px flex-1 bg-border/40" />
             </div>
-            <div className="space-y-3">
-              <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Clientes Ativos</Label>
-              <Input type="number" value={businessData.numClientes} onChange={(e) => updateBusinessData({ numClientes: parseInt(e.target.value) || 0 })} className="h-12 bg-background/50 border-primary/20 rounded-xl font-bold" />
-            </div>
-            <div className="space-y-3">
-              <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Maior Gargalo</Label>
-              <Select value={businessData.desafio} onValueChange={(val) => updateBusinessData({ desafio: val })}>
-                <SelectTrigger className="h-12 bg-background/50 border-primary/20 rounded-xl font-bold"><SelectValue /></SelectTrigger>
-                <SelectContent>{desafios.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}</SelectContent>
-              </Select>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="space-y-2.5">
+                <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">Ticket Médio (R$)</Label>
+                <Input 
+                  type="number" 
+                  value={businessData.ticketMedio} 
+                  onChange={(e) => updateBusinessData({ ticketMedio: parseFloat(e.target.value) || 0 })} 
+                  className="h-11 bg-secondary/20 border-border/40 rounded-lg font-medium text-center" 
+                />
+              </div>
+              <div className="space-y-2.5">
+                <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">Base de Clientes</Label>
+                <Input 
+                  type="number" 
+                  value={businessData.numClientes} 
+                  onChange={(e) => updateBusinessData({ numClientes: parseInt(e.target.value) || 0 })} 
+                  className="h-11 bg-secondary/20 border-border/40 rounded-lg font-medium text-center" 
+                />
+              </div>
+              <div className="space-y-2.5">
+                <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-1">Principal Gargalo</Label>
+                <Select value={businessData.desafio} onValueChange={(val) => updateBusinessData({ desafio: val })}>
+                  <SelectTrigger className="h-11 bg-secondary/20 border-border/40 rounded-lg font-medium">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {desafios.map((d) => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -193,21 +244,21 @@ export function BusinessProfile() {
 
       <section className="space-y-8 pt-4">
         <div className="relative group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-indigo-500/20 blur-xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
-          <Card className="relative border-primary/30 bg-primary/5 overflow-hidden">
-            <CardContent className="p-8 flex flex-col md:flex-row items-center justify-between gap-8">
-              <div className="space-y-1">
-                <h3 className="text-2xl font-headline font-black tracking-tight">Consultoria Estratégica AI</h3>
-                <p className="text-sm text-muted-foreground font-medium">Análise avançada de posicionamento e escala para o seu ramo.</p>
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary/10 to-indigo-500/10 blur-xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
+          <Card className="relative border-border/50 bg-card/40 backdrop-blur-sm overflow-hidden rounded-2xl">
+            <CardContent className="p-10 flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="space-y-1 text-center md:text-left">
+                <h3 className="text-xl font-headline font-bold tracking-tight">Audit Estratégico AI</h3>
+                <p className="text-xs text-muted-foreground font-medium">Análise avançada de posicionamento e escala para o seu ramo.</p>
               </div>
               <Button 
                 size="lg"
                 onClick={getStrategy} 
                 disabled={loading} 
-                className="rounded-full gap-3 shadow-xl shadow-primary/20 h-14 px-8 font-black uppercase tracking-widest text-xs"
+                className="rounded-full gap-3 shadow-lg shadow-primary/10 h-12 px-8 font-bold uppercase tracking-widest text-[10px] transition-all hover:scale-105 active:scale-95"
               >
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Sparkles className="h-5 w-5" />}
-                Obter Auditoria Estratégica
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                Obter Auditoria
               </Button>
             </CardContent>
           </Card>
@@ -215,60 +266,60 @@ export function BusinessProfile() {
 
         {strategy && (
           <div className="space-y-6 animate-in fade-in zoom-in duration-500">
-            <Card className="border-primary/20 bg-card overflow-hidden shadow-2xl">
-              <div className="p-6 md:p-8 space-y-4">
+            <Card className="border-border/50 bg-card/60 backdrop-blur-xl overflow-hidden shadow-2xl rounded-2xl">
+              <div className="p-8 space-y-4">
                 <div className="flex items-center justify-between">
-                   <Badge variant="outline" className="text-[10px] font-black text-primary uppercase tracking-[0.2em] bg-primary/5 border-primary/20 px-3 py-1">Veredito do Consultor</Badge>
-                   <ShieldCheck className="w-5 h-5 text-primary opacity-50" />
+                   <Badge variant="outline" className="text-[9px] font-bold text-primary/80 uppercase tracking-widest border-primary/20 bg-primary/5 px-2.5 py-1">Veredito Executivo</Badge>
+                   <ShieldCheck className="w-4 h-4 text-primary/40" />
                 </div>
-                <div className="p-8 rounded-3xl bg-secondary/20 border border-primary/10 relative">
-                  <p className="text-xs md:text-sm italic leading-relaxed text-foreground font-medium text-justify">
+                <div className="p-8 rounded-2xl bg-secondary/10 border border-border/40">
+                  <p className="text-xs md:text-sm italic leading-relaxed text-foreground/90 font-medium text-justify">
                     "{strategy.verdict}"
                   </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-border/50">
-                <div className="bg-card p-6 md:p-8 space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-border/40">
+                <div className="bg-card/40 p-8 space-y-6">
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-indigo-500/10 text-indigo-500 rounded-xl"><BarChart3 className="w-5 h-5" /></div>
-                    <h4 className="text-xs font-black uppercase tracking-widest">Otimização de Canais</h4>
+                    <div className="p-2 bg-indigo-500/5 text-indigo-500/80 rounded-lg"><BarChart3 className="w-4 h-4" /></div>
+                    <h4 className="text-[10px] font-bold uppercase tracking-widest">Otimização de Canais</h4>
                   </div>
                   <ul className="space-y-4">
                     {strategy.channelStrategy.map((s, i) => (
                       <li key={i} className="flex gap-3 items-start group">
-                        <Zap className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs text-muted-foreground font-medium group-hover:text-foreground transition-colors">{s}</span>
+                        <Zap className="w-3.5 h-3.5 text-indigo-500/40 shrink-0 mt-0.5" />
+                        <span className="text-[11px] text-muted-foreground font-medium group-hover:text-foreground transition-colors leading-relaxed">{s}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="bg-card p-6 md:p-8 space-y-6">
+                <div className="bg-card/40 p-8 space-y-6">
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-primary/10 text-primary rounded-xl"><Rocket className="w-5 h-5" /></div>
-                    <h4 className="text-xs font-black uppercase tracking-widest">Ações de Escala</h4>
+                    <div className="p-2 bg-primary/5 text-primary/80 rounded-lg"><Rocket className="w-4 h-4" /></div>
+                    <h4 className="text-[10px] font-bold uppercase tracking-widest">Ações de Escala</h4>
                   </div>
                   <ul className="space-y-4">
                     {strategy.growthActions.map((a, i) => (
                       <li key={i} className="flex gap-3 items-start group">
-                        <TrendingUp className="w-4 h-4 text-primary shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs text-muted-foreground font-medium group-hover:text-foreground transition-colors">{a}</span>
+                        <TrendingUp className="w-3.5 h-3.5 text-primary/40 shrink-0 mt-0.5" />
+                        <span className="text-[11px] text-muted-foreground font-medium group-hover:text-foreground transition-colors leading-relaxed">{a}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="bg-card p-6 md:p-8 space-y-6">
+                <div className="bg-card/40 p-8 space-y-6">
                   <div className="flex items-center gap-3">
-                    <div className="p-2.5 bg-amber-500/10 text-amber-500 rounded-xl"><Search className="w-5 h-5" /></div>
-                    <h4 className="text-xs font-black uppercase tracking-widest">Benchmarking</h4>
+                    <div className="p-2 bg-amber-500/5 text-amber-500/80 rounded-lg"><Search className="w-4 h-4" /></div>
+                    <h4 className="text-[10px] font-bold uppercase tracking-widest">Benchmarking</h4>
                   </div>
                   <ul className="space-y-4">
                     {strategy.benchmarking.map((b, i) => (
                       <li key={i} className="flex gap-3 items-start group">
-                        <Users className="w-4 h-4 text-amber-500 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs text-muted-foreground font-medium group-hover:text-foreground transition-colors">{b}</span>
+                        <Users className="w-3.5 h-3.5 text-amber-500/40 shrink-0 mt-0.5" />
+                        <span className="text-[11px] text-muted-foreground font-medium group-hover:text-foreground transition-colors leading-relaxed">{b}</span>
                       </li>
                     ))}
                   </ul>
@@ -279,26 +330,26 @@ export function BusinessProfile() {
         )}
       </section>
 
-      <section className="space-y-6 pt-10 border-t border-border/50">
+      <section className="space-y-6 pt-10 border-t border-border/30">
         <div className="flex items-center gap-3 px-1">
-          <div className="p-2.5 bg-primary/10 rounded-xl text-primary shadow-inner">
-            <HelpCircle className="w-6 h-6" />
+          <div className="p-2.5 bg-secondary/50 rounded-lg text-muted-foreground/60">
+            <HelpCircle className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-headline font-bold text-xl tracking-tight">Manual do Estrategista</h3>
-            <p className="text-xs text-muted-foreground font-medium mt-1">Entenda os pilares que a IA utiliza para projetar o seu crescimento.</p>
+            <h3 className="font-headline font-bold text-lg tracking-tight">Manual Estratégico</h3>
+            <p className="text-xs text-muted-foreground/60 font-medium">Entenda os pilares do seu posicionamento.</p>
           </div>
         </div>
 
-        <Accordion type="single" collapsible className="w-full space-y-3">
+        <Accordion type="single" collapsible className="w-full space-y-2">
           {FAQS_NEGOCIO.map((faq, idx) => (
-            <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-2xl px-5 bg-card/40 shadow-sm hover:shadow-md transition-all hover:bg-card">
-              <AccordionTrigger className="text-sm font-bold text-left hover:no-underline py-5 leading-relaxed group">
-                <span className="group-hover:text-primary transition-colors">{faq.q}</span>
+            <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-xl px-5 bg-secondary/10 border-border/20 transition-all hover:bg-secondary/20">
+              <AccordionTrigger className="text-xs font-bold text-left hover:no-underline py-4 leading-relaxed group">
+                <span className="group-hover:text-primary/80 transition-colors">{faq.q}</span>
               </AccordionTrigger>
-              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-6 pt-2 font-medium">
+              <AccordionContent className="text-[11px] text-muted-foreground/80 leading-relaxed pb-4 pt-1 font-medium">
                 <div className="flex gap-4">
-                  <div className="w-1 h-full bg-primary/20 rounded-full shrink-0" />
+                  <div className="w-0.5 h-auto bg-primary/10 rounded-full shrink-0" />
                   {faq.a}
                 </div>
               </AccordionContent>
