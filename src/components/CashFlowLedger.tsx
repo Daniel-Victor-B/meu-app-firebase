@@ -268,12 +268,14 @@ export function CashFlowLedger({
   };
 
   const clearImportHistory = () => {
-    setImportedIds(new Set());
-    localStorage.removeItem("mei-flow-imported-ids");
-    toast({
-      title: "Histórico Limpo",
-      description: "Agora você pode reimportar transações antigas.",
-    });
+    if (confirm("Limpar o histórico permitirá que transações já importadas sejam reimportadas na próxima sincronização. Isso pode duplicar valores na planilha se você importá-las novamente. Deseja continuar?")) {
+      setImportedIds(new Set());
+      localStorage.removeItem("mei-flow-imported-ids");
+      toast({
+        title: "Histórico Limpo",
+        description: "As próximas sincronizações trarão todas as transações como novas.",
+      });
+    }
   };
 
   const totals = useMemo(() => {
@@ -416,13 +418,6 @@ export function CashFlowLedger({
                       <CheckCircle2 className="w-3 h-3" />
                       Banco Ativo
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      onClick={clearImportHistory}
-                      className="text-[9px] font-bold text-muted-foreground hover:text-destructive h-auto p-0"
-                    >
-                      <Trash2 className="w-3 h-3 mr-1" /> Limpar Histórico
-                    </Button>
                   </div>
                 )}
               </div>
@@ -438,9 +433,28 @@ export function CashFlowLedger({
                   <Banknote className="w-4 h-4 text-primary" />
                   Pendentes ({pendingTransactions.length})
                 </div>
-                {pendingTransactions.length > 0 && (
-                  <Badge variant="secondary" className="text-[9px] font-black px-1.5 h-4 bg-primary/10 text-primary border-none">LIVE</Badge>
-                )}
+                <div className="flex items-center gap-1">
+                  {pendingTransactions.length > 0 && (
+                    <Badge variant="secondary" className="text-[9px] font-black px-1.5 h-4 bg-primary/10 text-primary border-none">LIVE</Badge>
+                  )}
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 text-muted-foreground hover:text-destructive"
+                          onClick={clearImportHistory}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        <p className="text-[10px] font-bold">Limpar histórico de importações. Use apenas se quiser reimportar tudo (pode causar duplicação).</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
