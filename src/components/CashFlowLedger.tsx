@@ -34,7 +34,11 @@ import {
   CheckCircle2,
   AlertCircle,
   Trash2,
-  History
+  History,
+  TrendingUp,
+  Scale,
+  ArrowRight,
+  Activity
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -109,7 +113,6 @@ export function CashFlowLedger({
   reservaPct, setReservaPct,
   monthlyData, setMonthlyData
 }: CashFlowLedgerProps) {
-  // Inicialização de estados usando lazy loading para evitar flash de estado vazio e problemas de hidratação
   const [mesesReserva, setMesesReserva] = useState(() => {
     if (typeof window === "undefined") return 6;
     const saved = localStorage.getItem("mei-flow-ledger-meses-reserva");
@@ -121,6 +124,8 @@ export function CashFlowLedger({
     const saved = localStorage.getItem("mei-flow-ledger-dist-lucro");
     return saved ? parseInt(saved, 10) || 50 : 50;
   });
+
+  const [selectedQuarter, setSelectedQuarter] = useState(0);
 
   const [isBankConnected, setIsBankConnected] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -172,7 +177,6 @@ export function CashFlowLedger({
   
   const das = 76;
 
-  // Persistência de alterações de estado
   useEffect(() => {
     localStorage.setItem("mei-flow-pending-txs", JSON.stringify(pendingTransactions));
   }, [pendingTransactions]);
@@ -281,13 +285,11 @@ export function CashFlowLedger({
     
     setMonthlyData(newData);
     
-    // Histórico de importações (Set para evitar duplicatas)
     const nextImported = new Set(importedIds);
     nextImported.add(tx.id);
     setImportedIds(nextImported);
     localStorage.setItem("mei-flow-imported-ids", JSON.stringify(Array.from(nextImported)));
 
-    // Limpa das pendências
     setPendingTransactions(prev => prev.filter(t => t.id !== tx.id));
     
     addLogEntry({
@@ -338,6 +340,27 @@ export function CashFlowLedger({
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
   const LIMITE_MEI = 81000;
   const percentualLimite = Math.min(100, (totals.acumuladoReceita / LIMITE_MEI) * 100);
+
+  const quarterlyTotals = useMemo(() => {
+    const quarters = [0, 0, 0, 0];
+    totals.rows.forEach((row, i) => {
+      const q = Math.floor(i / 3);
+      quarters[q] += row.lucro || 0;
+    });
+    return quarters;
+  }, [totals]);
+
+  const smartTarget = useMemo(() => {
+    if (progressoMeta < 100) return 20;
+    return 70;
+  }, [progressoMeta]);
+
+  const qProfit = quarterlyTotals[selectedQuarter];
+  const qProfitPF_Recommended = Math.round((qProfit * smartTarget) / 100);
+  const qProfitPJ_Recommended = qProfit - qProfitPF_Recommended;
+  
+  const qProfitPF_Manual = Math.round((qProfit * distribuicaoLucroPct) / 100);
+  const qProfitPJ_Manual = qProfit - qProfitPF_Manual;
 
   const displayedTransactions = isPendingExpanded ? pendingTransactions : pendingTransactions.slice(0, 3);
 
@@ -401,7 +424,6 @@ export function CashFlowLedger({
                     </div>
                   ))}
                 </div>
-                {pendingTransactions.length > 3 && <Button variant="ghost" size="sm" onClick={() => setIsPendingExpanded(!isPendingExpanded)} className="w-full text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary h-7 border border-dashed border-border/50 mt-1">{isPendingExpanded ? "Recolher Lista" : `Ver todas (${pendingTransactions.length})`}</Button>}
               </div>
             </CardContent>
           </Card>
@@ -421,7 +443,7 @@ export function CashFlowLedger({
         </Card>
         <Card className="bg-secondary/20 border-border/60 border-2 relative overflow-hidden group">
           <CardHeader className="pb-2"><div className="flex items-center gap-2 text-foreground"><Settings2 className="w-5 h-5 text-primary" /><div><CardTitle className="text-sm font-bold uppercase tracking-wider">Parâmetros de Gestão</CardTitle><CardDescription className="text-[10px] uppercase font-bold text-muted-foreground">Configurações globais</CardDescription></div></div></CardHeader>
-          <CardContent><div className="grid grid-cols-1 sm:grid-cols-2 gap-4"><div className="space-y-2"><div className="flex items-center gap-1.5 text-[10px] text-blue-500 font-black uppercase"><UserCircle className="w-3 h-3" />Salário PF</div><div className="flex items-center gap-2"><div className="flex flex-col -space-y-px"><Button variant="ghost" size="icon" className="h-4 w-6 rounded-t-md rounded-b-none border border-border hover:bg-secondary text-blue-500" onClick={() => setProlabore(prolabore + 100)}><ChevronUp className="w-3 h-3" /></Button><Button variant="ghost" size="icon" className="h-4 w-6 rounded-b-md rounded-t-none border border-border hover:bg-secondary text-blue-500" onClick={() => setProlabore(Math.max(0, prolabore - 100))}><ChevronDown className="w-3 h-3" /></Button></div><Input className="h-9 px-2 text-xs font-bold bg-background/80 border-blue-500/30" type="number" value={prolabore} onChange={(e) => setProlabore(parseFloat(e.target.value) || 0)} /></div></div><div className="space-y-2"><div className="flex items-center gap-1.5 text-[10px] text-purple-500 font-black uppercase"><Percent className="w-3 h-3" />Reserva PJ (%)</div><div className="flex items-center gap-2"><div className="flex flex-col -space-y-px"><Button variant="ghost" size="icon" className="h-4 w-6 rounded-t-md rounded-b-none border border-border hover:bg-secondary text-purple-500" onClick={() => setReservaPct(Math.min(100, reservaPct + 5))}><ChevronUp className="w-3 h-3" /></Button><Button variant="ghost" size="icon" className="h-4 w-6 rounded-b-md rounded-t-none border border-border hover:bg-secondary text-purple-500" onClick={() => setReservaPct(Math.max(0, reservaPct - 5))}><ChevronDown className="w-3 h-3" /></Button></div><Input className="h-9 px-2 text-xs font-bold bg-background/80 border-purple-500/30 text-right" type="number" value={reservaPct} onChange={(e) => setReservaPct(parseFloat(e.target.value) || 0)} /></div></div></div></CardContent>
+          <CardContent><div className="grid grid-cols-1 sm:grid-cols-2 gap-4"><div className="space-y-2"><div className="flex items-center gap-1.5 text-[10px] text-blue-500 font-black uppercase"><UserCircle className="w-3 h-3" />Salário PF</div><div className="flex flex-col -space-y-px"><Button variant="ghost" size="icon" className="h-4 w-6 rounded-t-md rounded-b-none border border-border hover:bg-secondary text-blue-500" onClick={() => setProlabore(prolabore + 100)}><ChevronUp className="w-3 h-3" /></Button><Button variant="ghost" size="icon" className="h-4 w-6 rounded-b-md rounded-t-none border border-border hover:bg-secondary text-blue-500" onClick={() => setProlabore(Math.max(0, prolabore - 100))}><ChevronDown className="w-3 h-3" /></Button></div><Input className="h-9 px-2 text-xs font-bold bg-background/80 border-blue-500/30" type="number" value={prolabore} onChange={(e) => setProlabore(parseFloat(e.target.value) || 0)} /></div><div className="space-y-2"><div className="flex items-center gap-1.5 text-[10px] text-purple-500 font-black uppercase"><Percent className="w-3 h-3" />Reserva PJ (%)</div><div className="flex items-center gap-2"><div className="flex flex-col -space-y-px"><Button variant="ghost" size="icon" className="h-4 w-6 rounded-t-md rounded-b-none border border-border hover:bg-secondary text-purple-500" onClick={() => setReservaPct(Math.min(100, reservaPct + 5))}><ChevronUp className="w-3 h-3" /></Button><Button variant="ghost" size="icon" className="h-4 w-6 rounded-b-md rounded-t-none border border-border hover:bg-secondary text-purple-500" onClick={() => setReservaPct(Math.max(0, reservaPct - 5))}><ChevronDown className="w-3 h-3" /></Button></div><Input className="h-9 px-2 text-xs font-bold bg-background/80 border-purple-500/30 text-right" type="number" value={reservaPct} onChange={(e) => setReservaPct(parseFloat(e.target.value) || 0)} /></div></div></div></CardContent>
         </Card>
       </div>
 
@@ -454,7 +476,150 @@ export function CashFlowLedger({
         </CardContent>
       </Card>
 
-      {/* Histórico de Movimentações (Activity Log) */}
+      <section className="relative p-1 rounded-[40px] bg-gradient-to-br from-primary/10 via-border/40 to-indigo-500/5 shadow-2xl group transition-all duration-700">
+        <div className="bg-card/40 backdrop-blur-xl rounded-[39px] p-8 md:p-10 space-y-10 relative overflow-hidden">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border/50 pb-8">
+            <div className="flex items-center gap-5">
+              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner border border-primary/20 shrink-0">
+                 <Zap className="w-7 h-7 text-primary drop-shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary/70">Ciclo de Riqueza Trimestral</span>
+                </div>
+                <h4 className="text-2xl md:text-3xl font-black tracking-tighter">Gestão de <span className="text-primary italic">90 Dias</span></h4>
+              </div>
+            </div>
+            
+            <div className="flex flex-wrap gap-2 p-1.5 bg-background/50 rounded-2xl border border-border/50 shadow-inner">
+              {["1º T", "2º T", "3º T", "4º T"].map((t, i) => (
+                <Button 
+                  key={i} 
+                  variant={selectedQuarter === i ? "default" : "ghost"}
+                  onClick={() => setSelectedQuarter(i)}
+                  className={cn(
+                    "rounded-xl font-bold h-12 px-5 transition-all text-[11px] uppercase tracking-wider flex flex-col gap-0.5",
+                    selectedQuarter === i ? "shadow-lg shadow-primary/20 scale-105" : "hover:bg-primary/10"
+                  )}
+                >
+                  <span>{t}</span>
+                  <span className={cn("text-[9px] font-black", selectedQuarter === i ? "text-primary-foreground/70" : "text-primary")}>
+                    {formatCurrency(quarterlyTotals[i] || 0)}
+                  </span>
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-stretch">
+            <div className="flex flex-col">
+              <div className="p-8 rounded-[32px] bg-secondary/20 border border-border/50 flex-1 space-y-8 relative overflow-hidden shadow-inner">
+                <div className="absolute top-0 right-0 p-8 opacity-5"><Sparkles className="w-24 h-24 text-primary" /></div>
+                
+                <div className="space-y-2 relative z-10">
+                  <div className="text-[10px] font-black uppercase text-primary/70 tracking-widest">Resultado Acumulado do Ciclo</div>
+                  <div className="text-5xl font-black tracking-tighter tabular-nums">{formatCurrency(qProfit)}</div>
+                </div>
+
+                <div className="space-y-6 relative z-10">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 rounded-lg text-primary"><Target className="w-4 h-4" /></div>
+                    <span className="text-[11px] font-black uppercase tracking-widest text-foreground">Diretriz da IA MEI Flow</span>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1 p-4 rounded-2xl bg-background/40 border border-primary/10 group hover:border-primary/30 transition-all">
+                      <div className="text-[9px] font-black text-muted-foreground uppercase tracking-wider">Distribuir (PF)</div>
+                      <div className="text-xl font-black text-primary">{formatCurrency(qProfitPF_Recommended)}</div>
+                    </div>
+                    <div className="space-y-1 p-4 rounded-2xl bg-background/40 border border-primary/10 group hover:border-primary/30 transition-all">
+                      <div className="text-[9px] font-black text-muted-foreground uppercase tracking-wider">Reter (PJ)</div>
+                      <div className="text-xl font-black text-muted-foreground">{formatCurrency(qProfitPJ_Recommended)}</div>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-primary/10 border border-primary/20 flex gap-3 items-start">
+                    <Activity className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <p className="text-[11px] text-primary/80 leading-relaxed font-medium italic">
+                      {progressoMeta < 100 
+                        ? "Prioridade: Fortalecimento de Caixa. Recomendamos reter 80% do lucro para atingir seu Colchão de Segurança mais rápido." 
+                        : "Prioridade: Fruição de Capital. Sua reserva está saudável, liberando 70% do lucro acumulado para o seu CPF."
+                      }
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col">
+              <Card className="flex-1 bg-background/30 border-2 border-dashed border-border/60 rounded-[32px] overflow-hidden flex flex-col p-8 space-y-10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-indigo-500/10 rounded-xl text-indigo-500 border border-indigo-500/20"><Scale className="w-5 h-5" /></div>
+                    <h5 className="font-black text-xs uppercase tracking-widest">Ajuste de Alocação</h5>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => setDistribuicaoLucroPct(smartTarget)}
+                    className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest gap-2 bg-primary/5 border-primary/20 text-primary hover:bg-primary/20"
+                  >
+                    <RefreshCw className="w-3 h-3" />
+                    Sincronizar IA
+                  </Button>
+                </div>
+
+                <div className="space-y-8 flex-1 flex flex-col justify-center">
+                  <div className="space-y-6">
+                    <div className="flex justify-between items-end mb-2">
+                      <div className="space-y-1">
+                         <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Sua Riqueza (PF)</span>
+                         <div className="text-3xl font-black tabular-nums">{distribuicaoLucroPct}%</div>
+                      </div>
+                      <div className="space-y-1 text-right">
+                         <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Caixa Extra (PJ)</span>
+                         <div className="text-3xl font-black tabular-nums">{100 - distribuicaoLucroPct}%</div>
+                      </div>
+                    </div>
+                    <Slider 
+                      value={[distribuicaoLucroPct]} 
+                      min={0} max={100} step={5} 
+                      onValueChange={([v]) => setDistribuicaoLucroPct(v)}
+                      className="py-4"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6 pt-6 border-t border-border/50">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <UserCircle className="w-3.5 h-3.5 text-blue-400" />
+                        <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">Transferir p/ CPF</span>
+                      </div>
+                      <div className="text-2xl font-black text-blue-400 tabular-nums">{formatCurrency(qProfitPF_Manual)}</div>
+                    </div>
+                    <div className="space-y-1.5 text-right">
+                      <div className="flex items-center gap-2 justify-end">
+                        <span className="text-[9px] font-black uppercase text-muted-foreground tracking-widest">Manter no CNPJ</span>
+                        <Building2 className="w-3.5 h-3.5 text-muted-foreground" />
+                      </div>
+                      <div className="text-2xl font-black text-muted-foreground tabular-nums">{formatCurrency(qProfitPJ_Manual)}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 flex gap-3 items-center mt-auto">
+                   <div className="p-2 bg-white rounded-lg text-indigo-500 shadow-sm"><ArrowRight className="w-4 h-4" /></div>
+                   <p className="text-[10px] text-muted-foreground font-medium leading-tight">
+                     O valor (PF) deve ser transferido da sua conta **PJ Operacional** para sua conta de **PF Investimentos** via PIX com a descrição: "Distribuição de Lucros - {selectedQuarter + 1}º Trimestre".
+                   </p>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="activity-log" className="border rounded-2xl bg-card/40 shadow-sm overflow-hidden">
           <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-secondary/20 transition-all">
@@ -528,3 +693,24 @@ export function CashFlowLedger({
     </div>
   );
 }
+
+const Building2 = ({ className }: { className?: string }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+  >
+    <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z" />
+    <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" />
+    <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" />
+    <path d="M10 6h4" />
+    <path d="M10 10h4" />
+    <path d="M10 14h4" />
+    <path d="M10 18h4" />
+  </svg>
+);
