@@ -32,7 +32,8 @@ import {
   PlusCircle,
   Banknote,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Trash2
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -101,11 +102,19 @@ export function CashFlowLedger({
   const [distribuicaoLucroPct, setDistribuicaoLucroPct] = useState(50);
   const [selectedQuarter, setSelectedQuarter] = useState(0);
   const [isSyncing, setIsSyncing] = useState(false);
-  const [pendingTransactions, setPendingTransactions] = useState<BankTransaction[]>([]);
   const [isBankConnected, setIsBankConnected] = useState(false);
   const [highlightedMonth, setHighlightedMonth] = useState<number | null>(null);
+  const [showAllPending, setShowAllPending] = useState(false);
+  
+  // Persistência de Transações Pendentes
+  const [pendingTransactions, setPendingTransactions] = useState<BankTransaction[]>([]);
+
+  // Persistência de IDs Importados (para evitar duplicatas)
+  const [importedIds, setImportedIds] = useState<Set<string>>(new Set());
+
   const das = 76;
 
+  // Efeito de Inicialização (Client-side only)
   useEffect(() => {
     const savedReserva = localStorage.getItem("mei-flow-ledger-meses-reserva");
     if (savedReserva) setMesesReserva(parseInt(savedReserva, 10) || 6);
@@ -115,8 +124,23 @@ export function CashFlowLedger({
 
     const connected = localStorage.getItem("mei-flow-bank-connected");
     if (connected === "true") setIsBankConnected(true);
+
+    const savedPending = localStorage.getItem("mei-flow-pending-txs");
+    if (savedPending) {
+      try {
+        setPendingTransactions(JSON.parse(savedPending));
+      } catch (e) { console.error("Erro ao carregar pendências", e); }
+    }
+
+    const savedImported = localStorage.getItem("mei-flow-imported-ids");
+    if (savedImported) {
+      try {
+        setImportedIds(new Set(JSON.parse(savedImported)));
+      } catch (e) { console.error("Erro ao carregar histórico de IDs", e); }
+    }
   }, []);
 
+  // Persistência Automática
   useEffect(() => {
     localStorage.setItem("mei-flow-ledger-meses-reserva", mesesReserva.toString());
   }, [mesesReserva]);
@@ -124,6 +148,14 @@ export function CashFlowLedger({
   useEffect(() => {
     localStorage.setItem("mei-flow-ledger-dist-lucro", distribuicaoLucroPct.toString());
   }, [distribuicaoLucroPct]);
+
+  useEffect(() => {
+    localStorage.setItem("mei-flow-pending-txs", JSON.stringify(pendingTransactions));
+  }, [pendingTransactions]);
+
+  useEffect(() => {
+    localStorage.setItem("mei-flow-imported-ids", JSON.stringify(Array.from(importedIds)));
+  }, [importedIds]);
 
   const updateMonth = (index: number, field: keyof MonthlyData, value: any) => {
     const newData = [...monthlyData];
@@ -150,11 +182,29 @@ export function CashFlowLedger({
     try {
       const res = await fetch('/api/bank/sync');
       const data = await res.json();
-      setPendingTransactions(data.transactions);
-      toast({
-        title: "Sincronização Concluída",
-        description: `${data.transactions.length} novas transações encontradas.`,
+      
+      // Filtrar apenas o que ainda não foi importado
+      const newTransactions = data.transactions.filter((tx: BankTransaction) => !importedIds.has(tx.id));
+      const alreadyImportedCount = data.transactions.length - newTransactions.length;
+      
+      setPendingTransactions(prev => {
+        // Evitar duplicatas já presentes no estado de pendências
+        const currentPendingIds = new Set(prev.map(t => t.id));
+        const finalNew = newTransactions.filter((t: BankTransaction) => !currentPendingIds.has(t.id));
+        return [...prev, ...finalNew];
       });
+
+      if (alreadyImportedCount > 0) {
+        toast({
+          title: "Sincronização Concluída",
+          description: `${newTransactions.length} novas transações encontradas (${alreadyImportedCount} já ignoradas por duplicidade).`,
+        });
+      } else {
+        toast({
+          title: "Sincronização Concluída",
+          description: `${newTransactions.length} novas transações encontradas.`,
+        });
+      }
     } catch (error) {
       toast({
         title: "Erro na Sincronização",
@@ -184,7 +234,14 @@ export function CashFlowLedger({
     }
     
     setMonthlyData(newData);
+    
+    // Remover das pendências e marcar como importado
     setPendingTransactions(prev => prev.filter(t => t.id !== tx.id));
+    setImportedIds(prev => {
+      const next = new Set(prev);
+      next.add(tx.id);
+      return next;
+    });
     
     if (wasInactive) {
       toast({
@@ -198,9 +255,17 @@ export function CashFlowLedger({
       description: `${tx.description} adicionada ao mês de ${MESES[currentMonthIndex]}.`,
     });
 
-    // Destaque visual temporário
     setHighlightedMonth(currentMonthIndex);
     setTimeout(() => setHighlightedMonth(null), 1500);
+  };
+
+  const clearImportHistory = () => {
+    setImportedIds(new Set());
+    localStorage.removeItem("mei-flow-imported-ids");
+    toast({
+      title: "Histórico Limpo",
+      description: "Agora você pode reimportar transações antigas.",
+    });
   };
 
   const totals = useMemo(() => {
@@ -307,9 +372,10 @@ export function CashFlowLedger({
     </div>
   );
 
+  const displayedTransactions = showAllPending ? pendingTransactions : pendingTransactions.slice(0, 3);
+
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
-      {/* Seção de Integração Bancária */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8">
           <Card className="border-primary/20 bg-primary/5 overflow-hidden relative">
@@ -337,9 +403,18 @@ export function CashFlowLedger({
                   {isBankConnected ? "Sincronizar Agora" : "Conectar Conta PJ"}
                 </Button>
                 {isBankConnected && (
-                  <div className="flex items-center justify-center gap-2 text-[10px] font-bold text-primary">
-                    <CheckCircle2 className="w-3 h-3" />
-                    Nubank PJ • Conectado
+                  <div className="flex items-center justify-center gap-4">
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-primary">
+                      <CheckCircle2 className="w-3 h-3" />
+                      Nubank PJ • Ativo
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      onClick={clearImportHistory}
+                      className="text-[9px] font-bold text-muted-foreground hover:text-destructive h-auto p-0"
+                    >
+                      <Trash2 className="w-3 h-3 mr-1" /> Limpar Histórico
+                    </Button>
                   </div>
                 )}
               </div>
@@ -350,51 +425,70 @@ export function CashFlowLedger({
         <div className="lg:col-span-4">
           <Card className="h-full border-border/50 bg-card/40 backdrop-blur-sm">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-bold flex items-center gap-2">
-                <Banknote className="w-4 h-4 text-primary" />
-                Pendentes ({pendingTransactions.length})
+              <CardTitle className="text-sm font-bold flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <Banknote className="w-4 h-4 text-primary" />
+                  Pendentes ({pendingTransactions.length})
+                </div>
+                {pendingTransactions.length > 0 && (
+                  <Badge variant="secondary" className="text-[9px] font-black px-1.5 h-4 bg-primary/10 text-primary border-none">LIVE</Badge>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <div className="max-h-[140px] overflow-y-auto px-4 pb-4 space-y-2 no-scrollbar">
-                {!monthlyData[new Date().getMonth()]?.active && (
+              <div className="px-4 pb-4 space-y-2">
+                {!monthlyData[new Date().getMonth()]?.active && pendingTransactions.length > 0 && (
                   <div className="px-3 py-2 mb-2 text-[9px] font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-center gap-2 animate-pulse">
                     <AlertCircle className="w-3 h-3 shrink-0" />
-                    O mês atual está inativo. Importar irá ativá-lo automaticamente.
+                    O mês atual está inativo.
                   </div>
                 )}
-                {pendingTransactions.length === 0 ? (
-                  <div className="py-8 text-center text-[10px] font-bold text-muted-foreground uppercase opacity-40">
-                    Nenhuma transação pendente
-                  </div>
-                ) : (
-                  pendingTransactions.map((tx) => (
-                    <div key={tx.id} className="flex items-center justify-between p-2 rounded-lg bg-background border border-border/50 group hover:border-primary/30 transition-all">
-                      <div className="min-0">
-                        <div className="text-[10px] font-bold truncate pr-2 uppercase">{tx.description}</div>
-                        <div className={cn("text-[10px] font-black", tx.type === "CREDIT" ? "text-primary" : "text-orange-500")}>
-                          {tx.type === "CREDIT" ? "+" : "-"}{formatCurrency(Math.abs(tx.amount))}
-                        </div>
-                      </div>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button 
-                              size="icon" 
-                              variant="ghost" 
-                              onClick={() => importTransaction(tx)}
-                              className="h-7 w-7 rounded-full hover:bg-primary/20 text-primary shrink-0"
-                            >
-                              <PlusCircle className="w-4 h-4" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="bg-popover border-border text-foreground">
-                            <p className="text-[10px] font-bold">Importar para o mês atual. O mês será ativado automaticamente se estiver inativo.</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                
+                <div className="max-h-[160px] overflow-y-auto space-y-2 no-scrollbar">
+                  {pendingTransactions.length === 0 ? (
+                    <div className="py-8 text-center text-[10px] font-bold text-muted-foreground uppercase opacity-40">
+                      Nenhuma transação pendente
                     </div>
-                  ))
+                  ) : (
+                    displayedTransactions.map((tx) => (
+                      <div key={tx.id} className="flex items-center justify-between p-2 rounded-lg bg-background border border-border/50 group hover:border-primary/30 transition-all animate-in fade-in slide-in-from-right-2 duration-300">
+                        <div className="min-w-0 flex-1">
+                          <div className="text-[10px] font-bold truncate pr-2 uppercase">{tx.description}</div>
+                          <div className={cn("text-[10px] font-black", tx.type === "CREDIT" ? "text-primary" : "text-orange-500")}>
+                            {tx.type === "CREDIT" ? "+" : "-"}{formatCurrency(Math.abs(tx.amount))}
+                          </div>
+                        </div>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button 
+                                size="icon" 
+                                variant="ghost" 
+                                onClick={() => importTransaction(tx)}
+                                className="h-7 w-7 rounded-full hover:bg-primary/20 text-primary shrink-0"
+                              >
+                                <PlusCircle className="w-4 h-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="bg-popover border-border text-foreground">
+                              <p className="text-[10px] font-bold">Importar para o mês atual. O mês será ativado se necessário.</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {pendingTransactions.length > 3 && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setShowAllPending(!showAllPending)}
+                    className="w-full text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary h-6"
+                  >
+                    {showAllPending ? "Mostrar Menos" : `Ver todas (${pendingTransactions.length})`}
+                  </Button>
                 )}
               </div>
             </CardContent>
