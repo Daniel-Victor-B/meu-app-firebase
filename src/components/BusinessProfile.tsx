@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react";
@@ -19,7 +20,11 @@ import {
   Zap,
   CheckCircle2,
   TrendingUp,
-  Users
+  Users,
+  BarChart3,
+  Rocket,
+  ShieldCheck,
+  Search
 } from "lucide-react";
 import {
   Accordion,
@@ -27,6 +32,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
 import { businessStrategyAdvice, type BusinessStrategyOutput } from "@/ai/flows/business-strategy-advice";
 
 export function BusinessProfile() {
@@ -70,8 +76,27 @@ export function BusinessProfile() {
     }
   };
 
+  const FAQS_NEGOCIO = [
+    {
+      q: "O que é Ticket Médio e como calculá-lo?",
+      a: "Ticket médio é o valor médio das vendas. Some o faturamento do mês e divida pelo número de vendas. A IA usa esse dado para recomendar estratégias de aumento de valor por venda e otimização de preços."
+    },
+    {
+      q: "O que significa B2B e B2C?",
+      a: "B2B é quando você vende para outras empresas; B2C é quando vende para consumidor final. Se atende os dois, marque ambos. A IA considera isso para recomendar estratégias de relacionamento, prazos de pagamento e volume de vendas."
+    },
+    {
+      q: "Como definir meu principal desafio?",
+      a: "Selecione o desafio que mais impacta seu dia a dia. Se não tiver certeza, observe onde você gasta mais tempo ou tem mais dificuldade. A IA priorizará esse ponto nas recomendações (ex: se é fluxo de caixa, as sugestões focarão em controle financeiro)."
+    },
+    {
+      q: "Como escolher minha meta principal?",
+      a: "Pense no que você mais deseja alcançar nos próximos meses. A IA usará essa meta para alinhar as sugestões (ex: se a meta é aumentar faturamento, as dicas serão voltadas para vendas; se é reduzir custos, focará em economia)."
+    }
+  ];
+
   return (
-    <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
+    <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500 pb-16">
       <Card className="border-primary/20 bg-card/40 backdrop-blur-xl shadow-xl overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary/50 via-primary to-primary/50" />
         <CardHeader className="pt-8 px-6">
@@ -148,49 +173,132 @@ export function BusinessProfile() {
         </CardContent>
       </Card>
 
-      {/* Consultoria Estratégica AI */}
-      <section className="space-y-6 pt-6">
-        <div className="flex items-center justify-between px-1">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-primary/10 rounded-xl text-primary shadow-inner"><Target className="w-6 h-6" /></div>
-            <div>
-              <h3 className="font-headline font-bold text-xl">Consultoria Estratégica AI</h3>
-              <p className="text-xs text-muted-foreground font-medium">Análise de posicionamento e escala</p>
-            </div>
-          </div>
-          <Button onClick={getStrategy} disabled={loading} className="rounded-full gap-2 shadow-xl shadow-primary/20">
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-            Obter Análise Estratégica
-          </Button>
+      {/* Consultoria Estratégica AI - Design Melhorado */}
+      <section className="space-y-8 pt-4">
+        <div className="relative group">
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-indigo-500/20 blur-xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
+          <Card className="relative border-primary/30 bg-primary/5 overflow-hidden">
+            <CardContent className="p-8 flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="flex items-center gap-5">
+                <div className="p-4 bg-primary/20 rounded-2xl text-primary shadow-lg shadow-primary/10 animate-pulse">
+                  <Target className="w-8 h-8" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-2xl font-headline font-black tracking-tight">Consultoria Estratégica AI</h3>
+                  <p className="text-sm text-muted-foreground font-medium">Análise avançada de posicionamento e escala para o seu ramo.</p>
+                </div>
+              </div>
+              <Button 
+                size="lg"
+                onClick={getStrategy} 
+                disabled={loading} 
+                className="rounded-full gap-3 shadow-xl shadow-primary/20 h-14 px-8 font-black uppercase tracking-widest text-xs"
+              >
+                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Sparkles className="h-5 w-5" />}
+                Obter Auditoria Estratégica
+              </Button>
+            </CardContent>
+          </Card>
         </div>
 
         {strategy && (
-          <div className="grid gap-6 animate-in fade-in duration-500">
-            <Card className="border-primary/20 bg-primary/5">
-              <CardContent className="pt-6">
-                <p className="text-xs italic leading-relaxed text-muted-foreground">"{strategy.verdict}"</p>
-              </CardContent>
+          <div className="space-y-6 animate-in fade-in zoom-in duration-500">
+            {/* Veredito */}
+            <Card className="border-primary/20 bg-card overflow-hidden shadow-2xl">
+              <div className="p-6 md:p-8 space-y-4">
+                <div className="flex items-center justify-between">
+                   <Badge variant="outline" className="text-[10px] font-black text-primary uppercase tracking-[0.2em] bg-primary/5 border-primary/20 px-3 py-1">Veredito do Consultor</Badge>
+                   <ShieldCheck className="w-5 h-5 text-primary opacity-50" />
+                </div>
+                <div className="p-8 rounded-3xl bg-secondary/20 border border-primary/10 relative">
+                  <p className="text-xs md:text-sm italic leading-relaxed text-foreground font-medium text-justify">
+                    "{strategy.verdict}"
+                  </p>
+                </div>
+              </div>
+
+              {/* Grid de Recomendações */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-border/50">
+                {/* Canais */}
+                <div className="bg-card p-6 md:p-8 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-indigo-500/10 text-indigo-500 rounded-xl"><BarChart3 className="w-5 h-5" /></div>
+                    <h4 className="text-xs font-black uppercase tracking-widest">Otimização de Canais</h4>
+                  </div>
+                  <ul className="space-y-4">
+                    {strategy.channelStrategy.map((s, i) => (
+                      <li key={i} className="flex gap-3 items-start group">
+                        <Zap className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs text-muted-foreground font-medium group-hover:text-foreground transition-colors">{s}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Ações */}
+                <div className="bg-card p-6 md:p-8 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-primary/10 text-primary rounded-xl"><Rocket className="w-5 h-5" /></div>
+                    <h4 className="text-xs font-black uppercase tracking-widest">Ações de Escala</h4>
+                  </div>
+                  <ul className="space-y-4">
+                    {strategy.growthActions.map((a, i) => (
+                      <li key={i} className="flex gap-3 items-start group">
+                        <TrendingUp className="w-4 h-4 text-primary shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs text-muted-foreground font-medium group-hover:text-foreground transition-colors">{a}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Benchmarking */}
+                <div className="bg-card p-6 md:p-8 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-amber-500/10 text-amber-500 rounded-xl"><Search className="w-5 h-5" /></div>
+                    <h4 className="text-xs font-black uppercase tracking-widest">Benchmarking</h4>
+                  </div>
+                  <ul className="space-y-4">
+                    {strategy.benchmarking.map((b, i) => (
+                      <li key={i} className="flex gap-3 items-start group">
+                        <Users className="w-4 h-4 text-amber-500 shrink-0 mt-0.5 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs text-muted-foreground font-medium group-hover:text-foreground transition-colors">{b}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </Card>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card className="bg-card">
-                <CardHeader className="pb-2"><CardTitle className="text-sm font-black uppercase">Estratégia de Canais</CardTitle></CardHeader>
-                <CardContent className="space-y-2">
-                  {strategy.channelStrategy.map((s, i) => (
-                    <div key={i} className="flex gap-2 text-xs text-muted-foreground"><Zap className="w-3.5 h-3.5 text-primary shrink-0" /> {s}</div>
-                  ))}
-                </CardContent>
-              </Card>
-              <Card className="bg-card">
-                <CardHeader className="pb-2"><CardTitle className="text-sm font-black uppercase">Ações de Crescimento</CardTitle></CardHeader>
-                <CardContent className="space-y-2">
-                  {strategy.growthActions.map((a, i) => (
-                    <div key={i} className="flex gap-2 text-xs text-muted-foreground"><TrendingUp className="w-3.5 h-3.5 text-primary shrink-0" /> {a}</div>
-                  ))}
-                </CardContent>
-              </Card>
-            </div>
           </div>
         )}
+      </section>
+
+      {/* FAQ de Blindagem Estratégica */}
+      <section className="space-y-6 pt-10 border-t border-border/50">
+        <div className="flex items-center gap-3 px-1">
+          <div className="p-2.5 bg-primary/10 rounded-xl text-primary shadow-inner">
+            <HelpCircle className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="font-headline font-bold text-xl tracking-tight">Manual do Estrategista</h3>
+            <p className="text-xs text-muted-foreground font-medium mt-1">Entenda os pilares que a IA utiliza para projetar o seu crescimento.</p>
+          </div>
+        </div>
+
+        <Accordion type="single" collapsible className="w-full space-y-3">
+          {FAQS_NEGOCIO.map((faq, idx) => (
+            <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-2xl px-5 bg-card/40 shadow-sm hover:shadow-md transition-all hover:bg-card">
+              <AccordionTrigger className="text-sm font-bold text-left hover:no-underline py-5 leading-relaxed group">
+                <span className="group-hover:text-primary transition-colors">{faq.q}</span>
+              </AccordionTrigger>
+              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-6 pt-2 font-medium">
+                <div className="flex gap-4">
+                  <div className="w-1 h-full bg-primary/20 rounded-full shrink-0" />
+                  {faq.a}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </section>
     </div>
   );
