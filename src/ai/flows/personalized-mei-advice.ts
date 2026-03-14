@@ -2,6 +2,7 @@
 
 /**
  * @fileOverview Consultoria Financeira de Elite para MEI (Foco em Distribuição e Caixa).
+ * Realiza cálculos no servidor antes de consultar a IA para evitar alucinações matemáticas.
  */
 
 async function getAvailableFreeModel(apiKey: string): Promise<string> {
@@ -34,11 +35,34 @@ export async function personalizedMeiAdvice(input: {
   reservaPct: number;
   mesesFaturamento: number;
 }): Promise<PersonalizedMeiAdviceOutput> {
+  // 1. Cálculos Financeiros Precisos no Servidor
+  const DAS_FIXO = 76;
+  const totalDespesas = input.custosOperacionais + DAS_FIXO + input.prolabore;
+  const sobra = Math.max(0, input.faturamentoMensal - totalDespesas);
+  const valorReserva = (sobra * input.reservaPct) / 100;
+  const lucroDisponivel = sobra - valorReserva;
+  const margemSeguranca = input.faturamentoMensal > 0 ? (sobra / input.faturamentoMensal) * 100 : 0;
+  
+  // Ponto de Equilíbrio considerando a reserva pretendida
+  const divisorEquilibrio = 1 - (input.reservaPct / 100);
+  const pontoEquilibrio = divisorEquilibrio > 0 ? (totalDespesas / divisorEquilibrio) : totalDespesas;
+
   const defaultErrorResponse = {
-    summary: "Falha temporária na análise financeira. Por favor, tente novamente em instantes.",
-    distributionAdvice: ["Revise seus custos operacionais", "Mantenha a disciplina no pró-labore", "Ajuste o fluxo de caixa"],
-    savingsAdvice: ["Foco na reserva de emergência", "Evite retiradas extras"],
-    optimizationSuggestions: ["Redução de custos fixos", "Melhoria de margem", "Gestão de estoque"]
+    summary: `Análise técnica: Sua margem de segurança atual é de ${margemSeguranca.toFixed(1)}%. Com uma sobra real de R$ ${sobra.toFixed(0)}, você possui fôlego para manter a operação, mas a disciplina na reserva de R$ ${valorReserva.toFixed(0)} é inegociável.`,
+    distributionAdvice: [
+      `Mantenha o pró-labore em R$ ${input.prolabore}`,
+      "Evite retiradas extras acima do lucro disponível",
+      "Priorize o pagamento do DAS no dia 20"
+    ],
+    savingsAdvice: [
+      `Sua meta de reserva mensal é R$ ${valorReserva.toFixed(0)}`,
+      `Busque atingir o ponto de equilíbrio de R$ ${pontoEquilibrio.toFixed(0)}`
+    ],
+    optimizationSuggestions: [
+      "Revise custos fixos mensais",
+      "Aumente o ticket médio para expandir a margem",
+      "Negocie prazos com fornecedores"
+    ]
   };
 
   try {
@@ -46,30 +70,43 @@ export async function personalizedMeiAdvice(input: {
     if (!apiKey) {
       return {
         ...defaultErrorResponse,
-        summary: "Erro: Chave de API não configurada no servidor."
+        summary: "Aviso: Conectividade com IA limitada. Exibindo diagnóstico técnico baseado em cálculos locais."
       };
     }
 
     const model = await getAvailableFreeModel(apiKey);
     
+    console.log('Enviando indicadores calculados para a IA:', {
+      faturamento: input.faturamentoMensal,
+      sobra,
+      margem: margemSeguranca,
+      lucroDisp: lucroDisponivel
+    });
+
     const prompt = `
-Você é um CFO de elite especializado em finanças para Microempreendedores Individuais.
-Sua análise deve ser puramente financeira, focada na saúde do fluxo de caixa e na eficiência da distribuição de capital.
+Você é um CFO de elite especializado em Microempreendedores Individuais.
+Sua missão é interpretar os seguintes INDICADORES FINANCEIROS REAIS (calculados pelo sistema) e fornecer conselhos estratégicos.
 
-DADOS FINANCEIROS:
-- Faturamento Mensal Médio: R$ ${input.faturamentoMensal}
-- Custos Operacionais: R$ ${input.custosOperacionais}
-- Pró-labore (Salário): R$ ${input.prolabore}
-- Percentual de Reserva Pretendido: ${input.reservaPct}%
-- Histórico: ${input.mesesFaturamento} meses registrados
+DADOS FINANCEIROS REAIS:
+· Faturamento Mensal: R$ ${input.faturamentoMensal.toFixed(2)}
+· Custos Operacionais: R$ ${input.custosOperacionais.toFixed(2)}
+· DAS Fixo: R$ ${DAS_FIXO.toFixed(2)}
+· Pró-labore (Salário): R$ ${input.prolabore.toFixed(2)}
+· Total de Despesas (Saídas): R$ ${totalDespesas.toFixed(2)}
+· Sobra (Lucro antes da reserva): R$ ${sobra.toFixed(2)}
+· Margem de Segurança: ${margemSeguranca.toFixed(1)}%
+· Reserva Pretendida: ${input.reservaPct}%
+· Valor da Reserva Mensal: R$ ${valorReserva.toFixed(2)}
+· Lucro Disponível (Pós-reserva): R$ ${lucroDisponivel.toFixed(2)}
+· Ponto de Equilíbrio Estratégico: R$ ${pontoEquilibrio.toFixed(2)}
 
-SUA MISSÃO:
-1. Analise a margem de segurança atual no campo "summary".
-2. No campo "distributionAdvice", sugira ajustes no pró-labore ou custos para maximizar a reserva.
-3. No campo "savingsAdvice", dê conselhos sobre a formação do colchão de segurança.
-4. No campo "optimizationSuggestions", sugira 3 cortes ou otimizações de custos.
+DIRETRIZES:
+1. "summary": Analise a saúde da margem de segurança e o fôlego do caixa. Seja direto e profissional.
+2. "distributionAdvice": 3 ações práticas sobre pró-labore ou gestão de saídas.
+3. "savingsAdvice": 2 conselhos sobre a formação do colchão de segurança baseados no valor da reserva calculado.
+4. "optimizationSuggestions": 3 sugestões táticas de melhoria de margem ou redução de despesas.
 
-Responda APENAS um JSON válido. Não inclua markdown, não inclua explicações fora do JSON:
+Responda APENAS um JSON válido. Não inclua markdown, explicações ou texto fora do JSON:
 {
   "summary": "String",
   "distributionAdvice": ["Array de 3"],
@@ -87,6 +124,7 @@ Responda APENAS um JSON válido. Não inclua markdown, não inclua explicações
       body: JSON.stringify({
         model,
         messages: [{ role: 'user', content: prompt }],
+        temperature: 0.3, // Menos criatividade, mais precisão técnica
       }),
     });
 
@@ -95,7 +133,7 @@ Responda APENAS um JSON válido. Não inclua markdown, não inclua explicações
     const data = await response.json();
     let content = data.choices?.[0]?.message?.content || "{}";
     
-    // Limpeza de possíveis blocos de código markdown na resposta
+    // Limpeza de possíveis blocos de código markdown
     content = content.replace(/```json/g, "").replace(/```/g, "").trim();
     
     const parsed = JSON.parse(content);
@@ -107,7 +145,7 @@ Responda APENAS um JSON válido. Não inclua markdown, não inclua explicações
       optimizationSuggestions: Array.isArray(parsed.optimizationSuggestions) ? parsed.optimizationSuggestions : defaultErrorResponse.optimizationSuggestions
     };
   } catch (error) {
-    console.error('Erro na IA Advice:', error);
+    console.error('Erro na Consultoria de IA:', error);
     return defaultErrorResponse;
   }
 }
