@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Sparkles, Loader2, Target, ShieldAlert, Zap, Activity, BrainCircuit, Terminal, CheckCircle2, Wallet, PiggyBank, Calculator } from "lucide-react";
 import { personalizedMeiAdvice, type PersonalizedMeiAdviceOutput } from "@/ai/flows/personalized-mei-advice";
 import { type MonthlyData } from "@/app/page";
