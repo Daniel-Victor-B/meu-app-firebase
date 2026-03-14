@@ -19,7 +19,12 @@ import {
   Rocket,
   Search,
   Target,
-  HelpCircle
+  HelpCircle,
+  Briefcase,
+  Settings2,
+  Globe,
+  Activity,
+  ChevronRight
 } from "lucide-react";
 import {
   Accordion,
@@ -73,7 +78,6 @@ export function BusinessProfile() {
   const getStrategy = async () => {
     setLoading(true);
     try {
-      // Filtra os dados com base nos toggles antes de enviar para a IA
       const filteredInput = {
         nomeNegocio: businessData.aiEnabledFields.nomeNegocio ? businessData.nomeNegocio : "[Ocultado]",
         ramo: businessData.aiEnabledFields.ramo ? businessData.ramo : "[Ocultado]",
@@ -99,11 +103,15 @@ export function BusinessProfile() {
   const FAQS_NEGOCIO = [
     {
       q: "O que é Ticket Médio e como calculá-lo?",
-      a: "Ticket médio é o valor médio das vendas. Some o faturamento do mês e divida pelo número de vendas."
+      a: "Ticket médio é o valor médio das vendas por cliente. Para calcular, divida o faturamento total do período pelo número de vendas ou clientes atendidos no mesmo intervalo."
     },
     {
-      q: "O que significa B2B e B2C?",
-      a: "B2B é quando você vende para outras empresas; B2C é quando vende para consumidor final."
+      q: "O que significa o Modelo B2B e B2C?",
+      a: "B2B (Business to Business) é quando seu foco é vender para outras empresas. B2C (Business to Consumer) é quando você vende diretamente para o consumidor final (pessoa física)."
+    },
+    {
+      q: "Por que definir um Nicho é importante para a IA?",
+      a: "O nicho permite que a IA compare seu negócio com benchmarks específicos. Um 'Fotógrafo' (ramo) tem estratégias diferentes de um 'Fotógrafo de Casamentos de Luxo' (nicho)."
     }
   ];
 
@@ -111,270 +119,293 @@ export function BusinessProfile() {
     <Button
       variant="ghost"
       size="icon"
-      onClick={() => toggleAiField(field)}
+      onClick={(e) => {
+        e.stopPropagation();
+        toggleAiField(field);
+      }}
       className={cn(
-        "h-6 w-6 rounded-full transition-all",
+        "h-8 w-8 rounded-xl transition-all border",
         businessData.aiEnabledFields[field] 
-          ? "text-primary bg-primary/10 shadow-[0_0_10px_rgba(34,197,94,0.2)]" 
-          : "text-muted-foreground/30 hover:text-primary/50"
+          ? "text-primary bg-primary/10 border-primary/20 shadow-sm" 
+          : "text-muted-foreground/30 border-transparent hover:text-primary/50"
       )}
-      title={businessData.aiEnabledFields[field] ? "Incluído na análise AI" : "Oculto para a IA"}
     >
-      <Sparkles className="h-3 w-3" />
+      <Sparkles className="h-4 w-4" />
     </Button>
   );
 
   return (
-    <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-12">
-      <Card className="border-none bg-transparent shadow-none">
-        <CardHeader className="px-0 pb-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <CardTitle className="text-xl font-headline font-bold tracking-tight">Identidade Estratégica</CardTitle>
-              <CardDescription className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-[0.2em]">Configuração do Perfil</CardDescription>
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="px-0 space-y-8">
-          {/* Sessão: Fundação */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <span className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-[0.3em] whitespace-nowrap">Fundação</span>
-              <div className="h-px flex-1 bg-border/40" />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between px-1">
-                  <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Nome Comercial</Label>
-                  <AiToggle field="nomeNegocio" />
-                </div>
-                <Input 
-                  placeholder="Nome da sua marca" 
-                  value={businessData.nomeNegocio} 
-                  onChange={(e) => updateBusinessData({ nomeNegocio: e.target.value })} 
-                  className="h-9 bg-secondary/20 border-border/40 text-sm" 
-                />
-              </div>
+    <div className="space-y-10 animate-in slide-in-from-bottom-4 duration-500 pb-20">
+      {/* Seção de Configuração Expansível */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-3 px-1">
+          <Settings2 className="w-5 h-5 text-primary" />
+          <h3 className="font-headline font-bold text-lg tracking-tight">Configurações do Perfil</h3>
+        </div>
 
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between px-1">
-                  <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Ramo de Atividade</Label>
-                  <AiToggle field="ramo" />
+        <Accordion type="single" collapsible className="w-full space-y-4">
+          <AccordionItem value="fundacao" className="border rounded-2xl px-5 bg-card/40 shadow-sm hover:bg-card/60 transition-all">
+            <AccordionTrigger className="hover:no-underline py-6">
+              <div className="flex items-center gap-4 text-left">
+                <div className="p-3 bg-indigo-500/10 text-indigo-500 rounded-xl">
+                  <Briefcase className="w-5 h-5" />
                 </div>
-                <Select value={businessData.ramo} onValueChange={(val) => updateBusinessData({ ramo: val })}>
-                  <SelectTrigger className="h-9 bg-secondary/20 border-border/40 text-sm">
-                    <SelectValue placeholder="Selecione o ramo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(ramosCategorizados).map(([categoria, lista]) => (
-                      <SelectGroup key={categoria}>
-                        <SelectLabel className="text-[9px] font-bold uppercase text-primary/40 tracking-widest pt-2 pb-1">{categoria}</SelectLabel>
-                        {lista.map((r) => <SelectItem key={r} value={r} className="text-sm">{r}</SelectItem>)}
-                      </SelectGroup>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div>
+                  <h4 className="font-bold text-sm uppercase tracking-widest">Fundação</h4>
+                  <p className="text-[10px] text-muted-foreground font-medium mt-0.5">Identidade, Ramo e Especialidade</p>
+                </div>
               </div>
+            </AccordionTrigger>
+            <AccordionContent className="pb-8 pt-2 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Nome Comercial</Label>
+                    <AiToggle field="nomeNegocio" />
+                  </div>
+                  <Input 
+                    placeholder="Ex: Studio Criativo" 
+                    value={businessData.nomeNegocio} 
+                    onChange={(e) => updateBusinessData({ nomeNegocio: e.target.value })} 
+                    className="h-11 bg-secondary/20 border-border/40" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Ramo de Atividade</Label>
+                    <AiToggle field="ramo" />
+                  </div>
+                  <Select value={businessData.ramo} onValueChange={(val) => updateBusinessData({ ramo: val })}>
+                    <SelectTrigger className="h-11 bg-secondary/20 border-border/40">
+                      <SelectValue placeholder="Selecione o ramo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(ramosCategorizados).map(([categoria, lista]) => (
+                        <SelectGroup key={categoria}>
+                          <SelectLabel className="text-[9px] font-bold uppercase text-primary/40 tracking-widest pt-2 pb-1">{categoria}</SelectLabel>
+                          {lista.map((r) => <SelectItem key={r} value={r} className="text-sm">{r}</SelectItem>)}
+                        </SelectGroup>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Nicho / Especialidade</Label>
+                    <AiToggle field="nicho" />
+                  </div>
+                  <Input 
+                    placeholder="Ex: Marketing para Médicos" 
+                    value={businessData.nicho} 
+                    onChange={(e) => updateBusinessData({ nicho: e.target.value })} 
+                    className="h-11 bg-secondary/20 border-border/40" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Modelo Comercial</Label>
+                    <AiToggle field="modeloNegocio" />
+                  </div>
+                  <Select value={businessData.modeloNegocio} onValueChange={(val) => updateBusinessData({ modeloNegocio: val })}>
+                    <SelectTrigger className="h-11 bg-secondary/20 border-border/40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {modelos.map((m) => <SelectItem key={m} value={m} className="text-sm">{m}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
 
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between px-1">
-                  <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Nicho / Especialidade</Label>
-                  <AiToggle field="nicho" />
+          <AccordionItem value="canais" className="border rounded-2xl px-5 bg-card/40 shadow-sm hover:bg-card/60 transition-all">
+            <AccordionTrigger className="hover:no-underline py-6">
+              <div className="flex items-center gap-4 text-left">
+                <div className="p-3 bg-blue-500/10 text-blue-500 rounded-xl">
+                  <Globe className="w-5 h-5" />
                 </div>
-                <Input 
-                  placeholder="Ex: Consultoria para Médicos" 
-                  value={businessData.nicho} 
-                  onChange={(e) => updateBusinessData({ nicho: e.target.value })} 
-                  className="h-9 bg-secondary/20 border-border/40 text-sm" 
-                />
+                <div>
+                  <h4 className="font-bold text-sm uppercase tracking-widest">Presença Digital</h4>
+                  <p className="text-[10px] text-muted-foreground font-medium mt-0.5">Canais de Venda e Divulgação</p>
+                </div>
               </div>
+            </AccordionTrigger>
+            <AccordionContent className="pb-8 pt-2">
+              <div className="flex items-center justify-between mb-4 px-1">
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Selecione onde você opera:</span>
+                <AiToggle field="canaisVenda" />
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                {canaisOpcoes.map((canal) => (
+                  <div 
+                    key={canal} 
+                    onClick={() => toggleCanal(canal)} 
+                    className={cn(
+                      "flex items-center justify-center p-3 rounded-xl border text-center cursor-pointer transition-all duration-300",
+                      businessData.canaisVenda?.includes(canal) 
+                        ? "bg-primary/10 border-primary/40 text-primary shadow-inner" 
+                        : "bg-secondary/20 border-border/40 text-muted-foreground hover:border-border"
+                    )}
+                  >
+                    <span className="text-[10px] font-black uppercase tracking-tight">{canal}</span>
+                  </div>
+                ))}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
 
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between px-1">
-                  <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Modelo Comercial</Label>
-                  <AiToggle field="modeloNegocio" />
+          <AccordionItem value="metricas" className="border rounded-2xl px-5 bg-card/40 shadow-sm hover:bg-card/60 transition-all">
+            <AccordionTrigger className="hover:no-underline py-6">
+              <div className="flex items-center gap-4 text-left">
+                <div className="p-3 bg-amber-500/10 text-amber-500 rounded-xl">
+                  <Activity className="w-5 h-5" />
                 </div>
-                <Select value={businessData.modeloNegocio} onValueChange={(val) => updateBusinessData({ modeloNegocio: val })}>
-                  <SelectTrigger className="h-9 bg-secondary/20 border-border/40 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {modelos.map((m) => <SelectItem key={m} value={m} className="text-sm">{m}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                <div>
+                  <h4 className="font-bold text-sm uppercase tracking-widest">Operação & Métricas</h4>
+                  <p className="text-[10px] text-muted-foreground font-medium mt-0.5">Resultados, Metas e Desafios</p>
+                </div>
               </div>
-            </div>
-          </div>
+            </AccordionTrigger>
+            <AccordionContent className="pb-8 pt-2 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Ticket Médio (R$)</Label>
+                    <AiToggle field="ticketMedio" />
+                  </div>
+                  <Input 
+                    type="number" 
+                    value={businessData.ticketMedio} 
+                    onChange={(e) => updateBusinessData({ ticketMedio: parseFloat(e.target.value) || 0 })} 
+                    className="h-11 bg-secondary/20 border-border/40 text-center font-bold" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Nº Clientes/Mês</Label>
+                    <AiToggle field="numClientes" />
+                  </div>
+                  <Input 
+                    type="number" 
+                    value={businessData.numClientes} 
+                    onChange={(e) => updateBusinessData({ numClientes: parseInt(e.target.value) || 0 })} 
+                    className="h-11 bg-secondary/20 border-border/40 text-center font-bold" 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Principal Gargalo</Label>
+                    <AiToggle field="desafio" />
+                  </div>
+                  <Select value={businessData.desafio} onValueChange={(val) => updateBusinessData({ desafio: val })}>
+                    <SelectTrigger className="h-11 bg-secondary/20 border-border/40 font-medium">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {desafios.map((d) => <SelectItem key={d} value={d} className="text-sm">{d}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Meta 12 Meses</Label>
+                    <AiToggle field="meta" />
+                  </div>
+                  <Select value={businessData.meta} onValueChange={(val) => updateBusinessData({ meta: val })}>
+                    <SelectTrigger className="h-11 bg-secondary/20 border-border/40 font-medium">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {metas.map((m) => <SelectItem key={m} value={m} className="text-sm">{m}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </section>
 
-          {/* Sessão: Canais */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between px-1">
-              <div className="flex items-center gap-3 flex-1">
-                <span className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-[0.3em] whitespace-nowrap">Presença Digital</span>
-                <div className="h-px flex-1 bg-border/40" />
-              </div>
-              <AiToggle field="canaisVenda" />
-            </div>
-            
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
-              {canaisOpcoes.map((canal) => (
-                <div 
-                  key={canal} 
-                  onClick={() => toggleCanal(canal)} 
-                  className={cn(
-                    "flex items-center justify-center p-2 rounded-lg border text-center cursor-pointer transition-all duration-300",
-                    businessData.canaisVenda?.includes(canal) 
-                      ? "bg-primary/5 border-primary/40 text-primary" 
-                      : "bg-transparent border-border/40 text-muted-foreground/60 hover:border-border"
-                  )}
-                >
-                  <span className="text-[10px] font-bold uppercase tracking-tight">{canal}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Sessão: Métricas */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <span className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-[0.3em] whitespace-nowrap">Operação</span>
-              <div className="h-px flex-1 bg-border/40" />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between px-1">
-                  <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Ticket Médio (R$)</Label>
-                  <AiToggle field="ticketMedio" />
-                </div>
-                <Input 
-                  type="number" 
-                  value={businessData.ticketMedio} 
-                  onChange={(e) => updateBusinessData({ ticketMedio: parseFloat(e.target.value) || 0 })} 
-                  className="h-9 bg-secondary/20 border-border/40 text-center text-sm" 
-                />
-              </div>
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between px-1">
-                  <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Clientes</Label>
-                  <AiToggle field="numClientes" />
-                </div>
-                <Input 
-                  type="number" 
-                  value={businessData.numClientes} 
-                  onChange={(e) => updateBusinessData({ numClientes: parseInt(e.target.value) || 0 })} 
-                  className="h-9 bg-secondary/20 border-border/40 text-center text-sm" 
-                />
-              </div>
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between px-1">
-                  <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Principal Gargalo</Label>
-                  <AiToggle field="desafio" />
-                </div>
-                <Select value={businessData.desafio} onValueChange={(val) => updateBusinessData({ desafio: val })}>
-                  <SelectTrigger className="h-9 bg-secondary/20 border-border/40 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {desafios.map((d) => <SelectItem key={d} value={d} className="text-sm">{d}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between px-1">
-                  <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">Meta</Label>
-                  <AiToggle field="meta" />
-                </div>
-                <Select value={businessData.meta} onValueChange={(val) => updateBusinessData({ meta: val })}>
-                  <SelectTrigger className="h-9 bg-secondary/20 border-border/40 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {metas.map((m) => <SelectItem key={m} value={m} className="text-sm">{m}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <section className="space-y-4 pt-2">
-        <Card className="border-border/50 bg-card/40 backdrop-blur-sm overflow-hidden rounded-xl">
-          <CardContent className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="space-y-0.5 text-center sm:text-left">
-              <h3 className="text-lg font-headline font-bold tracking-tight">Audit Estratégico AI</h3>
-              <p className="text-[11px] text-muted-foreground font-medium">Análise avançada de posicionamento para o seu ramo.</p>
+      {/* Seção de Auditoria Executiva */}
+      <section className="space-y-6 pt-4">
+        <Card className="border-border/50 bg-card/40 backdrop-blur-sm overflow-hidden rounded-2xl shadow-xl">
+          <CardContent className="p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-1.5 text-center md:text-left">
+              <h3 className="text-2xl font-headline font-bold tracking-tight">Consultoria Estratégica AI</h3>
+              <p className="text-sm text-muted-foreground font-medium">Análise avançada de posicionamento e escala para o seu ramo.</p>
             </div>
             <Button 
-              size="sm"
+              size="lg"
               onClick={getStrategy} 
               disabled={loading} 
-              className="rounded-full gap-2 h-10 px-6 font-bold uppercase tracking-widest text-[10px]"
+              className="rounded-full gap-3 h-14 px-10 font-black uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all"
             >
-              {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Sparkles className="h-3 w-3" />}
-              Obter Auditoria
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+              {loading ? "Processando Auditoria..." : "Obter Auditoria Executiva"}
             </Button>
           </CardContent>
         </Card>
 
         {strategy && (
-          <div className="space-y-4 animate-in fade-in zoom-in duration-500">
-            <Card className="border-border/50 bg-card/60 backdrop-blur-xl overflow-hidden shadow-xl rounded-xl">
-              <div className="p-6 space-y-4">
-                <div className="flex items-center justify-between">
-                   <Badge variant="outline" className="text-[9px] font-bold text-primary/80 uppercase tracking-widest border-primary/20 bg-primary/5 px-2 py-0.5">Veredito Executivo</Badge>
-                   <ShieldCheck className="w-4 h-4 text-primary/40" />
+          <div className="space-y-6 animate-in fade-in zoom-in duration-700">
+            <Card className="border-border/50 bg-card/60 backdrop-blur-xl overflow-hidden shadow-2xl rounded-3xl">
+              <div className="p-8 space-y-6">
+                <div className="flex items-center justify-between border-b border-border/50 pb-6">
+                   <div className="flex items-center gap-3">
+                     <div className="p-2 bg-primary/10 rounded-xl text-primary"><ShieldCheck className="w-5 h-5" /></div>
+                     <h3 className="font-black text-sm uppercase tracking-[0.3em]">Veredito Estratégico</h3>
+                   </div>
+                   <Badge variant="outline" className="text-[9px] font-bold text-primary uppercase tracking-[0.2em] border-primary/20 bg-primary/5 px-3 py-1">Business Audit 1.0</Badge>
                 </div>
-                <div className="p-4 rounded-xl bg-secondary/10 border border-border/40">
-                  <p className="text-xs italic leading-relaxed text-foreground/90 font-medium text-justify">
+                <div className="p-8 rounded-3xl bg-black/40 border border-primary/10 shadow-inner">
+                  <p className="text-sm italic leading-relaxed text-foreground/90 font-medium text-justify">
                     "{strategy.verdict}"
                   </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border/40">
-                <div className="bg-card/40 p-6 space-y-4">
-                  <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-indigo-500/5 text-indigo-500/80 rounded-lg"><BarChart3 className="w-4 h-4" /></div>
-                    <h4 className="text-[10px] font-bold uppercase tracking-widest">Canais</h4>
+                <div className="bg-card/40 p-8 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-indigo-500/10 text-indigo-500 rounded-xl"><BarChart3 className="w-5 h-5" /></div>
+                    <h4 className="text-[11px] font-black uppercase tracking-widest">Otimização de Canais</h4>
                   </div>
-                  <ul className="space-y-3">
+                  <ul className="space-y-4">
                     {strategy.channelStrategy.map((s, i) => (
-                      <li key={i} className="flex gap-2 items-start group">
-                        <Zap className="w-3 h-3 text-indigo-500/40 shrink-0 mt-0.5" />
-                        <span className="text-[11px] text-muted-foreground font-medium group-hover:text-foreground leading-relaxed">{s}</span>
+                      <li key={i} className="flex gap-3 items-start group">
+                        <ChevronRight className="w-4 h-4 text-indigo-500/40 shrink-0 mt-0.5" />
+                        <span className="text-xs text-muted-foreground font-medium group-hover:text-foreground leading-relaxed transition-colors">{s}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="bg-card/40 p-6 space-y-4">
-                  <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-primary/5 text-primary/80 rounded-lg"><Rocket className="w-4 h-4" /></div>
-                    <h4 className="text-[10px] font-bold uppercase tracking-widest">Escala</h4>
+                <div className="bg-card/40 p-8 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 text-primary rounded-xl"><Rocket className="w-5 h-5" /></div>
+                    <h4 className="text-[11px] font-black uppercase tracking-widest">Ações de Escala</h4>
                   </div>
-                  <ul className="space-y-3">
+                  <ul className="space-y-4">
                     {strategy.growthActions.map((a, i) => (
-                      <li key={i} className="flex gap-2 items-start group">
-                        <TrendingUp className="w-3 h-3 text-primary/40 shrink-0 mt-0.5" />
-                        <span className="text-[11px] text-muted-foreground font-medium group-hover:text-foreground leading-relaxed">{a}</span>
+                      <li key={i} className="flex gap-3 items-start group">
+                        <TrendingUp className="w-4 h-4 text-primary/40 shrink-0 mt-0.5" />
+                        <span className="text-xs text-muted-foreground font-medium group-hover:text-foreground leading-relaxed transition-colors">{a}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="bg-card/40 p-6 space-y-4">
-                  <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-amber-500/5 text-amber-500/80 rounded-lg"><Search className="w-4 h-4" /></div>
-                    <h4 className="text-[10px] font-bold uppercase tracking-widest">Benchmark</h4>
+                <div className="bg-card/40 p-8 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-amber-500/10 text-amber-500 rounded-xl"><Search className="w-5 h-5" /></div>
+                    <h4 className="text-[11px] font-black uppercase tracking-widest">Benchmark do Nicho</h4>
                   </div>
-                  <ul className="space-y-3">
+                  <ul className="space-y-4">
                     {strategy.benchmarking.map((b, i) => (
-                      <li key={i} className="flex gap-2 items-start group">
-                        <Users className="w-3 h-3 text-amber-500/40 shrink-0 mt-0.5" />
-                        <span className="text-[11px] text-muted-foreground font-medium group-hover:text-foreground leading-relaxed">{b}</span>
+                      <li key={i} className="flex gap-3 items-start group">
+                        <Users className="w-4 h-4 text-amber-500/40 shrink-0 mt-0.5" />
+                        <span className="text-xs text-muted-foreground font-medium group-hover:text-foreground leading-relaxed transition-colors">{b}</span>
                       </li>
                     ))}
                   </ul>
@@ -385,15 +416,29 @@ export function BusinessProfile() {
         )}
       </section>
 
-      <section className="space-y-4 pt-4 border-t border-border/30">
-        <Accordion type="single" collapsible className="w-full space-y-2">
+      {/* FAQ de Autoridade */}
+      <section className="space-y-6 pt-10 border-t border-border/30">
+        <div className="flex items-center gap-3 px-1">
+          <div className="p-2.5 bg-primary/10 rounded-xl text-primary shadow-inner">
+            <HelpCircle className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="font-headline font-bold text-xl tracking-tight">Manual de Identidade</h3>
+            <p className="text-xs text-muted-foreground font-medium mt-1">Esclarecimentos sobre o perfil e a inteligência estratégica do seu negócio.</p>
+          </div>
+        </div>
+
+        <Accordion type="single" collapsible className="w-full space-y-3">
           {FAQS_NEGOCIO.map((faq, idx) => (
-            <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-lg px-4 bg-secondary/10 border-border/20">
-              <AccordionTrigger className="text-[11px] font-bold text-left hover:no-underline py-3">
-                <span>{faq.q}</span>
+            <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-2xl px-5 bg-card/40 shadow-sm hover:shadow-md transition-all hover:bg-card">
+              <AccordionTrigger className="text-sm font-bold text-left hover:no-underline py-5 leading-relaxed group">
+                <span className="group-hover:text-primary transition-colors">{faq.q}</span>
               </AccordionTrigger>
-              <AccordionContent className="text-[11px] text-muted-foreground/80 leading-relaxed pb-3">
-                {faq.a}
+              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-6 pt-2 font-medium">
+                <div className="flex gap-4">
+                  <div className="w-1 h-full bg-primary/20 rounded-full shrink-0" />
+                  {faq.a}
+                </div>
               </AccordionContent>
             </AccordionItem>
           ))}
