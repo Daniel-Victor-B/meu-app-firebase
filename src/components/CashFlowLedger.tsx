@@ -32,7 +32,7 @@ import {
   PlusCircle,
   Banknote,
   CheckCircle2,
-  XCircle
+  AlertCircle
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -46,6 +46,7 @@ import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
 import { type MonthlyData } from "@/app/page";
 import { toast } from "@/hooks/use-toast";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const MESES = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
@@ -102,6 +103,7 @@ export function CashFlowLedger({
   const [isSyncing, setIsSyncing] = useState(false);
   const [pendingTransactions, setPendingTransactions] = useState<BankTransaction[]>([]);
   const [isBankConnected, setIsBankConnected] = useState(false);
+  const [highlightedMonth, setHighlightedMonth] = useState<number | null>(null);
   const das = 76;
 
   useEffect(() => {
@@ -168,6 +170,13 @@ export function CashFlowLedger({
     const currentMonthIndex = new Date().getMonth();
     const newData = [...monthlyData];
     
+    // Lógica de ativação automática
+    let wasInactive = false;
+    if (!newData[currentMonthIndex].active) {
+      newData[currentMonthIndex].active = true;
+      wasInactive = true;
+    }
+    
     if (tx.type === "CREDIT") {
       newData[currentMonthIndex].receita += tx.amount;
     } else {
@@ -177,10 +186,21 @@ export function CashFlowLedger({
     setMonthlyData(newData);
     setPendingTransactions(prev => prev.filter(t => t.id !== tx.id));
     
+    if (wasInactive) {
+      toast({
+        title: "Mês ativado automaticamente",
+        description: `O mês de ${MESES[currentMonthIndex]} foi ativado para receber as transações importadas.`,
+      });
+    }
+
     toast({
       title: "Transação Importada",
       description: `${tx.description} adicionada ao mês de ${MESES[currentMonthIndex]}.`,
     });
+
+    // Destaque visual temporário
+    setHighlightedMonth(currentMonthIndex);
+    setTimeout(() => setHighlightedMonth(null), 1500);
   };
 
   const totals = useMemo(() => {
@@ -337,6 +357,12 @@ export function CashFlowLedger({
             </CardHeader>
             <CardContent className="p-0">
               <div className="max-h-[140px] overflow-y-auto px-4 pb-4 space-y-2 no-scrollbar">
+                {!monthlyData[new Date().getMonth()]?.active && (
+                  <div className="px-3 py-2 mb-2 text-[9px] font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-center gap-2 animate-pulse">
+                    <AlertCircle className="w-3 h-3 shrink-0" />
+                    O mês atual está inativo. Importar irá ativá-lo automaticamente.
+                  </div>
+                )}
                 {pendingTransactions.length === 0 ? (
                   <div className="py-8 text-center text-[10px] font-bold text-muted-foreground uppercase opacity-40">
                     Nenhuma transação pendente
@@ -344,20 +370,29 @@ export function CashFlowLedger({
                 ) : (
                   pendingTransactions.map((tx) => (
                     <div key={tx.id} className="flex items-center justify-between p-2 rounded-lg bg-background border border-border/50 group hover:border-primary/30 transition-all">
-                      <div className="min-w-0">
+                      <div className="min-0">
                         <div className="text-[10px] font-bold truncate pr-2 uppercase">{tx.description}</div>
                         <div className={cn("text-[10px] font-black", tx.type === "CREDIT" ? "text-primary" : "text-orange-500")}>
                           {tx.type === "CREDIT" ? "+" : "-"}{formatCurrency(Math.abs(tx.amount))}
                         </div>
                       </div>
-                      <Button 
-                        size="icon" 
-                        variant="ghost" 
-                        onClick={() => importTransaction(tx)}
-                        className="h-7 w-7 rounded-full hover:bg-primary/20 text-primary shrink-0"
-                      >
-                        <PlusCircle className="w-4 h-4" />
-                      </Button>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              size="icon" 
+                              variant="ghost" 
+                              onClick={() => importTransaction(tx)}
+                              className="h-7 w-7 rounded-full hover:bg-primary/20 text-primary shrink-0"
+                            >
+                              <PlusCircle className="w-4 h-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="bg-popover border-border text-foreground">
+                            <p className="text-[10px] font-bold">Importar para o mês atual. O mês será ativado automaticamente se estiver inativo.</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
                   ))
                 )}
@@ -550,6 +585,7 @@ export function CashFlowLedger({
                 {totals.rows.map((row, i) => (
                   <TableRow key={i} className={cn(
                     "transition-all duration-300",
+                    highlightedMonth === i && "bg-primary/20 shadow-[inset_0_0_20px_rgba(34,197,94,0.1)] border-primary/50",
                     !row.active ? "opacity-20 grayscale scale-[0.98]" : "hover:bg-primary/5"
                   )}>
                     <TableCell className="py-3 text-center border-r">
