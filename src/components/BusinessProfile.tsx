@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { useBusiness } from "@/contexts/BusinessContext";
 import { 
   Sparkles,
@@ -117,22 +118,14 @@ export function BusinessProfile() {
   ];
 
   const AiToggle = ({ field }: { field: string }) => (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={(e) => {
-        e.stopPropagation();
-        toggleAiField(field);
-      }}
-      className={cn(
-        "h-8 w-8 rounded-xl transition-all border",
-        businessData.aiEnabledFields[field] 
-          ? "text-primary bg-primary/10 border-primary/20 shadow-sm" 
-          : "text-muted-foreground/30 border-transparent hover:text-primary/50"
-      )}
-    >
-      <Sparkles className="h-4 w-4" />
-    </Button>
+    <div className="flex items-center gap-2">
+      <Sparkles className={cn("h-3 w-3 transition-colors", businessData.aiEnabledFields[field] ? "text-primary" : "text-muted-foreground/20")} />
+      <Switch
+        checked={businessData.aiEnabledFields[field]}
+        onCheckedChange={() => toggleAiField(field)}
+        className="scale-75 data-[state=checked]:bg-primary"
+      />
+    </div>
   );
 
   return (
