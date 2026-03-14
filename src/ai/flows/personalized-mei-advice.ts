@@ -2,7 +2,6 @@
 
 /**
  * @fileOverview Consultoria Financeira de Elite para MEI (Foco em Distribuição e Caixa).
- * Versão restaurada focada em métricas financeiras e eficiência de capital.
  */
 
 async function getAvailableFreeModel(apiKey: string): Promise<string> {
@@ -12,8 +11,8 @@ async function getAvailableFreeModel(apiKey: string): Promise<string> {
     });
     const data = await response.json();
     const freeModels = data.data
-      .filter((model: any) => model.id.endsWith(':free'))
-      .map((model: any) => model.id);
+      ?.filter((model: any) => model.id.endsWith(':free'))
+      .map((model: any) => model.id) || [];
     if (freeModels.length > 0) return freeModels[0];
     return 'meta-llama/llama-3.2-3b-instruct:free';
   } catch {
@@ -35,14 +34,19 @@ export async function personalizedMeiAdvice(input: {
   reservaPct: number;
   mesesFaturamento: number;
 }): Promise<PersonalizedMeiAdviceOutput> {
+  const defaultErrorResponse = {
+    summary: "Falha temporária na análise financeira. Por favor, tente novamente em instantes.",
+    distributionAdvice: ["Revise seus custos operacionais", "Mantenha a disciplina no pró-labore", "Ajuste o fluxo de caixa"],
+    savingsAdvice: ["Foco na reserva de emergência", "Evite retiradas extras"],
+    optimizationSuggestions: ["Redução de custos fixos", "Melhoria de margem", "Gestão de estoque"]
+  };
+
   try {
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
       return {
-        summary: "Erro: chave da API não configurada. Adicione OPENROUTER_API_KEY no arquivo .env.",
-        distributionAdvice: ["Verifique o arquivo .env"],
-        savingsAdvice: ["Chave ausente"],
-        optimizationSuggestions: ["Configure sua API Key"]
+        ...defaultErrorResponse,
+        summary: "Erro: Chave de API não configurada no servidor."
       };
     }
 
@@ -65,7 +69,7 @@ SUA MISSÃO:
 3. No campo "savingsAdvice", dê conselhos sobre a formação do colchão de segurança.
 4. No campo "optimizationSuggestions", sugira 3 cortes ou otimizações de custos.
 
-Responda APENAS um JSON válido:
+Responda APENAS um JSON válido. Não inclua markdown, não inclua explicações fora do JSON:
 {
   "summary": "String",
   "distributionAdvice": ["Array de 3"],
@@ -83,26 +87,27 @@ Responda APENAS um JSON válido:
       body: JSON.stringify({
         model,
         messages: [{ role: 'user', content: prompt }],
-        response_format: { type: 'json_object' },
       }),
     });
 
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
     const data = await response.json();
-    let content = data.choices[0]?.message?.content || "{}";
-    const parsed = JSON.parse(content.trim());
+    let content = data.choices?.[0]?.message?.content || "{}";
+    
+    // Limpeza de possíveis blocos de código markdown na resposta
+    content = content.replace(/```json/g, "").replace(/```/g, "").trim();
+    
+    const parsed = JSON.parse(content);
 
     return {
-      summary: parsed.summary || "Análise financeira concluída.",
-      distributionAdvice: parsed.distributionAdvice || [],
-      savingsAdvice: parsed.savingsAdvice || [],
-      optimizationSuggestions: parsed.optimizationSuggestions || []
+      summary: parsed.summary || defaultErrorResponse.summary,
+      distributionAdvice: Array.isArray(parsed.distributionAdvice) ? parsed.distributionAdvice : defaultErrorResponse.distributionAdvice,
+      savingsAdvice: Array.isArray(parsed.savingsAdvice) ? parsed.savingsAdvice : defaultErrorResponse.savingsAdvice,
+      optimizationSuggestions: Array.isArray(parsed.optimizationSuggestions) ? parsed.optimizationSuggestions : defaultErrorResponse.optimizationSuggestions
     };
   } catch (error) {
-    return {
-      summary: "Falha ao processar análise financeira.",
-      distributionAdvice: [],
-      savingsAdvice: [],
-      optimizationSuggestions: []
-    };
+    console.error('Erro na IA Advice:', error);
+    return defaultErrorResponse;
   }
 }

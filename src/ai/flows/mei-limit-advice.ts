@@ -11,8 +11,8 @@ async function getAvailableFreeModel(apiKey: string): Promise<string> {
     });
     const data = await response.json();
     const freeModels = data.data
-      .filter((model: any) => model.id.endsWith(':free'))
-      .map((model: any) => model.id);
+      ?.filter((model: any) => model.id.endsWith(':free'))
+      .map((model: any) => model.id) || [];
     if (freeModels.length > 0) return freeModels[0];
     return 'meta-llama/llama-3.2-3b-instruct:free';
   } catch {
@@ -34,6 +34,13 @@ export async function meiLimitAdvice(input: {
   custosAnuais: number;
   prolaboreAnual: number;
 }): Promise<MeiLimitAdviceOutput> {
+  const defaultResponse = {
+    riskAnalysis: "Análise de risco indisponível no momento.",
+    migrationTiming: "Consulte um contador para avaliar o teto de 81k.",
+    fiscalOptimization: ["Planejamento tributário", "Revisão de DAS"],
+    profitImpact: ["Análise de margem necessária"]
+  };
+
   try {
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) throw new Error("API Key missing");
@@ -57,7 +64,7 @@ MISSÃO:
 3. "fiscalOptimization": Sugestões para reduzir impostos no novo regime.
 4. "profitImpact": Como o lucro líquido será afetado pela nova carga tributária.
 
-Responda APENAS JSON:
+Responda APENAS JSON. Não inclua markdown:
 {
   "riskAnalysis": "string",
   "migrationTiming": "string",
@@ -75,25 +82,25 @@ Responda APENAS JSON:
       body: JSON.stringify({
         model,
         messages: [{ role: 'user', content: prompt }],
-        response_format: { type: 'json_object' },
       }),
     });
 
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
     const data = await response.json();
-    const parsed = JSON.parse(data.choices[0]?.message?.content || "{}");
+    let content = data.choices?.[0]?.message?.content || "{}";
+    content = content.replace(/```json/g, "").replace(/```/g, "").trim();
+    
+    const parsed = JSON.parse(content);
 
     return {
-      riskAnalysis: parsed.riskAnalysis || "Análise de risco concluída.",
-      migrationTiming: parsed.migrationTiming || "Consulte um contador.",
-      fiscalOptimization: parsed.fiscalOptimization || [],
-      profitImpact: parsed.profitImpact || []
+      riskAnalysis: parsed.riskAnalysis || defaultResponse.riskAnalysis,
+      migrationTiming: parsed.migrationTiming || defaultResponse.migrationTiming,
+      fiscalOptimization: Array.isArray(parsed.fiscalOptimization) ? parsed.fiscalOptimization : defaultResponse.fiscalOptimization,
+      profitImpact: Array.isArray(parsed.profitImpact) ? parsed.profitImpact : defaultResponse.profitImpact
     };
   } catch (error) {
-    return {
-      riskAnalysis: "Erro na análise tributária.",
-      migrationTiming: "Tente novamente.",
-      fiscalOptimization: [],
-      profitImpact: []
-    };
+    console.error('Erro na Limit Advice:', error);
+    return defaultResponse;
   }
 }

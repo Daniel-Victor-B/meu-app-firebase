@@ -11,8 +11,8 @@ async function getAvailableFreeModel(apiKey: string): Promise<string> {
     });
     const data = await response.json();
     const freeModels = data.data
-      .filter((model: any) => model.id.endsWith(':free'))
-      .map((model: any) => model.id);
+      ?.filter((model: any) => model.id.endsWith(':free'))
+      .map((model: any) => model.id) || [];
     if (freeModels.length > 0) return freeModels[0];
     return 'meta-llama/llama-3.2-3b-instruct:free';
   } catch {
@@ -37,6 +37,13 @@ export async function businessStrategyAdvice(input: {
   desafio: string;
   meta: string;
 }): Promise<BusinessStrategyOutput> {
+  const defaultResponse = {
+    verdict: "Análise estratégica pendente. Verifique os dados do perfil.",
+    channelStrategy: ["Diversifique seus canais", "Otimize presença digital"],
+    growthActions: ["Foco em retenção", "Expansão de base", "Ajuste de ticket"],
+    benchmarking: ["Análise de concorrência necessária"]
+  };
+
   try {
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) throw new Error("API Key missing");
@@ -62,7 +69,7 @@ MISSÃO:
 3. "growthActions": 3 ações práticas para atingir a meta.
 4. "benchmarking": Como esse negócio se compara a líderes do setor.
 
-Responda APENAS JSON:
+Responda APENAS JSON. Não inclua markdown:
 {
   "verdict": "string",
   "channelStrategy": ["array"],
@@ -80,25 +87,25 @@ Responda APENAS JSON:
       body: JSON.stringify({
         model,
         messages: [{ role: 'user', content: prompt }],
-        response_format: { type: 'json_object' },
       }),
     });
 
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
     const data = await response.json();
-    const parsed = JSON.parse(data.choices[0]?.message?.content || "{}");
+    let content = data.choices?.[0]?.message?.content || "{}";
+    content = content.replace(/```json/g, "").replace(/```/g, "").trim();
+    
+    const parsed = JSON.parse(content);
 
     return {
-      verdict: parsed.verdict || "Análise concluída.",
-      channelStrategy: parsed.channelStrategy || [],
-      growthActions: parsed.growthActions || [],
-      benchmarking: parsed.benchmarking || []
+      verdict: parsed.verdict || defaultResponse.verdict,
+      channelStrategy: Array.isArray(parsed.channelStrategy) ? parsed.channelStrategy : defaultResponse.channelStrategy,
+      growthActions: Array.isArray(parsed.growthActions) ? parsed.growthActions : defaultResponse.growthActions,
+      benchmarking: Array.isArray(parsed.benchmarking) ? parsed.benchmarking : defaultResponse.benchmarking
     };
   } catch (error) {
-    return {
-      verdict: "Erro na consultoria estratégica.",
-      channelStrategy: [],
-      growthActions: [],
-      benchmarking: []
-    };
+    console.error('Erro na Business Strategy:', error);
+    return defaultResponse;
   }
 }
