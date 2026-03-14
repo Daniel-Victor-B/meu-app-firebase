@@ -166,6 +166,8 @@ export default function Home() {
               fatAcum={fatAcum} fatMensal={fat} setFatMensal={setFat}
               limiteAnual={LIMITE_MEI_ANUAL} mesesFat={mesesFat} setMesesFat={setMesesFat}
               mesesRestantes={mesesRestantes} monthlySpreadsheetData={monthlyData}
+              custos={custos} prolabore={prolabore}
+              setActiveTab={setActiveTab}
             />
           </TabsContent>
 
