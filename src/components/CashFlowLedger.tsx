@@ -109,56 +109,70 @@ export function CashFlowLedger({
   reservaPct, setReservaPct,
   monthlyData, setMonthlyData
 }: CashFlowLedgerProps) {
-  const [mesesReserva, setMesesReserva] = useState(6);
-  const [distribuicaoLucroPct, setDistribuicaoLucroPct] = useState(50);
-  const [selectedQuarter, setSelectedQuarter] = useState(0);
+  // Inicialização de estados usando lazy loading para evitar flash de estado vazio e problemas de hidratação
+  const [mesesReserva, setMesesReserva] = useState(() => {
+    if (typeof window === "undefined") return 6;
+    const saved = localStorage.getItem("mei-flow-ledger-meses-reserva");
+    return saved ? parseInt(saved, 10) || 6 : 6;
+  });
+
+  const [distribuicaoLucroPct, setDistribuicaoLucroPct] = useState(() => {
+    if (typeof window === "undefined") return 50;
+    const saved = localStorage.getItem("mei-flow-ledger-dist-lucro");
+    return saved ? parseInt(saved, 10) || 50 : 50;
+  });
+
+  const [isBankConnected, setIsBankConnected] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("mei-flow-bank-connected") === "true";
+  });
+
+  const [connectedBankName, setConnectedBankName] = useState<string>(() => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem("mei-flow-connected-bank-name") || "";
+  });
+
+  const [importedIds, setImportedIds] = useState<Set<string>>(() => {
+    if (typeof window === "undefined") return new Set();
+    const saved = localStorage.getItem("mei-flow-imported-ids");
+    if (!saved) return new Set();
+    try {
+      const parsed = JSON.parse(saved);
+      return new Set(Array.isArray(parsed) ? parsed : []);
+    } catch (e) {
+      return new Set();
+    }
+  });
+
+  const [pendingTransactions, setPendingTransactions] = useState<BankTransaction[]>(() => {
+    if (typeof window === "undefined") return [];
+    const saved = localStorage.getItem("mei-flow-pending-txs");
+    if (!saved) return [];
+    try {
+      return JSON.parse(saved);
+    } catch (e) {
+      return [];
+    }
+  });
+
+  const [activityLog, setActivityLog] = useState<ActivityLogEntry[]>(() => {
+    if (typeof window === "undefined") return [];
+    const saved = localStorage.getItem("mei-flow-activity-log");
+    if (!saved) return [];
+    try {
+      return JSON.parse(saved);
+    } catch (e) {
+      return [];
+    }
+  });
+
   const [isSyncing, setIsSyncing] = useState(false);
-  const [isBankConnected, setIsBankConnected] = useState(false);
-  const [connectedBankName, setConnectedBankName] = useState<string>("");
   const [highlightedMonth, setHighlightedMonth] = useState<number | null>(null);
   const [isPendingExpanded, setIsPendingExpanded] = useState(false);
   
-  const [importedIds, setImportedIds] = useState<Set<string>>(new Set());
-  const [pendingTransactions, setPendingTransactions] = useState<BankTransaction[]>([]);
-  const [activityLog, setActivityLog] = useState<ActivityLogEntry[]>([]);
-
   const das = 76;
 
-  useEffect(() => {
-    const savedImported = localStorage.getItem("mei-flow-imported-ids");
-    if (savedImported) {
-      try {
-        setImportedIds(new Set(JSON.parse(savedImported)));
-      } catch (e) { console.error(e); }
-    }
-
-    const savedPending = localStorage.getItem("mei-flow-pending-txs");
-    if (savedPending) {
-      try {
-        setPendingTransactions(JSON.parse(savedPending));
-      } catch (e) { console.error(e); }
-    }
-
-    const savedLog = localStorage.getItem("mei-flow-activity-log");
-    if (savedLog) {
-      try {
-        setActivityLog(JSON.parse(savedLog));
-      } catch (e) { console.error(e); }
-    }
-
-    const savedReserva = localStorage.getItem("mei-flow-ledger-meses-reserva");
-    if (savedReserva) setMesesReserva(parseInt(savedReserva, 10) || 6);
-    
-    const savedDist = localStorage.getItem("mei-flow-ledger-dist-lucro");
-    if (savedDist) setDistribuicaoLucroPct(parseInt(savedDist, 10) || 50);
-
-    const connected = localStorage.getItem("mei-flow-bank-connected");
-    if (connected === "true") setIsBankConnected(true);
-
-    const bankName = localStorage.getItem("mei-flow-connected-bank-name");
-    if (bankName) setConnectedBankName(bankName);
-  }, []);
-
+  // Persistência de alterações de estado
   useEffect(() => {
     localStorage.setItem("mei-flow-pending-txs", JSON.stringify(pendingTransactions));
   }, [pendingTransactions]);
@@ -236,9 +250,12 @@ export function CashFlowLedger({
         );
       });
 
+      const alreadyImportedCount = data.transactions.length - newTransactions.length;
       toast({
         title: "Sincronização Concluída",
-        description: `${newTransactions.length} novas transações encontradas.`
+        description: alreadyImportedCount > 0 
+          ? `${newTransactions.length} novas transações encontradas (${alreadyImportedCount} já ignoradas).` 
+          : `${newTransactions.length} novas transações encontradas.`
       });
     } catch (error) {
       toast({ title: "Erro na Sincronização", description: "Não foi possível buscar os dados do banco.", variant: "destructive" });
@@ -251,10 +268,12 @@ export function CashFlowLedger({
     const currentMonthIndex = new Date().getMonth();
     const newData = [...monthlyData];
     
-    let wasInactive = false;
     if (!newData[currentMonthIndex].active) {
       newData[currentMonthIndex] = { ...newData[currentMonthIndex], active: true };
-      wasInactive = true;
+      toast({
+        title: "Mês ativado automaticamente",
+        description: `O mês de ${MESES[currentMonthIndex]} foi ativado para receber as transações importadas.`,
+      });
     }
     
     if (tx.type === "CREDIT") newData[currentMonthIndex].receita += tx.amount;
@@ -262,11 +281,13 @@ export function CashFlowLedger({
     
     setMonthlyData(newData);
     
+    // Histórico de importações (Set para evitar duplicatas)
     const nextImported = new Set(importedIds);
     nextImported.add(tx.id);
     setImportedIds(nextImported);
     localStorage.setItem("mei-flow-imported-ids", JSON.stringify(Array.from(nextImported)));
 
+    // Limpa das pendências
     setPendingTransactions(prev => prev.filter(t => t.id !== tx.id));
     
     addLogEntry({
@@ -312,20 +333,6 @@ export function CashFlowLedger({
 
     return { rows, acumuladoReserva: acumuladoReservaTotal, acumuladoReceita: acumuladoReceitaTotal, acumuladoLucro: acumuladoLucroTotal };
   }, [monthlyData, das, prolabore, reservaPct]);
-
-  const quarterlyTotals = useMemo(() => {
-    const quarters = [
-      { id: 0, name: "1º Trimestre", months: [0, 1, 2], profit: 0, revenue: 0 },
-      { id: 1, name: "2º Trimestre", months: [3, 4, 5], profit: 0, revenue: 0 },
-      { id: 2, name: "3º Trimestre", months: [6, 7, 8], profit: 0, revenue: 0 },
-      { id: 3, name: "4º Trimestre", months: [9, 10, 11], profit: 0, revenue: 0 },
-    ];
-    quarters.forEach(q => q.months.forEach(mIdx => {
-      const row = totals.rows[mIdx];
-      if (row && row.active) { q.profit += row.lucro; q.revenue += row.receita; }
-    }));
-    return quarters;
-  }, [totals.rows]);
 
   const metaTotal = (custos + das + prolabore) * mesesReserva;
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
