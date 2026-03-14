@@ -114,6 +114,7 @@ export function CashFlowLedger({
   const [selectedQuarter, setSelectedQuarter] = useState(0);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isBankConnected, setIsBankConnected] = useState(false);
+  const [connectedBankName, setConnectedBankName] = useState<string>("");
   const [highlightedMonth, setHighlightedMonth] = useState<number | null>(null);
   const [isPendingExpanded, setIsPendingExpanded] = useState(false);
   
@@ -153,6 +154,9 @@ export function CashFlowLedger({
 
     const connected = localStorage.getItem("mei-flow-bank-connected");
     if (connected === "true") setIsBankConnected(true);
+
+    const bankName = localStorage.getItem("mei-flow-connected-bank-name");
+    if (bankName) setConnectedBankName(bankName);
   }, []);
 
   useEffect(() => {
@@ -208,16 +212,21 @@ export function CashFlowLedger({
   };
 
   const syncBank = async () => {
-    if (!isBankConnected) {
-      setIsBankConnected(true);
-      localStorage.setItem("mei-flow-bank-connected", "true");
-      toast({ title: "Banco Conectado", description: "Sua conta PJ foi vinculada com sucesso." });
-    }
-
     setIsSyncing(true);
     try {
       const res = await fetch('/api/bank/sync');
       const data = await res.json();
+      
+      if (!isBankConnected) {
+        setIsBankConnected(true);
+        localStorage.setItem("mei-flow-bank-connected", "true");
+        if (data.bankName) {
+          setConnectedBankName(data.bankName);
+          localStorage.setItem("mei-flow-connected-bank-name", data.bankName);
+        }
+        toast({ title: "Banco Conectado", description: "Sua conta PJ foi vinculada com sucesso." });
+      }
+
       const newTransactions = data.transactions.filter((tx: BankTransaction) => !importedIds.has(tx.id));
       
       setPendingTransactions(prev => {
@@ -318,29 +327,10 @@ export function CashFlowLedger({
     return quarters;
   }, [totals.rows]);
 
-  const currentQ = quarterlyTotals[selectedQuarter];
-  const qProfitPF_Manual = (currentQ.profit * distribuicaoLucroPct) / 100;
-  const qProfitPJ_Manual = currentQ.profit - qProfitPF_Manual;
-
   const metaTotal = (custos + das + prolabore) * mesesReserva;
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
   const LIMITE_MEI = 81000;
   const percentualLimite = Math.min(100, (totals.acumuladoReceita / LIMITE_MEI) * 100);
-
-  const smartTarget = useMemo(() => {
-    if (progressoMeta < 100) return { pf: 20, pj: 80, label: "Foco em Segurança", motive: "Reserva incompleta. Blinde o caixa da empresa." };
-    return { pf: 60, pj: 40, label: "Eficiência Máxima", motive: "Reserva concluída! Priorize sua recompensa pessoal." };
-  }, [progressoMeta]);
-
-  const qProfitPF_Recommended = (currentQ.profit * smartTarget.pf) / 100;
-  const qProfitPJ_Recommended = currentQ.profit - qProfitPF_Recommended;
-
-  const StepButtons = ({ onUp, onDown, colorClass }: { onUp: () => void, onDown: () => void, colorClass: string }) => (
-    <div className="flex flex-col -space-y-px">
-      <Button variant="ghost" size="icon" className={`h-4 w-6 rounded-t-md rounded-b-none border border-border hover:bg-secondary ${colorClass}`} onClick={onUp}><ChevronUp className="w-3 h-3" /></Button>
-      <Button variant="ghost" size="icon" className={`h-4 w-6 rounded-b-md rounded-t-none border border-border hover:bg-secondary ${colorClass}`} onClick={onDown}><ChevronDown className="w-3 h-3" /></Button>
-    </div>
-  );
 
   const displayedTransactions = isPendingExpanded ? pendingTransactions : pendingTransactions.slice(0, 3);
 
@@ -352,12 +342,21 @@ export function CashFlowLedger({
             <div className="absolute top-0 right-0 p-8 opacity-5"><Landmark className="w-32 h-32" /></div>
             <CardContent className="p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
               <div className="space-y-2 text-center md:text-left">
-                <div className="flex items-center justify-center md:justify-start gap-2 text-primary">
-                  <RefreshCw className={cn("w-5 h-5", isSyncing && "animate-spin")} />
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em]">Automação Bancária</span>
+                <div className="flex items-center justify-center md:justify-start gap-3 text-primary">
+                  <div className="flex items-center gap-2">
+                    <RefreshCw className={cn("w-5 h-5", isSyncing && "animate-spin")} />
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">Automação Bancária</span>
+                  </div>
+                  {isBankConnected && connectedBankName && (
+                    <Badge variant="outline" className="bg-primary/20 text-primary border-primary/20 text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 animate-in zoom-in duration-300">
+                      Conectado a: {connectedBankName}
+                    </Badge>
+                  )}
                 </div>
                 <h3 className="text-xl font-bold tracking-tight">Sincronize seu Fluxo de Caixa</h3>
-                <p className="text-xs text-muted-foreground font-medium max-w-sm">Conecte sua conta PJ para importar transações automaticamente.</p>
+                <p className="text-xs text-muted-foreground font-medium max-w-sm">
+                  Conecte sua conta PJ via Open Banking para importar transações automaticamente. Nós apenas lemos os dados para automatizar o preenchimento da sua planilha.
+                </p>
               </div>
               <Button onClick={syncBank} disabled={isSyncing} className="rounded-xl h-12 px-8 font-black uppercase tracking-widest text-[10px] gap-2 shadow-xl shadow-primary/20">
                 {isSyncing ? <RefreshCw className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
@@ -415,7 +414,7 @@ export function CashFlowLedger({
         </Card>
         <Card className="bg-secondary/20 border-border/60 border-2 relative overflow-hidden group">
           <CardHeader className="pb-2"><div className="flex items-center gap-2 text-foreground"><Settings2 className="w-5 h-5 text-primary" /><div><CardTitle className="text-sm font-bold uppercase tracking-wider">Parâmetros de Gestão</CardTitle><CardDescription className="text-[10px] uppercase font-bold text-muted-foreground">Configurações globais</CardDescription></div></div></CardHeader>
-          <CardContent><div className="grid grid-cols-1 sm:grid-cols-2 gap-4"><div className="space-y-2"><div className="flex items-center gap-1.5 text-[10px] text-blue-500 font-black uppercase"><UserCircle className="w-3 h-3" />Salário PF</div><div className="flex items-center gap-2"><StepButtons onUp={() => setProlabore(prolabore + 100)} onDown={() => setProlabore(Math.max(0, prolabore - 100))} colorClass="text-blue-500" /><Input className="h-9 px-2 text-xs font-bold bg-background/80 border-blue-500/30" type="number" value={prolabore} onChange={(e) => setProlabore(parseFloat(e.target.value) || 0)} /></div></div><div className="space-y-2"><div className="flex items-center gap-1.5 text-[10px] text-purple-500 font-black uppercase"><Percent className="w-3 h-3" />Reserva PJ (%)</div><div className="flex items-center gap-2"><StepButtons onUp={() => setReservaPct(Math.min(100, reservaPct + 5))} onDown={() => setReservaPct(Math.max(0, reservaPct - 5))} colorClass="text-purple-500" /><Input className="h-9 px-2 text-xs font-bold bg-background/80 border-purple-500/30 text-right" type="number" value={reservaPct} onChange={(e) => setReservaPct(parseFloat(e.target.value) || 0)} /></div></div></div></CardContent>
+          <CardContent><div className="grid grid-cols-1 sm:grid-cols-2 gap-4"><div className="space-y-2"><div className="flex items-center gap-1.5 text-[10px] text-blue-500 font-black uppercase"><UserCircle className="w-3 h-3" />Salário PF</div><div className="flex items-center gap-2"><div className="flex flex-col -space-y-px"><Button variant="ghost" size="icon" className="h-4 w-6 rounded-t-md rounded-b-none border border-border hover:bg-secondary text-blue-500" onClick={() => setProlabore(prolabore + 100)}><ChevronUp className="w-3 h-3" /></Button><Button variant="ghost" size="icon" className="h-4 w-6 rounded-b-md rounded-t-none border border-border hover:bg-secondary text-blue-500" onClick={() => setProlabore(Math.max(0, prolabore - 100))}><ChevronDown className="w-3 h-3" /></Button></div><Input className="h-9 px-2 text-xs font-bold bg-background/80 border-blue-500/30" type="number" value={prolabore} onChange={(e) => setProlabore(parseFloat(e.target.value) || 0)} /></div></div><div className="space-y-2"><div className="flex items-center gap-1.5 text-[10px] text-purple-500 font-black uppercase"><Percent className="w-3 h-3" />Reserva PJ (%)</div><div className="flex items-center gap-2"><div className="flex flex-col -space-y-px"><Button variant="ghost" size="icon" className="h-4 w-6 rounded-t-md rounded-b-none border border-border hover:bg-secondary text-purple-500" onClick={() => setReservaPct(Math.min(100, reservaPct + 5))}><ChevronUp className="w-3 h-3" /></Button><Button variant="ghost" size="icon" className="h-4 w-6 rounded-b-md rounded-t-none border border-border hover:bg-secondary text-purple-500" onClick={() => setReservaPct(Math.max(0, reservaPct - 5))}><ChevronDown className="w-3 h-3" /></Button></div><Input className="h-9 px-2 text-xs font-bold bg-background/80 border-purple-500/30 text-right" type="number" value={reservaPct} onChange={(e) => setReservaPct(parseFloat(e.target.value) || 0)} /></div></div></div></CardContent>
         </Card>
       </div>
 
