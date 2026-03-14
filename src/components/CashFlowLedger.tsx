@@ -33,7 +33,8 @@ import {
   Banknote,
   CheckCircle2,
   AlertCircle,
-  Trash2
+  Trash2,
+  History
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -104,18 +105,35 @@ export function CashFlowLedger({
   const [isSyncing, setIsSyncing] = useState(false);
   const [isBankConnected, setIsBankConnected] = useState(false);
   const [highlightedMonth, setHighlightedMonth] = useState<number | null>(null);
-  const [showAllPending, setShowAllPending] = useState(false);
+  const [isPendingExpanded, setIsPendingExpanded] = useState(false);
   
-  // Persistência de Transações Pendentes
-  const [pendingTransactions, setPendingTransactions] = useState<BankTransaction[]>([]);
-
   // Persistência de IDs Importados (para evitar duplicatas)
   const [importedIds, setImportedIds] = useState<Set<string>>(new Set());
+
+  // Persistência de Transações Pendentes
+  const [pendingTransactions, setPendingTransactions] = useState<BankTransaction[]>([]);
 
   const das = 76;
 
   // Efeito de Inicialização (Client-side only)
   useEffect(() => {
+    // Carregar IDs Importados
+    const savedImported = localStorage.getItem("mei-flow-imported-ids");
+    if (savedImported) {
+      try {
+        setImportedIds(new Set(JSON.parse(savedImported)));
+      } catch (e) { console.error("Erro ao carregar histórico de IDs", e); }
+    }
+
+    // Carregar Pendências
+    const savedPending = localStorage.getItem("mei-flow-pending-txs");
+    if (savedPending) {
+      try {
+        setPendingTransactions(JSON.parse(savedPending));
+      } catch (e) { console.error("Erro ao carregar pendências", e); }
+    }
+
+    // Outros estados
     const savedReserva = localStorage.getItem("mei-flow-ledger-meses-reserva");
     if (savedReserva) setMesesReserva(parseInt(savedReserva, 10) || 6);
     
@@ -124,21 +142,12 @@ export function CashFlowLedger({
 
     const connected = localStorage.getItem("mei-flow-bank-connected");
     if (connected === "true") setIsBankConnected(true);
-
-    const savedPending = localStorage.getItem("mei-flow-pending-txs");
-    if (savedPending) {
-      try {
-        setPendingTransactions(JSON.parse(savedPending));
-      } catch (e) { console.error("Erro ao carregar pendências", e); }
-    }
-
-    const savedImported = localStorage.getItem("mei-flow-imported-ids");
-    if (savedImported) {
-      try {
-        setImportedIds(new Set(JSON.parse(savedImported)));
-      } catch (e) { console.error("Erro ao carregar histórico de IDs", e); }
-    }
   }, []);
+
+  // Persistência Automática de Pendências
+  useEffect(() => {
+    localStorage.setItem("mei-flow-pending-txs", JSON.stringify(pendingTransactions));
+  }, [pendingTransactions]);
 
   // Persistência Automática de Configurações
   useEffect(() => {
@@ -148,11 +157,6 @@ export function CashFlowLedger({
   useEffect(() => {
     localStorage.setItem("mei-flow-ledger-dist-lucro", distribuicaoLucroPct.toString());
   }, [distribuicaoLucroPct]);
-
-  // Persistência de Pendências
-  useEffect(() => {
-    localStorage.setItem("mei-flow-pending-txs", JSON.stringify(pendingTransactions));
-  }, [pendingTransactions]);
 
   const updateMonth = (index: number, field: keyof MonthlyData, value: any) => {
     const newData = [...monthlyData];
@@ -376,7 +380,7 @@ export function CashFlowLedger({
     </div>
   );
 
-  const displayedTransactions = showAllPending ? pendingTransactions : pendingTransactions.slice(0, 3);
+  const displayedTransactions = isPendingExpanded ? pendingTransactions : pendingTransactions.slice(0, 3);
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
@@ -420,39 +424,65 @@ export function CashFlowLedger({
         </div>
 
         <div className="lg:col-span-4">
-          <Card className="h-full border-border/50 bg-card/40 backdrop-blur-sm">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-bold flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <Banknote className="w-4 h-4 text-primary" />
-                  Pendentes ({pendingTransactions.length})
+          <Card className="h-full border-border/50 bg-card/60 backdrop-blur-sm overflow-hidden transition-all duration-300">
+            <CardHeader className="pb-3 px-5 pt-5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 cursor-pointer group" onClick={() => setIsPendingExpanded(!isPendingExpanded)}>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="p-1.5 bg-primary/10 rounded-lg text-primary group-hover:bg-primary/20 transition-colors">
+                          <History className="w-4 h-4" />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        <p className="text-[10px] font-bold">Transações pendentes de importação</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <div>
+                    <CardTitle className="text-sm font-bold flex items-center gap-2">
+                      Pendências
+                      <Badge variant="secondary" className="text-[10px] font-black px-1.5 h-4 bg-primary/10 text-primary border-none">
+                        {pendingTransactions.length}
+                      </Badge>
+                    </CardTitle>
+                  </div>
                 </div>
+                
                 <div className="flex items-center gap-1">
-                  {pendingTransactions.length > 0 && (
-                    <Badge variant="secondary" className="text-[9px] font-black px-1.5 h-4 bg-primary/10 text-primary border-none">LIVE</Badge>
-                  )}
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6 text-muted-foreground hover:text-destructive"
+                          className="h-7 w-7 text-muted-foreground hover:text-destructive"
                           onClick={clearImportHistory}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent side="top">
-                        <p className="text-[10px] font-bold">Limpar histórico de importações. Use apenas se quiser reimportar tudo (pode causar duplicação).</p>
+                        <p className="text-[10px] font-bold">Limpar histórico de importações. Use apenas se quiser reimportar tudo.</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
+
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-7 w-7 text-muted-foreground"
+                    onClick={() => setIsPendingExpanded(!isPendingExpanded)}
+                  >
+                    {isPendingExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </Button>
                 </div>
-              </CardTitle>
+              </div>
             </CardHeader>
-            <CardContent className="p-0">
-              <div className="px-4 pb-4 space-y-2">
+
+            <CardContent className="px-4 pb-4">
+              <div className="space-y-2">
                 {!monthlyData[new Date().getMonth()]?.active && pendingTransactions.length > 0 && (
                   <div className="px-3 py-2 mb-2 text-[9px] font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-center gap-2 animate-pulse">
                     <AlertCircle className="w-3 h-3 shrink-0" />
@@ -460,17 +490,20 @@ export function CashFlowLedger({
                   </div>
                 )}
                 
-                <div className="max-h-[160px] overflow-y-auto space-y-2 no-scrollbar">
+                <div className={cn(
+                  "overflow-y-auto space-y-2 no-scrollbar transition-all duration-500",
+                  isPendingExpanded ? "max-h-[300px]" : "max-h-[160px]"
+                )}>
                   {pendingTransactions.length === 0 ? (
-                    <div className="py-8 text-center text-[10px] font-bold text-muted-foreground uppercase opacity-40">
-                      Nenhuma transação pendente
+                    <div className="py-10 text-center text-[10px] font-bold text-muted-foreground uppercase opacity-40">
+                      Tudo conciliado!
                     </div>
                   ) : (
                     displayedTransactions.map((tx) => (
-                      <div key={tx.id} className="flex items-center justify-between p-2 rounded-lg bg-background border border-border/50 group hover:border-primary/30 transition-all animate-in fade-in slide-in-from-right-2 duration-300">
+                      <div key={tx.id} className="flex items-center justify-between p-2.5 rounded-xl bg-background border border-border/50 group hover:border-primary/30 transition-all animate-in fade-in slide-in-from-right-2 duration-300">
                         <div className="min-w-0 flex-1">
-                          <div className="text-[10px] font-bold truncate pr-2 uppercase">{tx.description}</div>
-                          <div className={cn("text-[10px] font-black", tx.type === "CREDIT" ? "text-primary" : "text-orange-500")}>
+                          <div className="text-[10px] font-bold truncate pr-2 uppercase text-foreground/80">{tx.description}</div>
+                          <div className={cn("text-[10px] font-black mt-0.5", tx.type === "CREDIT" ? "text-primary" : "text-orange-500")}>
                             {tx.type === "CREDIT" ? "+" : "-"}{formatCurrency(Math.abs(tx.amount))}
                           </div>
                         </div>
@@ -481,7 +514,7 @@ export function CashFlowLedger({
                                 size="icon" 
                                 variant="ghost" 
                                 onClick={() => importTransaction(tx)}
-                                className="h-7 w-7 rounded-full hover:bg-primary/20 text-primary shrink-0"
+                                className="h-8 w-8 rounded-full hover:bg-primary/20 text-primary shrink-0"
                               >
                                 <PlusCircle className="w-4 h-4" />
                               </Button>
@@ -500,10 +533,10 @@ export function CashFlowLedger({
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    onClick={() => setShowAllPending(!showAllPending)}
-                    className="w-full text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary h-6"
+                    onClick={() => setIsPendingExpanded(!isPendingExpanded)}
+                    className="w-full text-[9px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary h-7 border border-dashed border-border/50 mt-1"
                   >
-                    {showAllPending ? "Mostrar Menos" : `Ver todas (${pendingTransactions.length})`}
+                    {isPendingExpanded ? "Recolher Lista" : `Ver todas (${pendingTransactions.length})`}
                   </Button>
                 )}
               </div>
@@ -941,4 +974,3 @@ export function CashFlowLedger({
     </div>
   );
 }
-
