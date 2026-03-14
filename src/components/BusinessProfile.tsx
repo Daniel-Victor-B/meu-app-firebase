@@ -1,17 +1,15 @@
-
 "use client"
 
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectGroup, SelectLabel } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useBusiness } from "@/contexts/BusinessContext";
 import { 
   Briefcase, 
-  AlertCircle,
   HelpCircle,
   Sparkles,
   Loader2,
@@ -21,7 +19,8 @@ import {
   Users,
   BarChart3,
   Rocket,
-  Search
+  Search,
+  Target
 } from "lucide-react";
 import {
   Accordion,
@@ -37,7 +36,6 @@ export function BusinessProfile() {
   const [loading, setLoading] = useState(false);
   const [strategy, setStrategy] = useState<BusinessStrategyOutput | null>(null);
 
-  // Carrega a estratégia salva ao montar o componente
   useEffect(() => {
     const saved = localStorage.getItem("mei-flow-business-strategy");
     if (saved) {
@@ -49,16 +47,15 @@ export function BusinessProfile() {
     }
   }, []);
 
-  const ramos = [
-    "Alimentação (restaurante, lanchonete, delivery)",
-    "Comércio varejista (loja física)",
-    "E-commerce / Negócio digital (loja virtual, infoprodutos)",
-    "Serviços presenciais (consultoria, estética, oficina)",
-    "Serviços online (freelancer, consultoria online, desenvolvimento)",
-    "Indústria / Artesanato",
-    "Transporte / Mobilidade",
-    "Outros"
-  ];
+  const ramosCategorizados = {
+    "Alimentação": ["Restaurante/Lanchonete", "Delivery de Comida", "Confeitaria/Padaria", "Bebidas"],
+    "Comércio": ["Loja Física (Varejo)", "Revenda de Produtos", "Moda e Acessórios", "Cosméticos"],
+    "Digital & E-commerce": ["Loja Virtual (Shopify/Nuvem)", "Infoprodutos (Cursos/Ebooks)", "Dropshipping", "Marketing de Afiliados"],
+    "Serviços Presenciais": ["Estética e Beleza", "Oficina/Manutenção", "Saúde/Bem-estar", "Eventos"],
+    "Serviços Online": ["Freelancer (Design/Dev)", "Consultoria/Mentoria", "Agência de Marketing", "Gestão de Tráfego"],
+    "Indústria & Produção": ["Artesanato", "Pequena Indústria", "Confecção Própria"],
+    "Outros": ["Transporte/Mobilidade", "Educação", "Outros Ramos"]
+  };
 
   const modelos = ["B2B", "B2C", "B2B e B2C", "Marketplace"];
   const canaisOpcoes = ["Loja física", "E-commerce", "Redes sociais", "Marketplace", "Delivery", "Outros"];
@@ -76,7 +73,9 @@ export function BusinessProfile() {
   const getStrategy = async () => {
     setLoading(true);
     try {
-      const result = await businessStrategyAdvice(businessData);
+      const result = await businessStrategyAdvice({
+        ...businessData
+      });
       setStrategy(result);
       localStorage.setItem("mei-flow-business-strategy", JSON.stringify(result));
     } catch (error) {
@@ -97,11 +96,11 @@ export function BusinessProfile() {
     },
     {
       q: "Como definir meu principal desafio?",
-      a: "Selecione o desafio que mais impacta seu dia a dia. Se não tiver certeza, observe onde você gasta mais tempo ou tem mais dificuldade. A IA priorizará esse ponto nas recomendações (ex: se é fluxo de caixa, as sugestões focarão em controle financeiro)."
+      a: "Selecione o desafio que mais impacta seu dia a dia. Se não tiver certeza, observe onde você gasta mais tempo ou tem mais dificuldade. A IA priorizará esse ponto nas recomendações."
     },
     {
       q: "Como escolher minha meta principal?",
-      a: "Pense no que você mais deseja alcançar nos próximos meses. A IA usará essa meta para alinhar as sugestões (ex: se a meta é aumentar faturamento, as dicas serão voltadas para vendas; se é reduzir custos, focará em economia)."
+      a: "Pense no que você mais deseja alcançar nos próximos meses. A IA usará essa meta para alinhar as sugestões (ex: se a meta é aumentar faturamento, as dicas serão voltadas para vendas)."
     }
   ];
 
@@ -128,24 +127,33 @@ export function BusinessProfile() {
               <div className="space-y-3">
                 <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Ramo de Atividade</Label>
                 <Select value={businessData.ramo} onValueChange={(val) => updateBusinessData({ ramo: val })}>
-                  <SelectTrigger className="h-12 bg-background/50 border-primary/20 rounded-xl font-bold"><SelectValue /></SelectTrigger>
-                  <SelectContent>{ramos.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}</SelectContent>
+                  <SelectTrigger className="h-12 bg-background/50 border-primary/20 rounded-xl font-bold">
+                    <SelectValue placeholder="Selecione o ramo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(ramosCategorizados).map(([categoria, lista]) => (
+                      <SelectGroup key={categoria}>
+                        <SelectLabel className="text-[10px] font-black uppercase text-primary/60 tracking-widest pt-4 pb-2">{categoria}</SelectLabel>
+                        {lista.map((r) => <SelectItem key={r} value={r} className="font-medium">{r}</SelectItem>)}
+                      </SelectGroup>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
             </div>
             <div className="space-y-6">
               <div className="space-y-3">
+                <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Nicho do Negócio (Ex: Moda Praia, Dev React)</Label>
+                <div className="relative">
+                  <Input placeholder="Qual seu público específico?" value={businessData.nicho} onChange={(e) => updateBusinessData({ nicho: e.target.value })} className="h-12 bg-background/50 border-primary/20 rounded-xl font-bold pl-10" />
+                  <Target className="w-4 h-4 text-primary absolute left-3.5 top-1/2 -translate-y-1/2" />
+                </div>
+              </div>
+              <div className="space-y-3">
                 <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Modelo de Negócio</Label>
                 <Select value={businessData.modeloNegocio} onValueChange={(val) => updateBusinessData({ modeloNegocio: val })}>
                   <SelectTrigger className="h-12 bg-background/50 border-primary/20 rounded-xl font-bold"><SelectValue /></SelectTrigger>
                   <SelectContent>{modelos.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-3">
-                <Label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Meta Principal</Label>
-                <Select value={businessData.meta} onValueChange={(val) => updateBusinessData({ meta: val })}>
-                  <SelectTrigger className="h-12 bg-background/50 border-primary/20 rounded-xl font-bold"><SelectValue /></SelectTrigger>
-                  <SelectContent>{metas.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
             </div>
@@ -183,7 +191,6 @@ export function BusinessProfile() {
         </CardContent>
       </Card>
 
-      {/* Consultoria Estratégica AI */}
       <section className="space-y-8 pt-4">
         <div className="relative group">
           <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-indigo-500/20 blur-xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
@@ -208,7 +215,6 @@ export function BusinessProfile() {
 
         {strategy && (
           <div className="space-y-6 animate-in fade-in zoom-in duration-500">
-            {/* Veredito */}
             <Card className="border-primary/20 bg-card overflow-hidden shadow-2xl">
               <div className="p-6 md:p-8 space-y-4">
                 <div className="flex items-center justify-between">
@@ -222,9 +228,7 @@ export function BusinessProfile() {
                 </div>
               </div>
 
-              {/* Grid de Recomendações */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-border/50">
-                {/* Canais */}
                 <div className="bg-card p-6 md:p-8 space-y-6">
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-indigo-500/10 text-indigo-500 rounded-xl"><BarChart3 className="w-5 h-5" /></div>
@@ -240,7 +244,6 @@ export function BusinessProfile() {
                   </ul>
                 </div>
 
-                {/* Ações */}
                 <div className="bg-card p-6 md:p-8 space-y-6">
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-primary/10 text-primary rounded-xl"><Rocket className="w-5 h-5" /></div>
@@ -256,7 +259,6 @@ export function BusinessProfile() {
                   </ul>
                 </div>
 
-                {/* Benchmarking */}
                 <div className="bg-card p-6 md:p-8 space-y-6">
                   <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-amber-500/10 text-amber-500 rounded-xl"><Search className="w-5 h-5" /></div>
@@ -277,7 +279,6 @@ export function BusinessProfile() {
         )}
       </section>
 
-      {/* FAQ de Blindagem Estratégica */}
       <section className="space-y-6 pt-10 border-t border-border/50">
         <div className="flex items-center gap-3 px-1">
           <div className="p-2.5 bg-primary/10 rounded-xl text-primary shadow-inner">

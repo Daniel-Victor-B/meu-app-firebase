@@ -30,6 +30,7 @@ export type BusinessStrategyOutput = {
 export async function businessStrategyAdvice(input: {
   nomeNegocio: string;
   ramo: string;
+  nicho: string;
   modeloNegocio: string;
   canaisVenda: string[];
   ticketMedio: number;
@@ -51,30 +52,31 @@ export async function businessStrategyAdvice(input: {
     const model = await getAvailableFreeModel(apiKey);
     
     const prompt = `
-Você é um consultor de estratégia de negócios. Analise o perfil deste MEI e forneça recomendações.
+Você é um consultor de estratégia de negócios de alto nível. Analise o perfil deste MEI e forneça recomendações práticas e realistas.
 
-PERFIL:
+PERFIL DO NEGÓCIO:
 - Nome: ${input.nomeNegocio}
 - Ramo: ${input.ramo}
+- Nicho Específico: ${input.nicho}
 - Modelo: ${input.modeloNegocio}
-- Canais: ${input.canaisVenda.join(', ')}
+- Canais de Venda: ${input.canaisVenda.join(', ')}
 - Ticket Médio: R$ ${input.ticketMedio}
-- Clientes: ${input.numClientes}
-- Desafio: ${input.desafio}
-- Meta: ${input.meta}
+- Clientes Ativos: ${input.numClientes}
+- Desafio Principal: ${input.desafio}
+- Meta Atual: ${input.meta}
 
 MISSÃO:
-1. "verdict": Análise estratégica do posicionamento.
-2. "channelStrategy": Como otimizar os canais atuais.
-3. "growthActions": 3 ações práticas.
-4. "benchmarking": Comparação com o mercado.
+1. "verdict": Uma análise afiada do posicionamento atual. O nicho é promissor? O ticket médio faz sentido para o ramo?
+2. "channelStrategy": 3 sugestões de como otimizar ou expandir os canais de venda atuais focando no nicho específico.
+3. "growthActions": 3 ações práticas de escala imediata.
+4. "benchmarking": Como esse negócio se compara com os líderes desse nicho específico? O que eles fazem que este MEI ainda não faz?
 
 Responda APENAS JSON puro. Não inclua markdown:
 {
   "verdict": "string",
-  "channelStrategy": ["array"],
-  "growthActions": ["array"],
-  "benchmarking": ["array"]
+  "channelStrategy": ["array de 3 strings"],
+  "growthActions": ["array de 3 strings"],
+  "benchmarking": ["array de 3 strings"]
 }
 `;
 
@@ -94,6 +96,8 @@ Responda APENAS JSON puro. Não inclua markdown:
 
     const data = await response.json();
     let content = data.choices?.[0]?.message?.content || "{}";
+    
+    // Limpeza de Markdown robusta
     content = content.replace(/```json/g, "").replace(/```/g, "").trim();
     
     const parsed = JSON.parse(content);
