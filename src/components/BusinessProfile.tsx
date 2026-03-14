@@ -24,7 +24,8 @@ import {
   Settings2,
   Globe,
   Activity,
-  ChevronRight
+  ChevronRight,
+  CheckCircle2
 } from "lucide-react";
 import {
   Accordion,
@@ -348,9 +349,9 @@ export function BusinessProfile() {
         </Card>
 
         {strategy && (
-          <div className="space-y-6 animate-in fade-in zoom-in duration-700">
+          <div className="space-y-8 animate-in fade-in zoom-in duration-700">
             <Card className="border-border/50 bg-card/60 backdrop-blur-xl overflow-hidden shadow-2xl rounded-3xl">
-              <div className="p-8 space-y-6">
+              <div className="p-8 space-y-8">
                 <div className="flex items-center justify-between border-b border-border/50 pb-6">
                    <div className="flex items-center gap-3">
                      <div className="p-2 bg-primary/10 rounded-xl text-primary"><ShieldCheck className="w-5 h-5" /></div>
@@ -358,57 +359,58 @@ export function BusinessProfile() {
                    </div>
                    <Badge variant="outline" className="text-[9px] font-bold text-primary uppercase tracking-[0.2em] border-primary/20 bg-primary/5 px-3 py-1">Business Audit 1.0</Badge>
                 </div>
-                <div className="p-8 rounded-3xl bg-black/40 border border-primary/10 shadow-inner">
-                  <p className="text-sm italic leading-relaxed text-foreground/90 font-medium text-justify">
+                
+                <div className="p-10 rounded-3xl bg-black/40 border border-primary/20 shadow-inner">
+                  <p className="text-[11px] md:text-xs font-medium leading-relaxed text-white/90 tracking-tight text-justify italic">
                     "{strategy.verdict}"
                   </p>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border/40">
-                <div className="bg-card/40 p-8 space-y-6">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-indigo-500/10 text-indigo-500 rounded-xl"><BarChart3 className="w-5 h-5" /></div>
-                    <h4 className="text-[11px] font-black uppercase tracking-widest">Otimização de Canais</h4>
-                  </div>
-                  <ul className="space-y-4">
-                    {strategy.channelStrategy.map((s, i) => (
-                      <li key={i} className="flex gap-3 items-start group">
-                        <ChevronRight className="w-4 h-4 text-indigo-500/40 shrink-0 mt-0.5" />
-                        <span className="text-xs text-muted-foreground font-medium group-hover:text-foreground leading-relaxed transition-colors">{s}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <section className="space-y-5">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-indigo-500/10 text-indigo-500 rounded-xl border border-indigo-500/20"><BarChart3 className="w-5 h-5" /></div>
+                      <h4 className="font-black text-[10px] uppercase tracking-widest">Otimização de Canais</h4>
+                    </div>
+                    <div className="grid gap-3">
+                      {strategy.channelStrategy.map((s, i) => (
+                        <div key={i} className="flex gap-4 items-center p-4 rounded-2xl bg-card border border-border/50 shadow-sm">
+                          <CheckCircle2 className="w-4 h-4 text-indigo-500 shrink-0" />
+                          <p className="text-xs text-muted-foreground font-medium">{s}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
 
-                <div className="bg-card/40 p-8 space-y-6">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-primary/10 text-primary rounded-xl"><Rocket className="w-5 h-5" /></div>
-                    <h4 className="text-[11px] font-black uppercase tracking-widest">Ações de Escala</h4>
-                  </div>
-                  <ul className="space-y-4">
-                    {strategy.growthActions.map((a, i) => (
-                      <li key={i} className="flex gap-3 items-start group">
-                        <TrendingUp className="w-4 h-4 text-primary/40 shrink-0 mt-0.5" />
-                        <span className="text-xs text-muted-foreground font-medium group-hover:text-foreground leading-relaxed transition-colors">{a}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                  <section className="space-y-5">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-primary/10 text-primary rounded-xl border border-primary/20"><Rocket className="w-5 h-5" /></div>
+                      <h4 className="font-black text-[10px] uppercase tracking-widest">Ações de Escala</h4>
+                    </div>
+                    <div className="grid gap-3">
+                      {strategy.growthActions.map((a, i) => (
+                        <div key={i} className="flex gap-4 items-center p-4 rounded-2xl bg-card border border-border/50 shadow-sm">
+                          <TrendingUp className="w-4 h-4 text-primary shrink-0" />
+                          <p className="text-xs text-muted-foreground font-medium">{a}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
 
-                <div className="bg-card/40 p-8 space-y-6">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-amber-500/10 text-amber-500 rounded-xl"><Search className="w-5 h-5" /></div>
-                    <h4 className="text-[11px] font-black uppercase tracking-widest">Benchmark do Nicho</h4>
-                  </div>
-                  <ul className="space-y-4">
-                    {strategy.benchmarking.map((b, i) => (
-                      <li key={i} className="flex gap-3 items-start group">
-                        <Users className="w-4 h-4 text-amber-500/40 shrink-0 mt-0.5" />
-                        <span className="text-xs text-muted-foreground font-medium group-hover:text-foreground leading-relaxed transition-colors">{b}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <section className="space-y-5">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-amber-500/10 text-amber-500 rounded-xl border border-amber-500/20"><Search className="w-5 h-5" /></div>
+                      <h4 className="font-black text-[10px] uppercase tracking-widest">Benchmark do Nicho</h4>
+                    </div>
+                    <div className="grid gap-3">
+                      {strategy.benchmarking.map((b, i) => (
+                        <div key={i} className="flex gap-4 items-center p-4 rounded-2xl bg-card border border-border/50 shadow-sm">
+                          <Users className="w-4 h-4 text-amber-500 shrink-0" />
+                          <p className="text-xs text-muted-foreground font-medium">{b}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
                 </div>
               </div>
             </Card>
