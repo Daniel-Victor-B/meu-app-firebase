@@ -180,27 +180,23 @@ export function CashFlowLedger({
       const res = await fetch('/api/bank/sync');
       const data = await res.json();
       
-      // 1. Filtrar transações que já foram importadas para o histórico (importedIds)
+      // Filtrar transações que já foram importadas para o histórico (importedIds)
       const newTransactions = data.transactions.filter((tx: BankTransaction) => !importedIds.has(tx.id));
-      const alreadyImportedCount = data.transactions.length - newTransactions.length;
       
       setPendingTransactions(prev => {
-        // 2. Filtrar transações que já estão na lista de pendências atual para evitar duplicatas visuais
-        const currentPendingIds = new Set(prev.map(t => t.id));
-        const finalNew = newTransactions.filter((t: BankTransaction) => !currentPendingIds.has(t.id));
-        
-        const combined = [...prev, ...finalNew];
-        
-        // 3. Garantir unicidade absoluta por ID
-        return combined.filter((tx, index, self) => 
+        // Combinar pendências atuais com as novas filtradas pelo histórico
+        const combined = [...prev, ...newTransactions];
+        // Remover duplicatas baseadas no ID para garantir unicidade na lista de pendências
+        const unique = combined.filter((tx, index, self) => 
           index === self.findIndex(t => t.id === tx.id)
         );
+        return unique;
       });
 
-      if (alreadyImportedCount > 0) {
+      if (data.transactions.length > newTransactions.length) {
         toast({
           title: "Sincronização Concluída",
-          description: `${newTransactions.length} novas transações encontradas (${alreadyImportedCount} já ignoradas por duplicidade).`,
+          description: `${newTransactions.length} novas transações encontradas (${data.transactions.length - newTransactions.length} já importadas anteriormente).`,
         });
       } else {
         toast({
@@ -239,13 +235,11 @@ export function CashFlowLedger({
     
     setMonthlyData(newData);
     
-    // Adiciona ID ao histórico e persiste imediatamente
-    setImportedIds(prev => {
-      const next = new Set(prev);
-      next.add(tx.id);
-      localStorage.setItem("mei-flow-imported-ids", JSON.stringify(Array.from(next)));
-      return next;
-    });
+    // Adiciona ID ao histórico e persiste
+    const nextImported = new Set(importedIds);
+    nextImported.add(tx.id);
+    setImportedIds(nextImported);
+    localStorage.setItem("mei-flow-imported-ids", JSON.stringify(Array.from(nextImported)));
 
     // Remove a transação da lista de pendências
     setPendingTransactions(prev => prev.filter(t => t.id !== tx.id));
@@ -947,3 +941,4 @@ export function CashFlowLedger({
     </div>
   );
 }
+
