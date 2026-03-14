@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
@@ -13,12 +14,26 @@ export interface BusinessData {
   numClientes: number;
   desafio: string;
   meta: string;
+  aiEnabledFields: Record<string, boolean>;
 }
 
 interface BusinessContextType {
   businessData: BusinessData;
   updateBusinessData: (data: Partial<BusinessData>) => void;
+  toggleAiField: (field: string) => void;
 }
+
+const DEFAULT_AI_FIELDS = {
+  nomeNegocio: true,
+  ramo: true,
+  nicho: true,
+  modeloNegocio: true,
+  canaisVenda: true,
+  ticketMedio: true,
+  numClientes: true,
+  desafio: true,
+  meta: true,
+};
 
 const BusinessContext = createContext<BusinessContextType | undefined>(undefined);
 
@@ -33,14 +48,19 @@ export function BusinessProvider({ children }: { children: React.ReactNode }) {
     ticketMedio: 0,
     numClientes: 0,
     desafio: "Fluxo de caixa",
-    meta: "Aumentar faturamento"
+    meta: "Aumentar faturamento",
+    aiEnabledFields: DEFAULT_AI_FIELDS,
   });
 
   useEffect(() => {
-    const saved = localStorage.getItem("mei-flow-business-context-v3");
+    const saved = localStorage.getItem("mei-flow-business-context-v4");
     if (saved) {
       try {
-        setBusinessData(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        setBusinessData({
+          ...parsed,
+          aiEnabledFields: parsed.aiEnabledFields || DEFAULT_AI_FIELDS
+        });
       } catch (e) {
         console.error("Erro ao carregar contexto de negócio", e);
       }
@@ -50,13 +70,27 @@ export function BusinessProvider({ children }: { children: React.ReactNode }) {
   const updateBusinessData = (data: Partial<BusinessData>) => {
     setBusinessData(prev => {
       const next = { ...prev, ...data };
-      localStorage.setItem("mei-flow-business-context-v3", JSON.stringify(next));
+      localStorage.setItem("mei-flow-business-context-v4", JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const toggleAiField = (field: string) => {
+    setBusinessData(prev => {
+      const next = {
+        ...prev,
+        aiEnabledFields: {
+          ...prev.aiEnabledFields,
+          [field]: !prev.aiEnabledFields[field]
+        }
+      };
+      localStorage.setItem("mei-flow-business-context-v4", JSON.stringify(next));
       return next;
     });
   };
 
   return (
-    <BusinessContext.Provider value={{ businessData, updateBusinessData }}>
+    <BusinessContext.Provider value={{ businessData, updateBusinessData, toggleAiField }}>
       {children}
     </BusinessContext.Provider>
   );
