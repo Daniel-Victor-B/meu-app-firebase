@@ -48,23 +48,22 @@ export async function meiLimitAdvice(input: {
     const model = await getAvailableFreeModel(apiKey);
     
     const prompt = `
-Você é um tributarista especialista em transição de MEI para ME (Simples Nacional).
-Analise os dados fiscais e projete a melhor estratégia de migração.
+Você é um tributarista especialista em transição de MEI para ME.
+Analise os dados fiscais e projete a melhor estratégia.
 
 DADOS:
 - Faturamento Projetado: R$ ${input.projecaoAnual}
-- Acumulado até agora: R$ ${input.acumulado}
+- Acumulado: R$ ${input.acumulado}
 - Ramo: ${input.ramo}
 - Custos: R$ ${input.custosAnuais}
-- Pró-labore: R$ ${input.prolaboreAnual}
 
 MISSÃO:
-1. "riskAnalysis": Avalie o risco de ultrapassar o teto de 81k.
-2. "migrationTiming": Quando é o momento ideal para migrar.
-3. "fiscalOptimization": Sugestões para reduzir impostos no novo regime.
-4. "profitImpact": Como o lucro líquido será afetado pela nova carga tributária.
+1. "riskAnalysis": Avalie o risco de ultrapassar 81k.
+2. "migrationTiming": Momento ideal para migrar.
+3. "fiscalOptimization": Redução de impostos no novo regime.
+4. "profitImpact": Impacto no lucro líquido.
 
-Responda APENAS JSON. Não inclua markdown:
+Responda APENAS JSON puro. Não inclua markdown:
 {
   "riskAnalysis": "string",
   "migrationTiming": "string",

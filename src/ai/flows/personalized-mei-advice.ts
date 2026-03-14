@@ -11,8 +11,8 @@ async function getAvailableFreeModel(apiKey: string): Promise<string> {
     });
     const data = await response.json();
     const freeModels = data.data
-      .filter((model: any) => model.id.endsWith(':free'))
-      .map((model: any) => model.id);
+      ?.filter((model: any) => model.id.endsWith(':free'))
+      .map((model: any) => model.id) || [];
     if (freeModels.length > 0) return freeModels[0];
     return 'meta-llama/llama-3.2-3b-instruct:free';
   } catch {
@@ -35,26 +35,29 @@ export async function personalizedMeiAdvice(input: {
   mesesFaturamento: number;
   meiLimiteAnual: number;
 }): Promise<PersonalizedMeiAdviceOutput> {
+  const defaultResponse: PersonalizedMeiAdviceOutput = {
+    summary: "Ocorreu um erro na análise estratégica. Verifique sua conexão ou a chave da API.",
+    distributionAdvice: ["Revise seus custos mensais", "Ajuste o pro-labore conforme a sobra"],
+    meiLimitAdvice: ["Monitore o teto de 81k", "Planeje a transição com antecedência"],
+    optimizationSuggestions: ["Reduza custos fixos", "Aumente o ticket médio"]
+  };
+
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
     return {
-      summary: "Erro: chave da API não configurada. Adicione OPENROUTER_API_KEY no .env.local",
-      distributionAdvice: ["Configure sua API Key"],
-      meiLimitAdvice: ["Chave ausente"],
-      optimizationSuggestions: ["Verifique o arquivo .env"]
+      ...defaultResponse,
+      summary: "Erro: chave da API não configurada. Adicione OPENROUTER_API_KEY no .env.local"
     };
   }
 
-  const model = await getAvailableFreeModel(apiKey);
-  const MEI_DAS_FIXO = 76;
-  const totalDespesas = input.custosOperacionais + MEI_DAS_FIXO + input.prolabore;
-  const sobra = Math.max(0, input.faturamentoMensal - totalDespesas);
-  
-  const faturamentoAnualProjetado = input.faturamentoMensal * 12;
-  const faturamentoAcumulado = input.faturamentoMensal * input.mesesFaturamento;
-
-  const prompt = `
-Você é um consultor financeiro de elite, estilo Wall Street, focado em Microempreendedores Individuais (MEI) brasileiros.
+  try {
+    const model = await getAvailableFreeModel(apiKey);
+    const MEI_DAS_FIXO = 76;
+    const totalDespesas = input.custosOperacionais + MEI_DAS_FIXO + input.prolabore;
+    const sobra = Math.max(0, input.faturamentoMensal - totalDespesas);
+    
+    const prompt = `
+Você é um consultor financeiro de elite, focado em MEIs brasileiros.
 Sua missão é dar um veredito tático REAL baseado nos números.
 
 DADOS DO NEGÓCIO:
@@ -63,22 +66,23 @@ DADOS DO NEGÓCIO:
 - Pró-labore: R$ ${input.prolabore}
 - Meses Ativos: ${input.mesesFaturamento}
 - Teto MEI: R$ ${input.meiLimiteAnual}
+- Sobra Real: R$ ${sobra}
 
-REGRAS PARA O "summary":
-1. NÃO repita os números brutos.
-2. Dê um VEREDITO: o negócio é sustentável ou um "castelo de cartas"?
-3. Identifique o GARGALO principal.
-4. Use linguagem direta, profissional e impactante. Foque no "pulo do gato".
-5. Texto curto e denso.
+MISSÃO:
+1. "summary": Análise da saúde financeira. O negócio é sustentável ou um "castelo de cartas"? Identifique o gargalo. Use linguagem direta e profissional.
+2. "distributionAdvice": 2-3 dicas de alocação.
+3. "meiLimitAdvice": 2-3 dicas sobre o teto.
+4. "optimizationSuggestions": 2-3 ações de otimização.
 
-Responda APENAS um JSON válido com as chaves:
-- summary (string)
-- distributionAdvice (array de strings)
-- meiLimitAdvice (array de strings)
-- optimizationSuggestions (array de strings)
+Responda APENAS JSON puro. Não inclua markdown (sem \`\`\`json):
+{
+  "summary": "string",
+  "distributionAdvice": ["array"],
+  "meiLimitAdvice": ["array"],
+  "optimizationSuggestions": ["array"]
+}
 `;
 
-  try {
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -88,24 +92,27 @@ Responda APENAS um JSON válido com as chaves:
       body: JSON.stringify({
         model,
         messages: [{ role: 'user', content: prompt }],
-        response_format: { type: 'json_object' },
       }),
     });
 
-    if (!response.ok) {
-      throw new Error(`OpenRouter Error: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`OpenRouter Error: ${response.status}`);
 
     const data = await response.json();
-    const content = data.choices[0]?.message?.content;
+    let content = data.choices?.[0]?.message?.content || "{}";
     
-    return JSON.parse(content);
-  } catch (error: any) {
+    // Limpeza de Markdown robusta
+    content = content.replace(/```json/g, "").replace(/```/g, "").trim();
+    
+    const parsed = JSON.parse(content);
+
     return {
-      summary: "Ocorreu um erro na análise estratégica. Verifique sua conexão ou a chave da API.",
-      distributionAdvice: ["Erro na consulta"],
-      meiLimitAdvice: ["Falha técnica"],
-      optimizationSuggestions: ["Tente novamente em instantes"]
+      summary: parsed.summary || defaultResponse.summary,
+      distributionAdvice: Array.isArray(parsed.distributionAdvice) ? parsed.distributionAdvice : defaultResponse.distributionAdvice,
+      meiLimitAdvice: Array.isArray(parsed.meiLimitAdvice) ? parsed.meiLimitAdvice : defaultResponse.meiLimitAdvice,
+      optimizationSuggestions: Array.isArray(parsed.optimizationSuggestions) ? parsed.optimizationSuggestions : defaultResponse.optimizationSuggestions
     };
+  } catch (error: any) {
+    console.error('Erro na Personalized Advice:', error);
+    return defaultResponse;
   }
 }

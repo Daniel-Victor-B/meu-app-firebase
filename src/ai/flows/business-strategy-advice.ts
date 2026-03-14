@@ -51,7 +51,7 @@ export async function businessStrategyAdvice(input: {
     const model = await getAvailableFreeModel(apiKey);
     
     const prompt = `
-Você é um consultor de estratégia de negócios de alto nível. Analise o perfil deste MEI e forneça recomendações de crescimento.
+Você é um consultor de estratégia de negócios. Analise o perfil deste MEI e forneça recomendações.
 
 PERFIL:
 - Nome: ${input.nomeNegocio}
@@ -60,16 +60,16 @@ PERFIL:
 - Canais: ${input.canaisVenda.join(', ')}
 - Ticket Médio: R$ ${input.ticketMedio}
 - Clientes: ${input.numClientes}
-- Maior Desafio: ${input.desafio}
-- Meta Principal: ${input.meta}
+- Desafio: ${input.desafio}
+- Meta: ${input.meta}
 
 MISSÃO:
-1. "verdict": Análise estratégica do posicionamento atual vs meta.
-2. "channelStrategy": Como otimizar os canais de venda atuais.
-3. "growthActions": 3 ações práticas para atingir a meta.
-4. "benchmarking": Como esse negócio se compara a líderes do setor.
+1. "verdict": Análise estratégica do posicionamento.
+2. "channelStrategy": Como otimizar os canais atuais.
+3. "growthActions": 3 ações práticas.
+4. "benchmarking": Comparação com o mercado.
 
-Responda APENAS JSON. Não inclua markdown:
+Responda APENAS JSON puro. Não inclua markdown:
 {
   "verdict": "string",
   "channelStrategy": ["array"],
