@@ -140,7 +140,7 @@ export function CashFlowLedger({
     }
   }, []);
 
-  // Persistência Automática
+  // Persistência Automática de Configurações
   useEffect(() => {
     localStorage.setItem("mei-flow-ledger-meses-reserva", mesesReserva.toString());
   }, [mesesReserva]);
@@ -149,13 +149,10 @@ export function CashFlowLedger({
     localStorage.setItem("mei-flow-ledger-dist-lucro", distribuicaoLucroPct.toString());
   }, [distribuicaoLucroPct]);
 
+  // Persistência de Pendências
   useEffect(() => {
     localStorage.setItem("mei-flow-pending-txs", JSON.stringify(pendingTransactions));
   }, [pendingTransactions]);
-
-  useEffect(() => {
-    localStorage.setItem("mei-flow-imported-ids", JSON.stringify(Array.from(importedIds)));
-  }, [importedIds]);
 
   const updateMonth = (index: number, field: keyof MonthlyData, value: any) => {
     const newData = [...monthlyData];
@@ -174,7 +171,7 @@ export function CashFlowLedger({
       localStorage.setItem("mei-flow-bank-connected", "true");
       toast({
         title: "Banco Conectado",
-        description: "Sua conta Nubank PJ foi vinculada com sucesso.",
+        description: "Sua conta PJ foi vinculada com sucesso.",
       });
     }
 
@@ -183,15 +180,21 @@ export function CashFlowLedger({
       const res = await fetch('/api/bank/sync');
       const data = await res.json();
       
-      // Filtrar apenas o que ainda não foi importado
+      // 1. Filtrar transações que já foram importadas para o histórico (importedIds)
       const newTransactions = data.transactions.filter((tx: BankTransaction) => !importedIds.has(tx.id));
       const alreadyImportedCount = data.transactions.length - newTransactions.length;
       
       setPendingTransactions(prev => {
-        // Evitar duplicatas já presentes no estado de pendências
+        // 2. Filtrar transações que já estão na lista de pendências atual para evitar duplicatas visuais
         const currentPendingIds = new Set(prev.map(t => t.id));
         const finalNew = newTransactions.filter((t: BankTransaction) => !currentPendingIds.has(t.id));
-        return [...prev, ...finalNew];
+        
+        const combined = [...prev, ...finalNew];
+        
+        // 3. Garantir unicidade absoluta por ID
+        return combined.filter((tx, index, self) => 
+          index === self.findIndex(t => t.id === tx.id)
+        );
       });
 
       if (alreadyImportedCount > 0) {
@@ -220,13 +223,14 @@ export function CashFlowLedger({
     const currentMonthIndex = new Date().getMonth();
     const newData = [...monthlyData];
     
-    // Lógica de ativação automática
+    // Ativação automática do mês se estiver inativo
     let wasInactive = false;
     if (!newData[currentMonthIndex].active) {
-      newData[currentMonthIndex].active = true;
+      newData[currentMonthIndex] = { ...newData[currentMonthIndex], active: true };
       wasInactive = true;
     }
     
+    // Incrementa valores na planilha
     if (tx.type === "CREDIT") {
       newData[currentMonthIndex].receita += tx.amount;
     } else {
@@ -235,13 +239,16 @@ export function CashFlowLedger({
     
     setMonthlyData(newData);
     
-    // Remover das pendências e marcar como importado
-    setPendingTransactions(prev => prev.filter(t => t.id !== tx.id));
+    // Adiciona ID ao histórico e persiste imediatamente
     setImportedIds(prev => {
       const next = new Set(prev);
       next.add(tx.id);
+      localStorage.setItem("mei-flow-imported-ids", JSON.stringify(Array.from(next)));
       return next;
     });
+
+    // Remove a transação da lista de pendências
+    setPendingTransactions(prev => prev.filter(t => t.id !== tx.id));
     
     if (wasInactive) {
       toast({
@@ -255,6 +262,7 @@ export function CashFlowLedger({
       description: `${tx.description} adicionada ao mês de ${MESES[currentMonthIndex]}.`,
     });
 
+    // Feedback visual na linha da tabela
     setHighlightedMonth(currentMonthIndex);
     setTimeout(() => setHighlightedMonth(null), 1500);
   };
@@ -406,7 +414,7 @@ export function CashFlowLedger({
                   <div className="flex items-center justify-center gap-4">
                     <div className="flex items-center gap-2 text-[10px] font-bold text-primary">
                       <CheckCircle2 className="w-3 h-3" />
-                      Nubank PJ • Ativo
+                      Banco Ativo
                     </div>
                     <Button 
                       variant="ghost" 
@@ -440,7 +448,7 @@ export function CashFlowLedger({
                 {!monthlyData[new Date().getMonth()]?.active && pendingTransactions.length > 0 && (
                   <div className="px-3 py-2 mb-2 text-[9px] font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-center gap-2 animate-pulse">
                     <AlertCircle className="w-3 h-3 shrink-0" />
-                    O mês atual está inativo.
+                    Mês atual inativo. Ativação automática ao importar.
                   </div>
                 )}
                 
