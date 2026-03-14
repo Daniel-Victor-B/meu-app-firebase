@@ -11,19 +11,16 @@ import { Button } from "@/components/ui/button";
 import { useBusiness } from "@/contexts/BusinessContext";
 import { 
   Briefcase, 
-  Store, 
   AlertCircle,
   HelpCircle,
   Sparkles,
   Loader2,
-  Target,
   Zap,
-  CheckCircle2,
+  ShieldCheck,
   TrendingUp,
   Users,
   BarChart3,
   Rocket,
-  ShieldCheck,
   Search
 } from "lucide-react";
 import {
@@ -39,6 +36,18 @@ export function BusinessProfile() {
   const { businessData, updateBusinessData } = useBusiness();
   const [loading, setLoading] = useState(false);
   const [strategy, setStrategy] = useState<BusinessStrategyOutput | null>(null);
+
+  // Carrega a estratégia salva ao montar o componente
+  useEffect(() => {
+    const saved = localStorage.getItem("mei-flow-business-strategy");
+    if (saved) {
+      try {
+        setStrategy(JSON.parse(saved));
+      } catch (e) {
+        console.error("Erro ao carregar estratégia salva", e);
+      }
+    }
+  }, []);
 
   const ramos = [
     "Alimentação (restaurante, lanchonete, delivery)",
@@ -69,6 +78,7 @@ export function BusinessProfile() {
     try {
       const result = await businessStrategyAdvice(businessData);
       setStrategy(result);
+      localStorage.setItem("mei-flow-business-strategy", JSON.stringify(result));
     } catch (error) {
       console.error(error);
     } finally {
@@ -173,20 +183,15 @@ export function BusinessProfile() {
         </CardContent>
       </Card>
 
-      {/* Consultoria Estratégica AI - Design Melhorado */}
+      {/* Consultoria Estratégica AI */}
       <section className="space-y-8 pt-4">
         <div className="relative group">
           <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-indigo-500/20 blur-xl opacity-50 group-hover:opacity-100 transition duration-1000"></div>
           <Card className="relative border-primary/30 bg-primary/5 overflow-hidden">
             <CardContent className="p-8 flex flex-col md:flex-row items-center justify-between gap-8">
-              <div className="flex items-center gap-5">
-                <div className="p-4 bg-primary/20 rounded-2xl text-primary shadow-lg shadow-primary/10 animate-pulse">
-                  <Target className="w-8 h-8" />
-                </div>
-                <div className="space-y-1">
-                  <h3 className="text-2xl font-headline font-black tracking-tight">Consultoria Estratégica AI</h3>
-                  <p className="text-sm text-muted-foreground font-medium">Análise avançada de posicionamento e escala para o seu ramo.</p>
-                </div>
+              <div className="space-y-1">
+                <h3 className="text-2xl font-headline font-black tracking-tight">Consultoria Estratégica AI</h3>
+                <p className="text-sm text-muted-foreground font-medium">Análise avançada de posicionamento e escala para o seu ramo.</p>
               </div>
               <Button 
                 size="lg"
