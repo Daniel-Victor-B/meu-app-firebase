@@ -4,10 +4,9 @@ import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Sparkles, Loader2, Target, ShieldAlert, Zap, Activity, BrainCircuit, Terminal, CheckCircle2, Wallet, PiggyBank, Calculator } from "lucide-react";
+import { Sparkles, Loader2, ShieldAlert, Zap, Activity, Wallet, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { personalizedMeiAdvice, type PersonalizedMeiAdviceOutput } from "@/ai/flows/personalized-mei-advice";
 import { type MonthlyData } from "@/app/page";
-import { formatCurrency } from "@/lib/formatters";
 
 interface AiAdvisorProps {
   fat: number;
@@ -35,7 +34,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
   }, [monthlyData, fat, custos, mesesFat]);
 
   useEffect(() => {
-    const saved = localStorage.getItem("mei-flow-ai-advice-v3");
+    const saved = localStorage.getItem("mei-flow-ai-advice-stable");
     if (saved) {
       try {
         setAdvice(JSON.parse(saved));
@@ -52,9 +51,10 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
         prolabore: prolabore,
         reservaPct: reservaPct,
         mesesFaturamento: spreadsheetMetrics.totalMonths,
+        meiLimiteAnual: 81000,
       });
       setAdvice(result);
-      localStorage.setItem("mei-flow-ai-advice-v3", JSON.stringify(result));
+      localStorage.setItem("mei-flow-ai-advice-stable", JSON.stringify(result));
     } catch (error) {
       console.error(error);
     } finally {
@@ -119,15 +119,31 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
                   ))}
                 </div>
               </section>
+              
               <section className="space-y-5">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-500/10 text-purple-500 rounded-xl border border-purple-500/20"><PiggyBank className="w-5 h-5" /></div>
-                  <h4 className="font-black text-sm uppercase tracking-widest">Colchão de Segurança</h4>
+                  <div className="p-2 bg-purple-500/10 text-purple-500 rounded-xl border border-purple-500/20"><ShieldCheck className="w-5 h-5" /></div>
+                  <h4 className="font-black text-sm uppercase tracking-widest">Teto e Transição MEI</h4>
                 </div>
                 <div className="grid gap-3">
-                  {advice.savingsAdvice.map((item, i) => (
+                  {advice.meiLimitAdvice.map((item, i) => (
                     <div key={i} className="flex gap-4 items-center p-4 rounded-2xl bg-card border border-border/50 shadow-sm">
                       <ShieldAlert className="w-4 h-4 text-purple-500 shrink-0" />
+                      <p className="text-sm text-muted-foreground font-medium">{item}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              <section className="space-y-5">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-amber-500/10 text-amber-500 rounded-xl border border-amber-500/20"><Zap className="w-5 h-5" /></div>
+                  <h4 className="font-black text-sm uppercase tracking-widest">Sugestões de Otimização</h4>
+                </div>
+                <div className="grid gap-3">
+                  {advice.optimizationSuggestions.map((item, i) => (
+                    <div key={i} className="flex gap-4 items-center p-4 rounded-2xl bg-card border border-border/50 shadow-sm">
+                      <Zap className="w-4 h-4 text-amber-500 shrink-0" />
                       <p className="text-sm text-muted-foreground font-medium">{item}</p>
                     </div>
                   ))}

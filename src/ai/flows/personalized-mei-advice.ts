@@ -1,8 +1,7 @@
 'use server';
 
 /**
- * @fileOverview Consultoria Financeira de Elite para MEI (Foco em Distribuição e Caixa).
- * Realiza cálculos no servidor antes de consultar a IA para evitar alucinações matemáticas.
+ * @fileOverview Consultoria de IA para MEI.
  */
 
 async function getAvailableFreeModel(apiKey: string): Promise<string> {
@@ -12,8 +11,8 @@ async function getAvailableFreeModel(apiKey: string): Promise<string> {
     });
     const data = await response.json();
     const freeModels = data.data
-      ?.filter((model: any) => model.id.endsWith(':free'))
-      .map((model: any) => model.id) || [];
+      .filter((model: any) => model.id.endsWith(':free'))
+      .map((model: any) => model.id);
     if (freeModels.length > 0) return freeModels[0];
     return 'meta-llama/llama-3.2-3b-instruct:free';
   } catch {
@@ -24,7 +23,7 @@ async function getAvailableFreeModel(apiKey: string): Promise<string> {
 export type PersonalizedMeiAdviceOutput = {
   summary: string;
   distributionAdvice: string[];
-  savingsAdvice: string[];
+  meiLimitAdvice: string[];
   optimizationSuggestions: string[];
 };
 
@@ -34,87 +33,52 @@ export async function personalizedMeiAdvice(input: {
   prolabore: number;
   reservaPct: number;
   mesesFaturamento: number;
+  meiLimiteAnual: number;
 }): Promise<PersonalizedMeiAdviceOutput> {
-  // 1. Cálculos Financeiros Precisos no Servidor
-  const DAS_FIXO = 76;
-  const totalDespesas = input.custosOperacionais + DAS_FIXO + input.prolabore;
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) {
+    return {
+      summary: "Erro: chave da API não configurada. Adicione OPENROUTER_API_KEY no .env.local",
+      distributionAdvice: ["Configure sua API Key"],
+      meiLimitAdvice: ["Chave ausente"],
+      optimizationSuggestions: ["Verifique o arquivo .env"]
+    };
+  }
+
+  const model = await getAvailableFreeModel(apiKey);
+  const MEI_DAS_FIXO = 76;
+  const totalDespesas = input.custosOperacionais + MEI_DAS_FIXO + input.prolabore;
   const sobra = Math.max(0, input.faturamentoMensal - totalDespesas);
-  const valorReserva = (sobra * input.reservaPct) / 100;
-  const lucroDisponivel = sobra - valorReserva;
-  const margemSeguranca = input.faturamentoMensal > 0 ? (sobra / input.faturamentoMensal) * 100 : 0;
   
-  // Ponto de Equilíbrio considerando a reserva pretendida
-  const divisorEquilibrio = 1 - (input.reservaPct / 100);
-  const pontoEquilibrio = divisorEquilibrio > 0 ? (totalDespesas / divisorEquilibrio) : totalDespesas;
+  const faturamentoAnualProjetado = input.faturamentoMensal * 12;
+  const faturamentoAcumulado = input.faturamentoMensal * input.mesesFaturamento;
 
-  const defaultErrorResponse = {
-    summary: `Análise técnica: Sua margem de segurança atual é de ${margemSeguranca.toFixed(1)}%. Com uma sobra real de R$ ${sobra.toFixed(0)}, você possui fôlego para manter a operação, mas a disciplina na reserva de R$ ${valorReserva.toFixed(0)} é inegociável.`,
-    distributionAdvice: [
-      `Mantenha o pró-labore em R$ ${input.prolabore}`,
-      "Evite retiradas extras acima do lucro disponível",
-      "Priorize o pagamento do DAS no dia 20"
-    ],
-    savingsAdvice: [
-      `Sua meta de reserva mensal é R$ ${valorReserva.toFixed(0)}`,
-      `Busque atingir o ponto de equilíbrio de R$ ${pontoEquilibrio.toFixed(0)}`
-    ],
-    optimizationSuggestions: [
-      "Revise custos fixos mensais",
-      "Aumente o ticket médio para expandir a margem",
-      "Negocie prazos com fornecedores"
-    ]
-  };
+  const prompt = `
+Você é um consultor financeiro de elite, estilo Wall Street, focado em Microempreendedores Individuais (MEI) brasileiros.
+Sua missão é dar um veredito tático REAL baseado nos números.
 
-  try {
-    const apiKey = process.env.OPENROUTER_API_KEY;
-    if (!apiKey) {
-      return {
-        ...defaultErrorResponse,
-        summary: "Aviso: Conectividade com IA limitada. Exibindo diagnóstico técnico baseado em cálculos locais."
-      };
-    }
+DADOS DO NEGÓCIO:
+- Faturamento Médio: R$ ${input.faturamentoMensal}
+- Custos: R$ ${input.custosOperacionais}
+- Pró-labore: R$ ${input.prolabore}
+- Meses Ativos: ${input.mesesFaturamento}
+- Teto MEI: R$ ${input.meiLimiteAnual}
 
-    const model = await getAvailableFreeModel(apiKey);
-    
-    console.log('Enviando indicadores calculados para a IA:', {
-      faturamento: input.faturamentoMensal,
-      sobra,
-      margem: margemSeguranca,
-      lucroDisp: lucroDisponivel
-    });
+REGRAS PARA O "summary":
+1. NÃO repita os números brutos.
+2. Dê um VEREDITO: o negócio é sustentável ou um "castelo de cartas"?
+3. Identifique o GARGALO principal.
+4. Use linguagem direta, profissional e impactante. Foque no "pulo do gato".
+5. Texto curto e denso.
 
-    const prompt = `
-Você é um CFO de elite especializado em Microempreendedores Individuais.
-Sua missão é interpretar os seguintes INDICADORES FINANCEIROS REAIS (calculados pelo sistema) e fornecer conselhos estratégicos.
-
-DADOS FINANCEIROS REAIS:
-· Faturamento Mensal: R$ ${input.faturamentoMensal.toFixed(2)}
-· Custos Operacionais: R$ ${input.custosOperacionais.toFixed(2)}
-· DAS Fixo: R$ ${DAS_FIXO.toFixed(2)}
-· Pró-labore (Salário): R$ ${input.prolabore.toFixed(2)}
-· Total de Despesas (Saídas): R$ ${totalDespesas.toFixed(2)}
-· Sobra (Lucro antes da reserva): R$ ${sobra.toFixed(2)}
-· Margem de Segurança: ${margemSeguranca.toFixed(1)}%
-· Reserva Pretendida: ${input.reservaPct}%
-· Valor da Reserva Mensal: R$ ${valorReserva.toFixed(2)}
-· Lucro Disponível (Pós-reserva): R$ ${lucroDisponivel.toFixed(2)}
-· Ponto de Equilíbrio Estratégico: R$ ${pontoEquilibrio.toFixed(2)}
-
-DIRETRIZES:
-1. "summary": Analise a saúde da margem de segurança e o fôlego do caixa. Seja direto e profissional.
-2. "distributionAdvice": 3 ações práticas sobre pró-labore ou gestão de saídas.
-3. "savingsAdvice": 2 conselhos sobre a formação do colchão de segurança baseados no valor da reserva calculado.
-4. "optimizationSuggestions": 3 sugestões táticas de melhoria de margem ou redução de despesas.
-
-Responda APENAS um JSON válido. Não inclua markdown, explicações ou texto fora do JSON:
-{
-  "summary": "String",
-  "distributionAdvice": ["Array de 3"],
-  "savingsAdvice": ["Array de 2"],
-  "optimizationSuggestions": ["Array de 3"]
-}
+Responda APENAS um JSON válido com as chaves:
+- summary (string)
+- distributionAdvice (array de strings)
+- meiLimitAdvice (array de strings)
+- optimizationSuggestions (array de strings)
 `;
 
+  try {
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -124,28 +88,24 @@ Responda APENAS um JSON válido. Não inclua markdown, explicações ou texto fo
       body: JSON.stringify({
         model,
         messages: [{ role: 'user', content: prompt }],
-        temperature: 0.3, // Menos criatividade, mais precisão técnica
+        response_format: { type: 'json_object' },
       }),
     });
 
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`OpenRouter Error: ${response.status}`);
+    }
 
     const data = await response.json();
-    let content = data.choices?.[0]?.message?.content || "{}";
+    const content = data.choices[0]?.message?.content;
     
-    // Limpeza de possíveis blocos de código markdown
-    content = content.replace(/```json/g, "").replace(/```/g, "").trim();
-    
-    const parsed = JSON.parse(content);
-
+    return JSON.parse(content);
+  } catch (error: any) {
     return {
-      summary: parsed.summary || defaultErrorResponse.summary,
-      distributionAdvice: Array.isArray(parsed.distributionAdvice) ? parsed.distributionAdvice : defaultErrorResponse.distributionAdvice,
-      savingsAdvice: Array.isArray(parsed.savingsAdvice) ? parsed.savingsAdvice : defaultErrorResponse.savingsAdvice,
-      optimizationSuggestions: Array.isArray(parsed.optimizationSuggestions) ? parsed.optimizationSuggestions : defaultErrorResponse.optimizationSuggestions
+      summary: "Ocorreu um erro na análise estratégica. Verifique sua conexão ou a chave da API.",
+      distributionAdvice: ["Erro na consulta"],
+      meiLimitAdvice: ["Falha técnica"],
+      optimizationSuggestions: ["Tente novamente em instantes"]
     };
-  } catch (error) {
-    console.error('Erro na Consultoria de IA:', error);
-    return defaultErrorResponse;
   }
 }
