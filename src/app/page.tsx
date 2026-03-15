@@ -9,7 +9,7 @@ import { MeiLimitTracker } from "@/components/MeiLimitTracker";
 import { AccountGuide } from "@/components/AccountGuide";
 import { Checklist } from "@/components/Checklist";
 import { AiAdvisor } from "@/components/AiAdvisor";
-import { NfseGuide } from "@/components/NfseGuide";
+import { BureaucraticGuide } from "@/components/BureaucraticGuide";
 import { CashFlowLedger } from "@/components/CashFlowLedger";
 import { BusinessProfile } from "@/components/BusinessProfile";
 import { 
@@ -18,7 +18,7 @@ import {
   LayoutList, 
   ShieldCheck, 
   Sparkles, 
-  FileText, 
+  BookOpen, 
   BarChart3, 
   FileSpreadsheet,
   Briefcase
@@ -125,13 +125,13 @@ export default function Home() {
             <Landmark className="w-4 h-4" />
             <span className="hidden sm:inline">Contas</span>
           </TabsTrigger>
-          <TabsTrigger value="nfse" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs">
-            <FileText className="w-4 h-4" />
-            <span className="hidden sm:inline">NFS-e</span>
+          <TabsTrigger value="guia" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs text-amber-500 data-[state=active]:bg-amber-500/20">
+            <BookOpen className="w-4 h-4" />
+            <span className="hidden sm:inline">Guia MEI</span>
           </TabsTrigger>
-          <TabsTrigger value="guia" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs">
+          <TabsTrigger value="checklist" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs">
             <LayoutList className="w-4 h-4" />
-            <span className="hidden sm:inline">Guia</span>
+            <span className="hidden sm:inline">Ritual</span>
           </TabsTrigger>
           <TabsTrigger value="ia" className="flex flex-col gap-1 py-3 text-[10px] md:text-xs text-primary data-[state=active]:bg-primary/20">
             <Sparkles className="w-4 h-4" />
@@ -182,11 +182,11 @@ export default function Home() {
             <AccountGuide />
           </TabsContent>
 
-          <TabsContent value="nfse">
-            <NfseGuide />
+          <TabsContent value="guia">
+            <BureaucraticGuide />
           </TabsContent>
 
-          <TabsContent value="guia">
+          <TabsContent value="checklist">
             <Checklist fat={fat} custos={custos} prolabore={prolabore} />
           </TabsContent>
 
