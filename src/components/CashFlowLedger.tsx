@@ -96,6 +96,22 @@ const FAQS_PLANILHA = [
   {
     q: "O que é o Saldo Acumulado?",
     a: "O Saldo Acumulado representa a soma de todos os lucros reais (lucro após reserva) menos todas as distribuições de lucro realizadas até aquele mês específico. É o termômetro real da liquidez do seu CNPJ."
+  },
+  {
+    q: "Por que os valores de lucro de meses passados não mudam quando altero meu pró-labore?",
+    a: "Isso acontece devido ao sistema de Snapshot. Cada mês salva uma 'foto' das suas configurações de custos no momento do lançamento. Isso evita que uma mudança estratégica hoje distorça a realidade do que aconteceu meses atrás."
+  },
+  {
+    q: "Como a 'Sobra' é calculada?",
+    a: "A sobra é o faturamento bruto menos os custos operacionais, o imposto DAS e o seu pró-labore (salário). É o que sobra 'limpo' no caixa da empresa antes de você decidir quanto vai para a reserva."
+  },
+  {
+    q: "Posso reimportar uma transação que apaguei das pendências?",
+    a: "Sim. Se você clicar no botão 'Limpar histórico de importações', o sistema esquecerá quais IDs já foram processados e, na próxima sincronização, todas as transações do banco voltarão a aparecer como novas pendências."
+  },
+  {
+    q: "Qual a diferença entre Lucro Real e Saldo PJ?",
+    a: "Lucro Real é o que sobrou no mês após separar a reserva. Saldo PJ é o montante acumulado desse lucro que ainda não foi transferido para sua conta pessoal (PF)."
   }
 ];
 
@@ -292,10 +308,17 @@ export function CashFlowLedger({
         );
       });
 
-      toast({
-        title: "Sincronização Concluída",
-        description: `${newTransactions.length} novas transações encontradas.`
-      });
+      if (data.transactions.length > newTransactions.length) {
+        toast({
+          title: "Sincronização Concluída",
+          description: `${newTransactions.length} novas transações encontradas (${data.transactions.length - newTransactions.length} já importadas anteriormente).`
+        });
+      } else {
+        toast({
+          title: "Sincronização Concluída",
+          description: `${newTransactions.length} novas transações encontradas.`
+        });
+      }
     } catch (error) {
       toast({ title: "Erro na Sincronização", variant: "destructive" });
     } finally {
@@ -446,7 +469,7 @@ export function CashFlowLedger({
                     </Badge>
                   )}
                 </div>
-                <h3 className="text-xl font-bold tracking-tight">Sincronize seu Fluxo de Caixa</h3>
+                <h3 className="text-xl font-bold tracking-tight">Conecte sua conta PJ para importar transações automaticamente</h3>
                 <p className="text-xs text-muted-foreground font-medium max-w-sm">
                   Conecte sua conta PJ via Open Banking para importar transações.
                 </p>
@@ -529,11 +552,11 @@ export function CashFlowLedger({
 
       <Card className="overflow-hidden border-border/50 shadow-xl">
         <CardHeader className="flex flex-col lg:flex-row lg:items-center justify-between bg-card pb-4 gap-4 px-6 pt-6 border-b">
-          <CardTitle className="text-lg flex items-center gap-2"><BookOpen className="w-5 h-5 text-primary" />Livro de Caixa (Snapshot Mode)</CardTitle>
+          <CardTitle className="text-lg flex items-center gap-2"><BookOpen className="w-5 h-5 text-primary" />Livro de Caixa</CardTitle>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl">
-            <div className="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20"><div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Acumulado</div><div className="text-lg font-bold text-indigo-500">{formatCurrency(totals.acumuladoReceita)}</div><div className="text-[8px] font-black uppercase text-indigo-500/70">{percentualLimite.toFixed(1)}% do Teto</div></div>
-            <div className="p-3 bg-primary/10 rounded-xl border border-primary/20"><div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Lucro Bruto</div><div className="text-lg font-bold text-primary">{formatCurrency(totals.acumuladoLucro)}</div></div>
-            <div className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20"><div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Caixa PJ Operacional</div><div className="text-lg font-bold text-amber-500">{formatCurrency(totals.acumuladoSaldoPJ)}</div></div>
+            <div className="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20"><div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Faturamento Acumulado</div><div className="text-lg font-bold text-indigo-500">{formatCurrency(totals.acumuladoReceita)}</div><div className="text-[8px] font-black uppercase text-indigo-500/70">{percentualLimite.toFixed(1)}% do Teto</div></div>
+            <div className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20"><div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Lucro Bruto Total</div><div className="text-lg font-bold text-amber-500">{formatCurrency(totals.acumuladoLucro)}</div></div>
+            <div className="p-3 bg-primary/10 rounded-xl border border-primary/20"><div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Caixa PJ Operacional</div><div className="text-lg font-bold text-primary">{formatCurrency(totals.acumuladoSaldoPJ)}</div></div>
           </div>
         </CardHeader>
         <CardContent className="p-0">
@@ -547,9 +570,9 @@ export function CashFlowLedger({
                   <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-orange-500">Custos Op.</TableHead>
                   <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase px-6">Sobra</TableHead>
                   <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-purple-500 px-6">Reserva PJ</TableHead>
-                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-primary px-6">Lucro Real</TableHead>
+                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-amber-500 px-6">Lucro Real</TableHead>
                   <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-red-500 px-6">Distribuição</TableHead>
-                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-amber-500 px-6 font-black">Saldo Acumulado</TableHead>
+                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-primary px-6 font-black">Saldo Acumulado</TableHead>
                   <TableHead className="w-[180px] text-right font-bold text-[10px] uppercase px-6 opacity-30 italic">Reserva/Salário Usado</TableHead>
                 </TableRow>
               </TableHeader>
@@ -562,9 +585,9 @@ export function CashFlowLedger({
                     <TableCell className="py-2 px-6"><Input type="number" disabled={!row.active} value={row.custos} onChange={(e) => updateMonth(i, 'custos', e.target.value)} className="h-10 text-xs font-bold text-orange-500" /></TableCell>
                     <TableCell className="text-right text-xs font-medium px-6">{formatCurrency(row.sobra || 0)}</TableCell>
                     <TableCell className="text-right text-xs font-bold text-purple-500 px-6">{formatCurrency(row.reserva || 0)}</TableCell>
-                    <TableCell className="text-right text-sm font-black text-primary px-6">{formatCurrency(row.lucro || 0)}</TableCell>
+                    <TableCell className="text-right text-sm font-black text-amber-500 px-6">{formatCurrency(row.lucro || 0)}</TableCell>
                     <TableCell className="text-right text-xs font-bold text-red-500 px-6">{formatCurrency(row.distribuicao || 0)}</TableCell>
-                    <TableCell className="text-right text-xs font-black text-amber-500 px-6 bg-amber-500/5">{formatCurrency(row.acumuladoSaldoPJ || 0)}</TableCell>
+                    <TableCell className="text-right text-xs font-black text-primary px-6 bg-primary/5">{formatCurrency(row.acumuladoSaldoPJ || 0)}</TableCell>
                     <TableCell className="text-right text-[10px] font-medium text-muted-foreground px-6 opacity-30 italic">
                       {row.prolabore_usado ? `S: ${formatCurrency(row.prolabore_usado)} | R: ${row.reservaPct_usado}%` : "-"}
                     </TableCell>
@@ -672,7 +695,21 @@ export function CashFlowLedger({
 
       <section className="space-y-6 pt-6">
         <div className="flex items-center gap-3 px-1"><div className="p-2.5 bg-primary/10 rounded-xl text-primary shadow-inner"><HelpCircle className="w-6 h-6" /></div><div><h3 className="font-headline font-bold text-xl tracking-tight">FAQ de Gestão</h3></div></div>
-        <Accordion type="single" collapsible className="w-full space-y-3">{FAQS_PLANILHA.map((faq, idx) => (<AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-2xl px-5 bg-card/40 shadow-sm hover:shadow-md transition-all hover:bg-card"><AccordionTrigger className="text-sm font-bold text-left hover:no-underline py-5 leading-relaxed group"><span className="group-hover:text-primary transition-colors">{faq.q}</span></AccordionTrigger><AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-6 pt-2 font-medium"><div className="flex gap-4"><div className="w-1 h-full bg-primary/20 rounded-full shrink-0" />{faq.a}</div></AccordionContent></AccordionItem>))} </Accordion>
+        <Accordion type="single" collapsible className="w-full space-y-3">
+          {FAQS_PLANILHA.map((faq, idx) => (
+            <AccordionItem key={idx} value={`faq-${idx}`} className="border rounded-2xl px-5 bg-card/40 shadow-sm hover:shadow-md transition-all hover:bg-card">
+              <AccordionTrigger className="text-sm font-bold text-left hover:no-underline py-5 leading-relaxed group">
+                <span className="group-hover:text-primary transition-colors">{faq.q}</span>
+              </AccordionTrigger>
+              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pb-6 pt-2 font-medium">
+                <div className="flex gap-4">
+                  <div className="w-1 h-full bg-primary/20 rounded-full shrink-0" />
+                  {faq.a}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))} 
+        </Accordion>
       </section>
 
       <style jsx global>{` .no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; } `}</style>
