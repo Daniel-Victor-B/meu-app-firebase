@@ -38,7 +38,8 @@ import {
   TrendingUp,
   Scale,
   ArrowRight,
-  Activity
+  Activity,
+  Save
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -71,7 +72,7 @@ interface BankTransaction {
 type ActivityLogEntry = {
   id: string;
   timestamp: number;
-  actionType: 'import' | 'manual_edit' | 'month_toggle' | 'clear_history' | 'clear_log';
+  actionType: 'import' | 'manual_edit' | 'month_toggle' | 'clear_history' | 'clear_log' | 'distribution';
   description: string;
   details?: any;
   monthIndex?: number;
@@ -559,15 +560,34 @@ export function CashFlowLedger({
                     <div className="p-2.5 bg-indigo-500/10 rounded-xl text-indigo-500 border border-indigo-500/20"><Scale className="w-5 h-5" /></div>
                     <h5 className="font-black text-xs uppercase tracking-widest">Ajuste de Alocação</h5>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => setDistribuicaoLucroPct(smartTarget)}
-                    className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest gap-2 bg-primary/5 border-primary/20 text-primary hover:bg-primary/20"
-                  >
-                    <RefreshCw className="w-3 h-3" />
-                    Sincronizar IA
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => {
+                        addLogEntry({
+                          actionType: 'distribution',
+                          description: `Distribuição do ${selectedQuarter + 1}º trimestre: ${formatCurrency(qProfitPF_Manual)} para PF e ${formatCurrency(qProfitPJ_Manual)} retidos na PJ.`,
+                          amount: qProfit,
+                          details: { pf: qProfitPF_Manual, pj: qProfitPJ_Manual, quarter: selectedQuarter }
+                        });
+                        toast({ title: "Distribuição registrada", description: "Decisão salva no histórico." });
+                      }}
+                      className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest gap-2 bg-primary/5 border-primary/20 text-primary hover:bg-primary/20"
+                    >
+                      <Save className="w-3 h-3" />
+                      Registrar
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setDistribuicaoLucroPct(smartTarget)}
+                      className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest gap-2 bg-primary/5 border-primary/20 text-primary hover:bg-primary/20"
+                    >
+                      <RefreshCw className="w-3 h-3" />
+                      Sincronizar IA
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="space-y-8 flex-1 flex flex-col justify-center">
@@ -653,6 +673,7 @@ export function CashFlowLedger({
                         {entry.actionType === 'month_toggle' && 'Status'}
                         {entry.actionType === 'clear_history' && 'Limpeza'}
                         {entry.actionType === 'clear_log' && 'Reset'}
+                        {entry.actionType === 'distribution' && 'Distribuição'}
                       </Badge>
                     </div>
                     {entry.amount !== undefined && entry.amount !== 0 && (
