@@ -29,6 +29,12 @@ export interface MonthlyData {
   custos: number;
   active: boolean;
   distribuicao?: number; // Valor transferido para PF no mês
+  // Novos campos para imutabilidade paramétrica
+  prolabore_usado?: number;
+  reservaPct_usado?: number;
+  sobra?: number;
+  reserva?: number;
+  lucro?: number;
 }
 
 export default function Home() {
