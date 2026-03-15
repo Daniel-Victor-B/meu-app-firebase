@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   FileText, 
-  Calendar, 
   ShieldCheck, 
   ExternalLink, 
   Info, 
@@ -21,41 +20,84 @@ import {
   Key,
   Globe,
   Youtube,
-  GraduationCap
+  GraduationCap,
+  Rocket,
+  LogOut,
+  HeartHandshake,
+  Calculator,
+  Zap
 } from "lucide-react";
-import Image from "next/image";
 import { formatCurrency } from "@/lib/formatters";
 
 export function BureaucraticGuide() {
   const { businessData } = useBusiness();
   const [activeTab, setActiveTab] = useState("nfs-e");
 
+  const SALARIO_MINIMO_2026 = 1621;
+
   const calcularDAS = () => {
-    const ramo = businessData.ramo.toLowerCase();
-    if (ramo.includes('comércio') || ramo.includes('indústria') || ramo.includes('alimentação')) return 76;
-    if (ramo.includes('serviços')) return 81;
-    if (ramo.includes('transporte')) return 86;
-    return 81; // Padrão serviços
+    const INSS = SALARIO_MINIMO_2026 * 0.05; // R$ 81,05
+    const ICMS = 1.00;
+    const ISS = 5.00;
+
+    const ramo = businessData.ramo?.toLowerCase() || "";
+
+    if (ramo.includes("transporte") || ramo.includes("caminhoneiro")) {
+      const INSS_CAMINHONEIRO = SALARIO_MINIMO_2026 * 0.12; // R$ 194,52
+      return INSS_CAMINHONEIRO + ICMS;
+    }
+    
+    if (ramo.includes("comércio") && ramo.includes("serviços")) {
+      return INSS + ICMS + ISS; // R$ 87,05
+    }
+
+    if (ramo.includes("comércio") || ramo.includes("indústria") || ramo.includes("alimentação")) {
+      return INSS + ICMS; // R$ 82,05
+    }
+    
+    if (ramo.includes("serviços")) {
+      return INSS + ISS; // R$ 86,05
+    }
+    
+    return INSS + ICMS; // fallback
   };
 
   const dasValue = calcularDAS();
 
   const sections = [
     {
+      id: "abrir",
+      label: "Abrir MEI",
+      icon: <Rocket className="w-4 h-4" />,
+      title: "Formalização (Abrir MEI)",
+      description: "Como se tornar MEI de forma gratuita e segura em 2026.",
+      officialLink: "https://www.gov.br/empresas-e-negocios/pt-br/empreendedor",
+      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      steps: [
+        "Verifique se seu CPF está regular e se você possui conta gov.br Prata ou Ouro.",
+        "Acesse o Portal do Empreendedor oficial (gov.br).",
+        "Escolha sua atividade principal (CNAE) e atividades secundárias.",
+        "Preencha os dados de endereço e contato do negócio.",
+        "Confirme as declarações de desimpedimento e opção pelo Simples Nacional.",
+        "Emita e guarde seu Certificado de Condição de MEI (CCMEI)."
+      ],
+      warning: "A formalização é 100% GRATUITA no portal do governo. Desconfie de sites que cobram taxas para abrir o MEI."
+    },
+    {
       id: "nfs-e",
       label: "Nota Fiscal",
       icon: <FileText className="w-4 h-4" />,
       title: "Emissão de NFS-e Nacional",
       description: "O MEI deve emitir nota fiscal sempre que vender para empresas (CNPJ).",
-      officialLink: "https://www.nfse.gov.br",
-      videoUrl: "https://www.youtube.com/embed/PjRreV0fP6c", // Exemplo de vídeo explicativo
+      officialLink: "https://nfse.gov.br/EmissorNacional",
+      videoUrl: "https://www.youtube.com/embed/PjRreV0fP6c",
       steps: [
-        "Acesse o Portal NFS-e Nacional com sua conta Gov.br (Prata ou Ouro).",
-        "Configure seu e-mail e telefone no menu de configurações (engrenagem).",
-        "Cadastre seus 'Serviços Favoritos' para facilitar a emissão.",
-        "Utilize a 'Emissão Simplificada' para faturar rapidamente."
+        "Acesse o Portal NFS-e Nacional com sua conta Gov.br.",
+        "Configure seu e-mail e telefone no menu de configurações.",
+        "Cadastre seus 'Serviços Favoritos' para facilitar a emissão diária.",
+        "Utilize a 'Emissão Simplificada' para faturar rapidamente via web ou app."
       ],
-      warning: "Para vendas para Pessoas Físicas (CPF), a nota é opcional, a menos que o cliente exija."
+      warning: "Desde 2026, o uso do Emissor Nacional é obrigatório para todos os MEIs prestadores de serviço do país."
     },
     {
       id: "das",
@@ -66,58 +108,107 @@ export function BureaucraticGuide() {
       officialLink: "https://www.gov.br/mei/pt-br/servicos/pagamento-do-das",
       videoUrl: "https://www.youtube.com/embed/fAEv38zS93w",
       steps: [
-        "Acesse o PGMEI no portal oficial do Governo.",
-        "Informe seu CNPJ.",
+        "Acesse o portal do PGMEI e informe seu CNPJ.",
         "Selecione o ano vigente e os meses em aberto.",
-        "Pague via PIX (QR Code) para compensação imediata."
+        "Gere o boleto ou use o QR Code PIX para pagamento imediato.",
+        "O vencimento ocorre sempre no dia 20 de cada mês."
       ],
       special: {
-        label: "Cálculo por Ramo",
-        value: `R$ ${dasValue},00`,
-        detail: `Baseado no seu ramo: ${businessData.ramo}`
-      }
+        label: "Cálculo 2026",
+        value: `R$ ${dasValue.toFixed(2).replace('.', ',')}`,
+        detail: "Baseado no Salário Mínimo de R$ 1.621,00"
+      },
+      warning: "O atraso no DAS gera multa de 0,33% ao dia + juros SELIC. Mantenha o pagamento em dia para não perder direitos INSS."
     },
     {
       id: "declaracao",
       label: "DASN-SIMEI",
       icon: <FileCheck className="w-4 h-4" />,
-      title: "Declaração Anual de Faturamento",
-      description: "Obrigatória para todos os MEIs, mesmo que não tenham faturado nada no ano.",
+      title: "Declaração Anual (DASN)",
+      description: "Obrigatória para todos, mesmo que não tenha faturado nada no ano.",
       officialLink: "https://www.gov.br/mei/pt-br/servicos/declaracao-anual-de-faturamento",
       videoUrl: "https://www.youtube.com/embed/5U2BvJqW3jY",
       steps: [
-        "Soma todo o seu faturamento bruto do ano anterior (vendas com e sem nota).",
-        "Acesse o portal DASN-SIMEI entre Janeiro e Maio.",
-        "Informe o valor total e se teve funcionários.",
-        "Guarde o recibo de entrega — ele é sua prova de renda oficial."
+        "Soma todo o seu faturamento bruto (vendas com e sem nota) do ano anterior.",
+        "Acesse o portal DASN-SIMEI oficial entre 01/Jan e 31/Mai.",
+        "Informe o valor total e se teve funcionários registrados.",
+        "Guarde o recibo — ele é sua prova de renda oficial para bancos."
       ],
-      warning: "O prazo termina sempre em 31 de Maio. O atraso gera multa automática de R$ 50,00."
+      warning: "Atraso na declaração gera multa mínima de R$ 50,00. O prazo final é 31 de maio."
+    },
+    {
+      id: "direitos",
+      label: "Direitos INSS",
+      icon: <HeartHandshake className="w-4 h-4" />,
+      title: "Benefícios Previdenciários",
+      description: "O que você garante ao pagar o DAS em dia.",
+      officialLink: "https://www.gov.br/mei/pt-br/empreendedor",
+      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      steps: [
+        "Aposentadoria por idade (mulheres 62, homens 65).",
+        "Auxílio-doença e aposentadoria por invalidez (carência de 12 meses).",
+        "Salário-maternidade (carência de 10 meses).",
+        "Pensão por morte para seus dependentes."
+      ],
+      warning: "A formalização pode suspender benefícios assistenciais como Seguro-Desemprego, BPC/LOAS ou Prouni. Verifique sua situação antes de abrir."
+    },
+    {
+      id: "carne-leao",
+      label: "Carnê-leão",
+      icon: <Calculator className="w-4 h-4" />,
+      title: "Imposto de Renda PF",
+      description: "Recolhimento mensal para rendimentos recebidos de pessoas físicas.",
+      officialLink: "https://www.gov.br/receitafederal",
+      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      steps: [
+        "O lucro do MEI tem parcela isenta (8% comércio, 16% transporte, 32% serviços).",
+        "O excedente do lucro é tributável na Declaração de IRPF da Pessoa Física.",
+        "Rendimentos extras de PF ou exterior devem ser lançados mensalmente no Carnê-leão.",
+        "Acesse o e-CAC com sua conta gov.br para preencher o programa online."
+      ]
+    },
+    {
+      id: "baixar",
+      label: "Baixar MEI",
+      icon: <LogOut className="w-4 h-4" />,
+      title: "Encerramento (Baixar MEI)",
+      description: "Como dar baixa no seu CNPJ MEI de forma correta.",
+      officialLink: "https://www.gov.br/empresas-e-negocios/pt-br/empreendedor/servicos-para-mei/baixa-do-mei",
+      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      steps: [
+        "Acesse a opção 'Baixar MEI' no Portal do Empreendedor.",
+        "Informe o motivo do encerramento e confirme a solicitação.",
+        "Emita a Certidão de Baixa do CNPJ.",
+        "Entregue a DASN-SIMEI de Situação Especial (Extinção) em até 30 dias.",
+        "Importante: Dívidas não pagas do CNPJ migram automaticamente para o seu CPF."
+      ]
     },
     {
       id: "alvara",
-      label: "Alvará & Licenças",
+      label: "Alvará",
       icon: <Building className="w-4 h-4" />,
       title: "Alvará de Funcionamento",
-      description: "O MEI é dispensado de alvará prévio, mas deve cumprir as normas municipais.",
+      description: "Regras municipais e dispensa de alvará prévio.",
       officialLink: "https://www.gov.br/empresas-e-negocios/pt-br/redesim/abrir-uma-empresa",
       steps: [
-        "O CCMEI (Certificado do MEI) serve como alvará provisório.",
+        "O MEI é dispensado de alvarás e licenças prévias para iniciar.",
         "Ao abrir, você concorda com o Termo de Ciência e Responsabilidade.",
-        "Verifique no site da sua prefeitura se há exigências específicas para vigilância sanitária ou bombeiros.",
-        "Mantenha seu CCMEI sempre impresso e disponível na sede do negócio."
+        "Verifique as normas da prefeitura para vigilância e bombeiros.",
+        "Mantenha o CCMEI sempre disponível para fiscalização."
       ]
     },
     {
       id: "certificado",
-      label: "Certificado Digital",
+      label: "Certificado",
       icon: <Key className="w-4 h-4" />,
       title: "Certificado Digital (e-CNPJ)",
-      description: "Sua assinatura eletrônica com validade jurídica. Opcional, mas recomendado para alta performance.",
+      description: "Sua assinatura eletrônica com validade jurídica.",
+      officialLink: "https://www.gov.br/receitafederal",
       steps: [
-        "O Certificado Tipo A1 (arquivo) é o mais comum e dura 12 meses.",
-        "Permite assinar contratos digitalmente sem precisar de cartório.",
-        "Facilita o acesso a portais mais complexos da Receita Federal.",
-        "Escolha uma autoridade certificadora credenciada (Ex: Serasa, Certisign, Soluti)."
+        "Certificado Tipo A1 (arquivo) é o mais comum para MEIs.",
+        "Permite assinar contratos e emitir NFe de produto em alguns estados.",
+        "Opcional para NFS-e nacional, mas exigido para sistemas de gestão avançados.",
+        "Adquira em uma autoridade certificadora credenciada (Serasa, Certisign, etc)."
       ]
     }
   ];
@@ -133,18 +224,18 @@ export function BureaucraticGuide() {
           </div>
           <div>
             <h2 className="text-2xl font-headline font-bold">Guia MEI de Elite</h2>
-            <p className="text-sm text-muted-foreground font-medium">Sua central de inteligência burocrática e fiscal.</p>
+            <p className="text-sm text-muted-foreground font-medium">Sua central de inteligência burocrática atualizada para 2026.</p>
           </div>
         </div>
         <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 px-3 py-1 font-black text-[10px] tracking-widest uppercase">
-          Versão {new Date().getFullYear()}.1
+          Versão 2026.2
         </Badge>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-2 md:grid-cols-5 h-auto p-1 bg-secondary/20 border border-border/50 rounded-2xl">
+        <TabsList className="grid grid-cols-3 md:grid-cols-9 h-auto p-1 bg-secondary/20 border border-border/50 rounded-2xl overflow-x-auto no-scrollbar">
           {sections.map(s => (
-            <TabsTrigger key={s.id} value={s.id} className="flex flex-col gap-1 py-3 text-[10px] md:text-xs">
+            <TabsTrigger key={s.id} value={s.id} className="flex flex-col gap-1 py-3 text-[9px] md:text-xs min-w-[80px]">
               {s.icon}
               <span className="hidden sm:inline">{s.label}</span>
             </TabsTrigger>
@@ -247,11 +338,11 @@ export function BureaucraticGuide() {
                 </div>
                 <div className="space-y-1">
                   <h5 className="font-bold text-sm">Acessar Portal do Empreendedor</h5>
-                  <p className="text-[10px] text-muted-foreground font-medium">Link oficial do governo federal para todos os serviços MEI.</p>
+                  <p className="text-[10px] text-muted-foreground font-medium">Link oficial do governo federal atualizado para 2026.</p>
                 </div>
                 <Button 
                   className="w-full rounded-xl h-11 font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20"
-                  onClick={() => window.open("https://www.gov.br/mei", "_blank")}
+                  onClick={() => window.open("https://www.gov.br/empresas-e-negocios/pt-br/empreendedor", "_blank")}
                 >
                   Ir para o site do Governo
                 </Button>
@@ -264,11 +355,11 @@ export function BureaucraticGuide() {
       <section className="p-8 rounded-[40px] bg-secondary/20 border-2 border-dashed border-border/50 text-center space-y-6">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-full">
           <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Blindagem Fiscal Ativa</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Blindagem Fiscal Ativa 2026</span>
         </div>
         <h4 className="text-xl font-black tracking-tight">Precisa de ajuda com a Declaração?</h4>
         <p className="text-xs text-muted-foreground font-medium max-w-lg mx-auto">
-          Utilize nossa aba de **AI Advice** para receber orientações personalizadas sobre sua transição para ME ou como otimizar seus impostos.
+          Utilize nossa aba de **AI Advice** para receber orientações personalizadas sobre sua transição para ME ou como otimizar seus impostos com base no faturamento real do seu livro de caixa.
         </p>
       </section>
     </div>
