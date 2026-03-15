@@ -33,7 +33,9 @@ import {
   Scale,
   ArrowRight,
   Activity,
-  AlertCircle
+  AlertCircle,
+  CheckCircle2,
+  Unlink
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -473,19 +475,73 @@ export function CashFlowLedger({
                     <span className="text-[10px] font-black uppercase tracking-[0.2em]">Automação Bancária</span>
                   </div>
                   {isBankConnected && connectedBankName && (
-                    <Badge variant="outline" className="bg-primary/20 text-primary border-primary/20 text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5">
-                      Conectado: {connectedBankName}
-                    </Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="bg-primary/20 text-primary border-primary/20 text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5">
+                        Conectado: {connectedBankName} <CheckCircle2 className="ml-1 w-3 h-3 inline" />
+                      </Badge>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-muted-foreground hover:text-destructive transition-colors"
+                              onClick={() => {
+                                if (confirm("Desconectar conta bancária? Isso não afetará os dados já importados.")) {
+                                  setIsBankConnected(false);
+                                  setConnectedBankName("");
+                                  localStorage.removeItem("mei-flow-bank-connected");
+                                  localStorage.removeItem("mei-flow-connected-bank-name");
+                                  toast({ title: "Conta desconectada", description: "Você pode conectar novamente a qualquer momento." });
+                                }
+                              }}
+                            >
+                              <Unlink className="h-3.5 w-3.5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="top">Desconectar conta</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                   )}
                 </div>
-                <h3 className="text-xl font-bold tracking-tight">Importação Automática via Open Banking</h3>
+                <h3 className="text-xl font-bold tracking-tight">
+                  {isBankConnected ? "Sincronização em Tempo Real" : "Importação Automática via Open Banking"}
+                </h3>
                 <p className="text-xs text-muted-foreground font-medium max-w-sm">
-                  Conecte sua conta PJ para importar transações e gerir seu caixa em tempo real.
+                  {isBankConnected 
+                    ? `Sua conta ${connectedBankName} está vinculada. Clique abaixo para atualizar seu fluxo de caixa.`
+                    : "Conecte sua conta PJ via Open Banking para importar transações e gerir seu caixa em tempo real."}
                 </p>
               </div>
-              <Button onClick={syncBank} disabled={isSyncing} className="rounded-xl h-12 px-8 font-black uppercase tracking-widest text-[10px] gap-2 shadow-xl shadow-primary/20">
-                {isSyncing ? "Sincronizando..." : "Conectar Conta PJ"}
-              </Button>
+              
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="relative">
+                      <Button 
+                        onClick={syncBank} 
+                        disabled={isSyncing} 
+                        className="rounded-xl h-12 px-8 font-black uppercase tracking-widest text-[10px] gap-2 shadow-xl shadow-primary/20"
+                      >
+                        {isSyncing ? "Sincronizando..." : (isBankConnected ? "SINCRONIZAR AGORA" : "CONECTAR CONTA PJ")}
+                        {pendingTransactions.length > 0 && isBankConnected && !isSyncing && (
+                          <Badge className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-[8px] h-4 min-w-4 flex items-center justify-center border-2 border-background px-1">
+                            {pendingTransactions.length}
+                          </Badge>
+                        )}
+                      </Button>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    <p className="text-[10px]">
+                      {isBankConnected 
+                        ? "Busca novas movimentações no seu banco e atualiza a lista de pendências." 
+                        : "Inicia o fluxo de conexão segura com seu banco PJ."}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </CardContent>
           </Card>
         </div>
