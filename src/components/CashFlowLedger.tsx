@@ -450,6 +450,15 @@ export function CashFlowLedger({
     toast({ title: "Distribuição registrada!" });
   };
 
+  const formatInputCurrency = (val: number) => {
+    return `R$ ${val.toLocaleString('pt-BR')}`;
+  };
+
+  const parseInputCurrency = (val: string) => {
+    const numeric = val.replace(/\D/g, '');
+    return parseFloat(numeric) || 0;
+  };
+
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -469,9 +478,9 @@ export function CashFlowLedger({
                     </Badge>
                   )}
                 </div>
-                <h3 className="text-xl font-bold tracking-tight">Conecte sua conta PJ para importar transações automaticamente</h3>
+                <h3 className="text-xl font-bold tracking-tight">Importação Automática via Open Banking</h3>
                 <p className="text-xs text-muted-foreground font-medium max-w-sm">
-                  Conecte sua conta PJ via Open Banking para importar transações.
+                  Conecte sua conta PJ para importar transações e gerir seu caixa em tempo real.
                 </p>
               </div>
               <Button onClick={syncBank} disabled={isSyncing} className="rounded-xl h-12 px-8 font-black uppercase tracking-widest text-[10px] gap-2 shadow-xl shadow-primary/20">
@@ -581,8 +590,24 @@ export function CashFlowLedger({
                   <TableRow key={i} className={cn("transition-all duration-300", highlightedMonth === i && "bg-primary/20 shadow-inner", !row.active && "opacity-20 grayscale")}>
                     <TableCell className="py-3 text-center border-r"><Switch checked={row.active} onCheckedChange={(c) => updateMonth(i, 'active', c)} className="scale-90" /></TableCell>
                     <TableCell className="font-bold text-xs py-3 border-r text-center bg-card">{MESES[i]}</TableCell>
-                    <TableCell className="py-2 px-6"><Input type="number" disabled={!row.active} value={row.receita} onChange={(e) => updateMonth(i, 'receita', e.target.value)} className="h-10 text-xs font-bold text-indigo-500" /></TableCell>
-                    <TableCell className="py-2 px-6"><Input type="number" disabled={!row.active} value={row.custos} onChange={(e) => updateMonth(i, 'custos', e.target.value)} className="h-10 text-xs font-bold text-orange-500" /></TableCell>
+                    <TableCell className="py-2 px-6">
+                      <Input 
+                        type="text" 
+                        disabled={!row.active} 
+                        value={formatInputCurrency(row.receita)} 
+                        onChange={(e) => updateMonth(i, 'receita', parseInputCurrency(e.target.value))} 
+                        className="h-10 text-xs font-bold text-indigo-500" 
+                      />
+                    </TableCell>
+                    <TableCell className="py-2 px-6">
+                      <Input 
+                        type="text" 
+                        disabled={!row.active} 
+                        value={formatInputCurrency(row.custos)} 
+                        onChange={(e) => updateMonth(i, 'custos', parseInputCurrency(e.target.value))} 
+                        className="h-10 text-xs font-bold text-orange-500" 
+                      />
+                    </TableCell>
                     <TableCell className="text-right text-xs font-medium px-6">{formatCurrency(row.sobra || 0)}</TableCell>
                     <TableCell className="text-right text-xs font-bold text-purple-500 px-6">{formatCurrency(row.reserva || 0)}</TableCell>
                     <TableCell className="text-right text-sm font-black text-amber-500 px-6">{formatCurrency(row.lucro || 0)}</TableCell>
@@ -609,9 +634,9 @@ export function CashFlowLedger({
                 <h4 className="text-2xl md:text-3xl font-black tracking-tighter">Gestão de <span className="text-primary italic">90 Dias</span></h4>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2 p-1.5 bg-background/50 rounded-2xl border border-border/50">
+            <div className="flex flex-nowrap overflow-x-auto no-scrollbar gap-2 p-1.5 bg-background/50 rounded-2xl border border-border/50">
               {["1º T", "2º T", "3º T", "4º T"].map((t, i) => (
-                <Button key={i} variant={selectedQuarter === i ? "default" : "ghost"} onClick={() => setSelectedQuarter(i)} className={cn("rounded-xl font-bold h-12 px-5 transition-all text-[11px] uppercase tracking-wider flex flex-col gap-0.5", selectedQuarter === i && "shadow-lg shadow-primary/20 scale-105")}>
+                <Button key={i} variant={selectedQuarter === i ? "default" : "ghost"} onClick={() => setSelectedQuarter(i)} className={cn("rounded-xl font-bold h-12 px-5 transition-all text-[11px] uppercase tracking-wider flex flex-col gap-0.5 shrink-0", selectedQuarter === i && "shadow-lg shadow-primary/20 scale-105")}>
                   <span>{t}</span>
                   <span className={cn("text-[9px] font-black", selectedQuarter === i ? "text-primary-foreground/70" : "text-primary")}>{formatCurrency(quarterlyTotals[i] || 0)}</span>
                 </Button>
@@ -647,12 +672,12 @@ export function CashFlowLedger({
               <div className="space-y-6 flex-1 flex flex-col justify-center">
                 <div className="flex justify-between items-end mb-2">
                   <div className="space-y-1"><span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">PF (CPF)</span><div className="text-3xl font-black">{distribuicaoLucroPct}%</div></div>
-                  <div className="space-y-1 text-right"><span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">PJ (CNPJ)</span><div className="text-3xl font-black">{100 - distribuicaoLucroPct}%</div></div>
+                  <div className="space-y-1 text-right"><span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">MANTER/RETER PJ (CNPJ)</span><div className="text-3xl font-black">{100 - distribuicaoLucroPct}%</div></div>
                 </div>
                 <Slider value={[distribuicaoLucroPct]} min={0} max={100} step={5} onValueChange={([v]) => setDistribuicaoLucroPct(v)} className="py-4" />
                 <div className="grid grid-cols-2 gap-6 pt-6 border-t border-border/50">
                   <div className="space-y-1"><div className="text-[9px] font-black uppercase text-muted-foreground">Transferir</div><div className="text-2xl font-black text-blue-400">{formatCurrency(qProfitPF_Manual)}</div></div>
-                  <div className="space-y-1 text-right"><div className="text-[9px] font-black uppercase text-muted-foreground">Reter</div><div className="text-2xl font-black text-muted-foreground">{formatCurrency(qProfitPJ_Manual)}</div></div>
+                  <div className="space-y-1 text-right"><div className="text-[9px] font-black uppercase text-muted-foreground">Manter/Reter</div><div className="text-2xl font-black text-muted-foreground">{formatCurrency(qProfitPJ_Manual)}</div></div>
                 </div>
               </div>
             </Card>
