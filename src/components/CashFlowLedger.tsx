@@ -94,8 +94,8 @@ const FAQS_PLANILHA = [
     a: "É o sistema do MEI Flow que garante que seus dados passados fiquem protegidos. Se você aumentar seu pró-labore hoje, os lucros de meses passados não mudam, pois eles guardam as configurações da época."
   },
   {
-    q: "Como funciona o Saldo PJ?",
-    a: "O Saldo PJ é o dinheiro 'vivo' que permanece na conta da empresa após você pagar seus custos, o DAS, seu Pró-labore e realizar a Distribuição de Lucros para sua conta pessoal."
+    q: "O que é o Saldo Acumulado?",
+    a: "O Saldo Acumulado representa a soma de todos os lucros reais (lucro após reserva) menos todas as distribuições de lucro realizadas até aquele mês específico. É o termômetro real da liquidez do seu CNPJ."
   }
 ];
 
@@ -542,7 +542,7 @@ export function CashFlowLedger({
                   <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-purple-500 px-6">Reserva PJ</TableHead>
                   <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-primary px-6">Lucro Real</TableHead>
                   <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-red-500 px-6">Distribuição</TableHead>
-                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-emerald-500 px-6 font-black">Saldo PJ</TableHead>
+                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-emerald-500 px-6 font-black">Saldo Acumulado</TableHead>
                   <TableHead className="w-[180px] text-right font-bold text-[10px] uppercase px-6 opacity-30 italic">Reserva/Salário Usado</TableHead>
                 </TableRow>
               </TableHeader>
@@ -557,7 +557,7 @@ export function CashFlowLedger({
                     <TableCell className="text-right text-xs font-bold text-purple-500 px-6">{formatCurrency(row.reserva || 0)}</TableCell>
                     <TableCell className="text-right text-sm font-black text-primary px-6">{formatCurrency(row.lucro || 0)}</TableCell>
                     <TableCell className="text-right text-xs font-bold text-red-500 px-6">{formatCurrency(row.distribuicao || 0)}</TableCell>
-                    <TableCell className="text-right text-xs font-black text-emerald-500 px-6 bg-emerald-500/5">{formatCurrency(row.saldoMensal || 0)}</TableCell>
+                    <TableCell className="text-right text-xs font-black text-emerald-500 px-6 bg-emerald-500/5">{formatCurrency(row.acumuladoSaldoPJ || 0)}</TableCell>
                     <TableCell className="text-right text-[10px] font-medium text-muted-foreground px-6 opacity-30 italic">
                       {row.prolabore_usado ? `S: ${formatCurrency(row.prolabore_usado)} | R: ${row.reservaPct_usado}%` : "-"}
                     </TableCell>
