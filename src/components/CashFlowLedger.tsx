@@ -322,19 +322,50 @@ export function CashFlowLedger({
     let acumuladoReservaTotal = 0;
     let acumuladoReceitaTotal = 0;
     let acumuladoLucroTotal = 0;
+    let acumuladoDistribuicaoTotal = 0;
 
     const rows = monthlyData.map((m) => {
-      if (!m.active) return { ...m, sobra: 0, reserva: 0, lucro: 0, acumuladoReserva: acumuladoReservaTotal, acumuladoLucro: acumuladoLucroTotal };
+      const distValue = m.distribuicao || 0;
+      if (!m.active) return { 
+        ...m, 
+        sobra: 0, 
+        reserva: 0, 
+        lucro: 0, 
+        distribuicao: distValue,
+        saldoPJ: acumuladoLucroTotal - acumuladoDistribuicaoTotal,
+        acumuladoReserva: acumuladoReservaTotal, 
+        acumuladoLucro: acumuladoLucroTotal 
+      };
+      
       const sobra = Math.max(0, m.receita - m.custos - das - prolabore);
       const reserva = Math.round((sobra * reservaPct) / 100);
       const lucro = sobra - reserva;
+      
       acumuladoReservaTotal += reserva;
       acumuladoReceitaTotal += m.receita;
       acumuladoLucroTotal += lucro;
-      return { ...m, sobra, reserva, lucro, acumuladoReserva: acumuladoReservaTotal, acumuladoLucro: acumuladoLucroTotal };
+      acumuladoDistribuicaoTotal += distValue;
+      
+      return { 
+        ...m, 
+        sobra, 
+        reserva, 
+        lucro, 
+        distribuicao: distValue,
+        saldoPJ: acumuladoLucroTotal - acumuladoDistribuicaoTotal,
+        acumuladoReserva: acumuladoReservaTotal, 
+        acumuladoLucro: acumuladoLucroTotal 
+      };
     });
 
-    return { rows, acumuladoReserva: acumuladoReservaTotal, acumuladoReceita: acumuladoReceitaTotal, acumuladoLucro: acumuladoLucroTotal };
+    return { 
+      rows, 
+      acumuladoReserva: acumuladoReservaTotal, 
+      acumuladoReceita: acumuladoReceitaTotal, 
+      acumuladoLucro: acumuladoLucroTotal,
+      acumuladoDistribuicao: acumuladoDistribuicaoTotal,
+      saldoPJ: acumuladoLucroTotal - acumuladoDistribuicaoTotal
+    };
   }, [monthlyData, das, prolabore, reservaPct]);
 
   const metaTotal = (custos + das + prolabore) * mesesReserva;
@@ -362,6 +393,25 @@ export function CashFlowLedger({
   
   const qProfitPF_Manual = Math.round((qProfit * distribuicaoLucroPct) / 100);
   const qProfitPJ_Manual = qProfit - qProfitPF_Manual;
+
+  const handleRegisterDistribution = () => {
+    const lastMonthOfQuarter = selectedQuarter * 3 + 2; // 0,1,2 -> 2; 3,4,5 -> 5; etc.
+    const newData = [...monthlyData];
+    const currentDist = newData[lastMonthOfQuarter].distribuicao || 0;
+    newData[lastMonthOfQuarter] = {
+      ...newData[lastMonthOfQuarter],
+      distribuicao: currentDist + qProfitPF_Manual,
+    };
+    setMonthlyData(newData);
+    addLogEntry({
+      actionType: 'distribution',
+      description: `Distribuição do ${selectedQuarter + 1}º trimestre: R$ ${formatCurrency(qProfitPF_Manual)} registrada em ${MESES[lastMonthOfQuarter]}.`,
+      amount: qProfitPF_Manual,
+      monthIndex: lastMonthOfQuarter,
+      details: { pf: qProfitPF_Manual, pj: qProfitPJ_Manual, quarter: selectedQuarter }
+    });
+    toast({ title: "Distribuição registrada", description: `Valor adicionado à planilha em ${MESES[lastMonthOfQuarter]}.` });
+  };
 
   const displayedTransactions = isPendingExpanded ? pendingTransactions : pendingTransactions.slice(0, 3);
 
@@ -449,13 +499,25 @@ export function CashFlowLedger({
       </div>
 
       <Card className="overflow-hidden border-border/50 shadow-xl">
-        <CardHeader className="flex flex-col lg:flex-row lg:items-center justify-between bg-card pb-4 gap-4 px-6 pt-6 border-b"><CardTitle className="text-lg flex items-center gap-2"><BookOpen className="w-5 h-5 text-primary" />Livro de Caixa Anual</CardTitle><div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl"><div className="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20"><div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Acumulado</div><div className="text-lg font-bold text-indigo-500 leading-tight">{formatCurrency(totals.acumuladoReceita || 0)}</div><div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-indigo-500/70"><ShieldCheck className="w-2.5 h-2.5" />{percentualLimite.toFixed(1)}% do Teto</div></div><div className="p-3 bg-primary/10 rounded-xl border border-primary/20"><div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Lucro Acumulado</div><div className="text-lg font-bold text-primary leading-tight">{formatCurrency(totals.acumuladoLucro || 0)}</div></div><div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20"><div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Patrimônio PJ</div><div className="text-lg font-bold text-purple-500 leading-tight">{formatCurrency(totals.acumuladoReserva || 0)}</div></div></div></CardHeader>
+        <CardHeader className="flex flex-col lg:flex-row lg:items-center justify-between bg-card pb-4 gap-4 px-6 pt-6 border-b"><CardTitle className="text-lg flex items-center gap-2"><BookOpen className="w-5 h-5 text-primary" />Livro de Caixa Anual</CardTitle><div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl"><div className="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20"><div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Acumulado</div><div className="text-lg font-bold text-indigo-500 leading-tight">{formatCurrency(totals.acumuladoReceita || 0)}</div><div className="flex items-center gap-1 mt-1 text-[8px] font-black uppercase text-indigo-500/70"><ShieldCheck className="w-2.5 h-2.5" />{percentualLimite.toFixed(1)}% do Teto</div></div><div className="p-3 bg-primary/10 rounded-xl border border-primary/20"><div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Lucro Acumulado</div><div className="text-lg font-bold text-primary leading-tight">{formatCurrency(totals.acumuladoLucro || 0)}</div></div><div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20"><div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Patrimônio PJ</div><div className="text-lg font-bold text-purple-500 leading-tight">{formatCurrency(totals.saldoPJ || 0)}</div></div></div></CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto no-scrollbar pb-6">
-            <Table className="min-w-[1250px] border-collapse">
+            <Table className="min-w-[1550px] border-collapse">
               <TableHeader className="bg-secondary/30">
-                <TableRow className="hover:bg-transparent border-b bg-primary/10"><TableHead colSpan={9} className="h-12 py-0 text-center border-b border-primary/20"><div className="flex items-center justify-between px-8 text-[10px] font-bold uppercase tracking-[0.4em] text-primary/80"><div className="flex items-center gap-4"><ArrowLeftRight className="w-4 h-4" />Registro Mensal de Faturamento<ArrowLeftRight className="w-4 h-4" /></div></div></TableHead></TableRow>
-                <TableRow className="hover:bg-transparent border-b"><TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r bg-secondary/10">Ativo</TableHead><TableHead className="w-[120px] font-bold text-[10px] uppercase border-r text-center bg-secondary/10">Mês</TableHead><TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-indigo-500 bg-indigo-500/5">Receita Bruta</TableHead><TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-orange-500 bg-orange-500/5">Custos Op.</TableHead><TableHead className="w-[140px] text-right font-bold text-[10px] uppercase px-6">Sobra</TableHead><TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-purple-500 px-6">Reserva PJ</TableHead><TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-primary px-6">Lucro Real</TableHead><TableHead className="w-[180px] text-right font-bold text-[10px] uppercase px-6 opacity-30">Lucro Acum.</TableHead><TableHead className="w-[180px] text-right font-bold text-[10px] uppercase px-6 opacity-30">Reserva Acum.</TableHead></TableRow>
+                <TableRow className="hover:bg-transparent border-b bg-primary/10"><TableHead colSpan={11} className="h-12 py-0 text-center border-b border-primary/20"><div className="flex items-center justify-between px-8 text-[10px] font-bold uppercase tracking-[0.4em] text-primary/80"><div className="flex items-center gap-4"><ArrowLeftRight className="w-4 h-4" />Registro Mensal de Faturamento<ArrowLeftRight className="w-4 h-4" /></div></div></TableHead></TableRow>
+                <TableRow className="hover:bg-transparent border-b">
+                  <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r bg-secondary/10">Ativo</TableHead>
+                  <TableHead className="w-[120px] font-bold text-[10px] uppercase border-r text-center bg-secondary/10">Mês</TableHead>
+                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-indigo-500 bg-indigo-500/5">Receita Bruta</TableHead>
+                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-orange-500 bg-orange-500/5">Custos Op.</TableHead>
+                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase px-6">Sobra</TableHead>
+                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-purple-500 px-6">Reserva PJ</TableHead>
+                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-primary px-6">Lucro Real</TableHead>
+                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-red-500 px-6">Distribuição</TableHead>
+                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-emerald-500 px-6">Saldo PJ</TableHead>
+                  <TableHead className="w-[180px] text-right font-bold text-[10px] uppercase px-6 opacity-30">Lucro Acum.</TableHead>
+                  <TableHead className="w-[180px] text-right font-bold text-[10px] uppercase px-6 opacity-30">Reserva Acum.</TableHead>
+                </TableRow>
               </TableHeader>
               <TableBody>
                 {totals.rows.map((row, i) => (
@@ -467,6 +529,8 @@ export function CashFlowLedger({
                     <TableCell className="text-right text-xs font-medium tabular-nums px-6 bg-secondary/10">{formatCurrency(row.sobra || 0)}</TableCell>
                     <TableCell className="text-right text-xs font-bold text-purple-500 tabular-nums px-6 bg-purple-500/5">{formatCurrency(row.reserva || 0)}</TableCell>
                     <TableCell className="text-right text-sm font-black text-primary tabular-nums px-6 bg-primary/5">{formatCurrency(row.lucro || 0)}</TableCell>
+                    <TableCell className="text-right text-xs font-bold text-red-500 tabular-nums px-6 bg-red-500/5">{formatCurrency(row.distribuicao || 0)}</TableCell>
+                    <TableCell className="text-right text-xs font-bold text-emerald-500 tabular-nums px-6 bg-emerald-500/5">{formatCurrency(row.saldoPJ || 0)}</TableCell>
                     <TableCell className="text-right text-xs font-medium tabular-nums px-6 opacity-30">{formatCurrency(row.acumuladoLucro || 0)}</TableCell>
                     <TableCell className="text-right text-xs font-medium tabular-nums px-6 opacity-30">{formatCurrency(row.acumuladoReserva || 0)}</TableCell>
                   </TableRow>
@@ -564,15 +628,7 @@ export function CashFlowLedger({
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      onClick={() => {
-                        addLogEntry({
-                          actionType: 'distribution',
-                          description: `Distribuição do ${selectedQuarter + 1}º trimestre: ${formatCurrency(qProfitPF_Manual)} para PF e ${formatCurrency(qProfitPJ_Manual)} retidos na PJ.`,
-                          amount: qProfit,
-                          details: { pf: qProfitPF_Manual, pj: qProfitPJ_Manual, quarter: selectedQuarter }
-                        });
-                        toast({ title: "Distribuição registrada", description: "Decisão salva no histórico." });
-                      }}
+                      onClick={handleRegisterDistribution}
                       className="rounded-full h-8 px-4 text-[9px] font-black uppercase tracking-widest gap-2 bg-primary/5 border-primary/20 text-primary hover:bg-primary/20"
                     >
                       <Save className="w-3 h-3" />

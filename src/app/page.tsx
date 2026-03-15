@@ -28,6 +28,7 @@ export interface MonthlyData {
   receita: number;
   custos: number;
   active: boolean;
+  distribuicao?: number; // Valor transferido para PF no mês
 }
 
 export default function Home() {
@@ -40,13 +41,13 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("distribuicao");
   
   const [monthlyData, setMonthlyData] = useState<MonthlyData[]>(
-    Array(12).fill(null).map(() => ({ receita: 5000, custos: 1500, active: true }))
+    Array(12).fill(null).map(() => ({ receita: 5000, custos: 1500, active: true, distribuicao: 0 }))
   );
 
   const LIMITE_MEI_ANUAL = 81000;
 
   useEffect(() => {
-    const saved = localStorage.getItem("mei-flow-main-state");
+    const saved = localStorage.getItem("mei-flow-main-state-v5");
     if (saved) {
       try {
         const data = JSON.parse(saved);
@@ -64,7 +65,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("mei-flow-main-state", JSON.stringify({
+    localStorage.setItem("mei-flow-main-state-v5", JSON.stringify({
       fat, custos, prolabore, reservaPct, mesesFat, activeTab, monthlyData
     }));
   }, [fat, custos, prolabore, reservaPct, mesesFat, activeTab, monthlyData]);
