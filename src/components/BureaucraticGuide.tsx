@@ -1,8 +1,8 @@
-
 "use client"
 
 import { useState } from "react";
 import { useBusiness } from "@/contexts/BusinessContext";
+import { calculateDasValue } from "@/lib/dasCalculator";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -33,36 +33,7 @@ export function BureaucraticGuide() {
   const { businessData } = useBusiness();
   const [activeTab, setActiveTab] = useState("nfs-e");
 
-  const SALARIO_MINIMO_2026 = 1621;
-
-  const calcularDAS = () => {
-    const INSS = SALARIO_MINIMO_2026 * 0.05; // R$ 81,05
-    const ICMS = 1.00;
-    const ISS = 5.00;
-
-    const ramo = businessData.ramo?.toLowerCase() || "";
-
-    if (ramo.includes("transporte") || ramo.includes("caminhoneiro")) {
-      const INSS_CAMINHONEIRO = SALARIO_MINIMO_2026 * 0.12; // R$ 194,52
-      return INSS_CAMINHONEIRO + ICMS;
-    }
-    
-    if (ramo.includes("comércio") && ramo.includes("serviços")) {
-      return INSS + ICMS + ISS; // R$ 87,05
-    }
-
-    if (ramo.includes("comércio") || ramo.includes("indústria") || ramo.includes("alimentação")) {
-      return INSS + ICMS; // R$ 82,05
-    }
-    
-    if (ramo.includes("serviços")) {
-      return INSS + ISS; // R$ 86,05
-    }
-    
-    return INSS + ICMS; // fallback
-  };
-
-  const dasValue = calcularDAS();
+  const dasValue = calculateDasValue(businessData.ramo);
 
   const sections = [
     {
@@ -116,7 +87,7 @@ export function BureaucraticGuide() {
       special: {
         label: "Cálculo 2026",
         value: `R$ ${dasValue.toFixed(2).replace('.', ',')}`,
-        detail: "Baseado no Salário Mínimo de R$ 1.621,00"
+        detail: `Baseado no Salário Mínimo de R$ 1.621,00 para ${businessData.ramo}`
       },
       warning: "O atraso no DAS gera multa de 0,33% ao dia + juros SELIC. Mantenha o pagamento em dia para não perder direitos INSS."
     },

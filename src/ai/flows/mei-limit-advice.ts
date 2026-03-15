@@ -3,6 +3,7 @@
 /**
  * @fileOverview Consultoria de Transição Tributária (Foco em Limite e Regimes).
  */
+import { calculateDasValue } from '@/lib/dasCalculator';
 
 async function getAvailableFreeModel(apiKey: string): Promise<string> {
   try {
@@ -46,16 +47,18 @@ export async function meiLimitAdvice(input: {
     if (!apiKey) throw new Error("API Key missing");
 
     const model = await getAvailableFreeModel(apiKey);
+    const dasValue = calculateDasValue(input.ramo);
     
     const prompt = `
-Você é um tributarista especialista em transição de MEI para ME.
-Analise os dados fiscais e projete a melhor estratégia.
+Você é um tributarista especialista em transição de MEI para ME em 2026.
+Analise os dados fiscais e projete a melhor estratégia considerando o DAS mensal de R$ ${dasValue}.
 
 DADOS:
 - Faturamento Projetado: R$ ${input.projecaoAnual}
 - Acumulado: R$ ${input.acumulado}
 - Ramo: ${input.ramo}
 - Custos: R$ ${input.custosAnuais}
+- DAS Atual: R$ ${dasValue}
 
 MISSÃO:
 1. "riskAnalysis": Avalie o risco de ultrapassar 81k.

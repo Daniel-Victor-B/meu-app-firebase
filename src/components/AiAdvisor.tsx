@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useBusiness } from "@/contexts/BusinessContext";
 import { Sparkles, Loader2, ShieldAlert, Zap, Activity, Wallet, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { personalizedMeiAdvice, type PersonalizedMeiAdviceOutput } from "@/ai/flows/personalized-mei-advice";
 import { type MonthlyData } from "@/app/page";
@@ -18,6 +19,7 @@ interface AiAdvisorProps {
 }
 
 export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthlyData }: AiAdvisorProps) {
+  const { businessData } = useBusiness();
   const [loading, setLoading] = useState(false);
   const [advice, setAdvice] = useState<PersonalizedMeiAdviceOutput | null>(null);
 
@@ -52,6 +54,7 @@ export function AiAdvisor({ fat, custos, prolabore, reservaPct, mesesFat, monthl
         reservaPct: reservaPct,
         mesesFaturamento: spreadsheetMetrics.totalMonths,
         meiLimiteAnual: 81000,
+        ramo: businessData.ramo
       });
       setAdvice(result);
       localStorage.setItem("mei-flow-ai-advice-stable", JSON.stringify(result));

@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useMemo, useEffect, useCallback } from "react";
@@ -8,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/lib/formatters";
+import { calculateDasValue } from "@/lib/dasCalculator";
+import { useBusiness } from "@/contexts/BusinessContext";
 import { 
   FileSpreadsheet, 
   ShieldCheck, 
@@ -55,8 +56,6 @@ const MESES = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
 ];
-
-const DAS_FIXO = 76;
 
 interface BankTransaction {
   id: string;
@@ -124,6 +123,9 @@ export function CashFlowLedger({
   reservaPct, setReservaPct,
   monthlyData, setMonthlyData
 }: CashFlowLedgerProps) {
+  const { businessData } = useBusiness();
+  const dasValue = calculateDasValue(businessData.ramo);
+
   const [mesesReserva, setMesesReserva] = useState(() => {
     if (typeof window === "undefined") return 6;
     const saved = localStorage.getItem("mei-flow-ledger-meses-reserva");
@@ -197,7 +199,7 @@ export function CashFlowLedger({
     const newData = monthlyData.map(m => {
       if (m.sobra === undefined || m.reserva === undefined || m.lucro === undefined) {
         precisaAtualizar = true;
-        const sobra = Math.max(0, m.receita - m.custos - DAS_FIXO - prolabore);
+        const sobra = Math.max(0, m.receita - m.custos - dasValue - prolabore);
         const reserva = Math.round((sobra * reservaPct) / 100);
         const lucro = sobra - reserva;
         return {
@@ -214,7 +216,7 @@ export function CashFlowLedger({
     if (precisaAtualizar) {
       setMonthlyData(newData);
     }
-  }, []);
+  }, [dasValue]);
 
   const addLogEntry = useCallback((entry: Omit<ActivityLogEntry, 'id' | 'timestamp'>) => {
     const newEntry: ActivityLogEntry = {
@@ -232,7 +234,7 @@ export function CashFlowLedger({
     if (field === 'active') {
       const isActivating = !!value;
       if (isActivating) {
-        const sobra = Math.max(0, newData[index].receita - newData[index].custos - DAS_FIXO - prolabore);
+        const sobra = Math.max(0, newData[index].receita - newData[index].custos - dasValue - prolabore);
         const reserva = Math.round((sobra * reservaPct) / 100);
         const lucro = sobra - reserva;
         newData[index] = { 
@@ -264,7 +266,7 @@ export function CashFlowLedger({
       const newValue = parseFloat(value) || 0;
       if (oldValue !== newValue) {
         newData[index] = { ...newData[index], [field]: newValue };
-        const sobra = Math.max(0, newData[index].receita - newData[index].custos - DAS_FIXO - prolabore);
+        const sobra = Math.max(0, newData[index].receita - newData[index].custos - dasValue - prolabore);
         const reserva = Math.round((sobra * reservaPct) / 100);
         const lucro = sobra - reserva;
         newData[index] = {
@@ -339,7 +341,7 @@ export function CashFlowLedger({
     if (tx.type === "CREDIT") newData[currentMonthIndex].receita += tx.amount;
     else newData[currentMonthIndex].custos += Math.abs(tx.amount);
 
-    const sobra = Math.max(0, newData[currentMonthIndex].receita - newData[currentMonthIndex].custos - DAS_FIXO - prolabore);
+    const sobra = Math.max(0, newData[currentMonthIndex].receita - newData[currentMonthIndex].custos - dasValue - prolabore);
     const reserva = Math.round((sobra * reservaPct) / 100);
     const lucro = sobra - reserva;
     newData[currentMonthIndex] = {
@@ -415,7 +417,7 @@ export function CashFlowLedger({
     };
   }, [monthlyData]);
 
-  const metaTotal = (custos + DAS_FIXO + prolabore) * mesesReserva;
+  const metaTotal = (custos + dasValue + prolabore) * mesesReserva;
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
   const percentualLimite = Math.min(100, (totals.acumuladoReceita / 81000) * 100);
 

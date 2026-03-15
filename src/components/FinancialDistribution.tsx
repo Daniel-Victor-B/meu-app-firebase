@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { formatCurrency, formatPercent } from "@/lib/formatters";
+import { calculateDasValue } from "@/lib/dasCalculator";
+import { useBusiness } from "@/contexts/BusinessContext";
 import { 
   AlertCircle, 
   ChevronUp, 
@@ -43,7 +45,9 @@ export function FinancialDistribution({
   reservaPct, setReservaPct,
   setActiveTab
 }: FinancialDistributionProps) {
-  const das = 76;
+  const { businessData } = useBusiness();
+  const das = calculateDasValue(businessData.ramo);
+  
   const totalDespesas = custos + das + prolabore;
   const sobra = Math.max(0, fat - totalDespesas);
   const reservaVal = Math.round((sobra * reservaPct) / 100);

@@ -3,6 +3,7 @@
 /**
  * @fileOverview Consultoria de IA para MEI.
  */
+import { calculateDasValue } from '@/lib/dasCalculator';
 
 async function getAvailableFreeModel(apiKey: string): Promise<string> {
   try {
@@ -34,6 +35,7 @@ export async function personalizedMeiAdvice(input: {
   reservaPct: number;
   mesesFaturamento: number;
   meiLimiteAnual: number;
+  ramo?: string;
 }): Promise<PersonalizedMeiAdviceOutput> {
   const defaultResponse: PersonalizedMeiAdviceOutput = {
     summary: "Ocorreu um erro na análise estratégica. Verifique sua conexão ou a chave da API.",
@@ -52,24 +54,26 @@ export async function personalizedMeiAdvice(input: {
 
   try {
     const model = await getAvailableFreeModel(apiKey);
-    const MEI_DAS_FIXO = 76;
-    const totalDespesas = input.custosOperacionais + MEI_DAS_FIXO + input.prolabore;
+    const dasValue = calculateDasValue(input.ramo || "");
+    const totalDespesas = input.custosOperacionais + dasValue + input.prolabore;
     const sobra = Math.max(0, input.faturamentoMensal - totalDespesas);
     
     const prompt = `
 Você é um consultor financeiro de elite, focado em MEIs brasileiros.
-Sua missão é dar um veredito tático REAL baseado nos números.
+Sua missão é dar um veredito tático REAL baseado nos números atuais de 2026.
 
 DADOS DO NEGÓCIO:
+- Ramo: ${input.ramo || "Geral"}
 - Faturamento Médio: R$ ${input.faturamentoMensal}
 - Custos: R$ ${input.custosOperacionais}
+- DAS Mensal (Calculado): R$ ${dasValue}
 - Pró-labore: R$ ${input.prolabore}
 - Meses Ativos: ${input.mesesFaturamento}
 - Teto MEI: R$ ${input.meiLimiteAnual}
 - Sobra Real: R$ ${sobra}
 
 MISSÃO:
-1. "summary": Análise da saúde financeira. O negócio é sustentável ou um "castelo de cartas"? Identifique o gargalo. Use linguagem direta e profissional.
+1. "summary": Análise da saúde financeira. O negócio é sustentável ou um "castelo de cartas"? Identifique o gargalo. Use linguagem direta e profissional. Mencione se o DAS atual condiz com o ramo.
 2. "distributionAdvice": 2-3 dicas de alocação.
 3. "meiLimitAdvice": 2-3 dicas sobre o teto.
 4. "optimizationSuggestions": 2-3 ações de otimização.

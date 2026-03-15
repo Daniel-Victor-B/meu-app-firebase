@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect, useMemo } from "react";
@@ -6,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { useBusiness } from "@/contexts/BusinessContext";
+import { calculateDasValue } from "@/lib/dasCalculator";
 import { 
   Rocket, 
   CalendarDays, 
@@ -123,6 +124,9 @@ const FAQS_GUIDE = [
 ];
 
 export function Checklist({ fat, custos, prolabore }: ChecklistProps) {
+  const { businessData } = useBusiness();
+  const dasValue = calculateDasValue(businessData.ramo);
+
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
   const [isEliteMode, setIsEliteMode] = useState(false);
 
@@ -161,7 +165,7 @@ export function Checklist({ fat, custos, prolabore }: ChecklistProps) {
   };
 
   const chartData = useMemo(() => {
-    const das = 76;
+    const das = dasValue;
     
     // Cenário Atual
     const currentCostsPct = fat > 0 ? ((custos + das) / fat) * 100 : 30;
@@ -187,10 +191,10 @@ export function Checklist({ fat, custos, prolabore }: ChecklistProps) {
       { name: 'Salário', value: currentSalaryPct, color: '#fbbf24', desc: 'Sobrevivência' },
       { name: 'Riqueza', value: currentProfitPct, color: '#f472b6', desc: 'Liberdade' }
     ];
-  }, [fat, custos, prolabore, isEliteMode]);
+  }, [fat, custos, prolabore, isEliteMode, dasValue]);
 
   const wealthExplosion = useMemo(() => {
-    const das = 76;
+    const das = dasValue;
     const currentProfit = Math.max(0, fat - custos - das - prolabore);
     const eliteCosts = fat * 0.1;
     const eliteProfit = Math.max(0, fat - eliteCosts - das - prolabore);
@@ -200,7 +204,7 @@ export function Checklist({ fat, custos, prolabore }: ChecklistProps) {
       annualGap: gap * 12,
       multiplier: currentProfit > 0 ? (eliteProfit / currentProfit).toFixed(1) : "∞"
     };
-  }, [fat, custos, prolabore]);
+  }, [fat, custos, prolabore, dasValue]);
 
   return (
     <div className="space-y-10 animate-in slide-in-from-bottom-4 duration-500 pb-20">
@@ -505,4 +509,3 @@ export function Checklist({ fat, custos, prolabore }: ChecklistProps) {
     </div>
   );
 }
-

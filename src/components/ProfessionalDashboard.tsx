@@ -1,10 +1,11 @@
-
 "use client"
 
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatCurrency } from "@/lib/formatters";
+import { calculateDasValue } from "@/lib/dasCalculator";
+import { useBusiness } from "@/contexts/BusinessContext";
 import { TrendingUp, Wallet, Target, ShieldCheck, BarChart3, MousePointer2, Info, Lightbulb, ArrowRight, Rocket, PiggyBank, Landmark, Sparkles, ArrowDownRight, ArrowDownLeft, ChevronRight } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +18,9 @@ interface ProfessionalDashboardProps {
 }
 
 export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: ProfessionalDashboardProps) {
-  const das = 76;
+  const { businessData } = useBusiness();
+  const das = calculateDasValue(businessData.ramo);
+  
   const totalDespesas = custos + das + prolabore;
   const sobraMensal = Math.max(0, fat - totalDespesas);
   const reservaMensal = Math.round((sobraMensal * reservaPct) / 100);
@@ -448,4 +451,3 @@ export function ProfessionalDashboard({ fat, custos, prolabore, reservaPct }: Pr
     </div>
   );
 }
-
