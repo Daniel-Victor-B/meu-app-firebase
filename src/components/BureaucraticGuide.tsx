@@ -1,4 +1,3 @@
-
 "use client"
 
 import { useState, useEffect } from "react";
@@ -46,7 +45,8 @@ import {
   Search,
   UserPlus,
   TrendingUp,
-  HelpCircle
+  HelpCircle,
+  FilePlus
 } from "lucide-react";
 import { fetchUpdatedMeiGuide, type DynamicGuideContent } from "@/ai/flows/mei-guide-updater";
 
