@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -44,15 +45,35 @@ export async function fetchUpdatedMeiGuide(topicId: string, businessData: any): 
   }
 
   const searchTopicMap: Record<string, string> = {
-    'nfs-e': 'emissão de nota fiscal de serviço eletrônica NFS-e para MEI em 2026',
-    'das': 'pagamento do DAS MEI valor e guia PGMEI 2026',
-    'declaracao': 'declaração anual de faturamento DASN-SIMEI MEI 2026',
-    'abrir': 'formalização e abertura de MEI passo a passo gratuito',
-    'baixar': 'como fechar ou dar baixa no CNPJ MEI corretamente',
-    'direitos': 'benefícios e direitos INSS para MEI em 2026',
-    'carne-leao': 'imposto de renda e carnê-leão para pessoa física MEI',
-    'alvara': 'alvará de funcionamento e dispensa para MEI',
-    'certificado': 'certificado digital e-CNPJ para MEI necessidade e tipos'
+    'antes-formalizar': 'pontos essenciais antes de abrir MEI e benefícios suspensos',
+    'formalizacao': 'como abrir empresa MEI passo a passo gratuito portal do empreendedor',
+    'impedimentos': 'quem não pode ser MEI impedimentos e restrições legais',
+    'documentos': 'documentos necessários para formalização MEI',
+    'capital-social': 'o que colocar no capital social do MEI e valor mínimo',
+    'atividades-permitidas': 'atividades permitidas MEI Anexo XI lista CNAEs',
+    'endereco': 'endereço do negócio MEI e consulta prévia na prefeitura',
+    'ccmei': 'como emitir certificado CCMEI oficial comprovante de inscrição',
+    'pagamento-das': 'pagamento de contribuição mensal DAS MEI guia 2026',
+    'relatorio-mensal': 'relatorio mensal de receitas brutas MEI como preencher e arquivar',
+    'declaracao-anual': 'declaração anual de faturamento DASN-SIMEI prazo e passos',
+    'emissao-nf': 'emissão de nota fiscal de serviço eletrônica NFS-e nacional para MEI',
+    'arquivar-notas': 'arquivamento de notas fiscais MEI prazo e obrigatoriedade',
+    'direitos-previdenciarios': 'direitos e benefícios INSS para MEI em 2026',
+    'aposentadoria': 'aposentadoria por idade MEI regras carência e idade',
+    'auxilio-doenca': 'auxilio-doença incapacidade temporária MEI perícia e carência',
+    'salario-maternidade': 'salário-maternidade MEI gestante e adotante regras 2026',
+    'pensao-morte': 'pensão por morte MEI dependentes e carência',
+    'auxilio-reclusao': 'auxílio-reclusão MEI para dependentes baixa renda',
+    'pgmei': 'portal PGMEI serviços consulta débitos e parcelamentos',
+    'atualizacao-cadastral': 'alteração de dados cadastrais MEI portal do empreendedor',
+    'emissao-ccmei': 'emissão de segunda via do certificado CCMEI',
+    'consultar-debitos': 'como consultar débitos e pendências fiscais MEI',
+    'regularizar-debitos': 'como regularizar dívidas MEI e opções de parcelamento',
+    'contratar-empregado': 'contratação de funcionário MEI regras salário e custos',
+    'obrigacoes-trabalhistas': 'obrigações trabalhistas MEI empregador FGTS e eSocial',
+    'desenquadramento': 'desenquadramento MEI por excesso de faturamento migração para ME',
+    'baixa-mei': 'como fechar empresa MEI baixa definitiva e declaração de extinção',
+    'faq-geral': 'perguntas frequentes MEI governo oficial respostas atualizadas'
   };
 
   const topicDescription = searchTopicMap[topicId] || topicId;
@@ -64,16 +85,19 @@ Sua missão é fornecer informações 100% atualizadas (baseadas no cenário de 
 CONTEXTO DO NEGÓCIO DO USUÁRIO:
 - Ramo: ${businessData.ramo}
 - Nome: ${businessData.nomeNegocio}
-- Local/Foco: ${businessData.nicho}
+- Nicho: ${businessData.nicho}
+
+PRIORIDADE DE PESQUISA:
+Use exclusivamente dados dos portais oficiais: gov.br/empresas-e-negocios e Receita Federal.
 
 ESTRUTURA DE RESPOSTA (JSON):
 {
   "title": "Título curto e profissional",
   "description": "Breve explicação do que o MEI precisa saber agora",
-  "steps": ["Array com 4-6 passos práticos"],
-  "warning": "Um alerta crítico sobre multas ou prazos (opcional)",
-  "officialLink": "URL mais direta e oficial do governo (gov.br)",
-  "specialValue": "Valor atualizado do DAS ou limite se aplicável (opcional)"
+  "steps": ["Array com 4-6 passos práticos e diretos"],
+  "warning": "Um alerta crítico sobre multas, prazos ou golpes (opcional)",
+  "officialLink": "URL mais direta e oficial do governo (gov.br) para este serviço",
+  "specialValue": "Valor atualizado se aplicável (ex: valor DAS, limite faturamento)"
 }
 
 Responda APENAS JSON puro. Sem markdown ou explicações.
@@ -108,7 +132,7 @@ Responda APENAS JSON puro. Sem markdown ou explicações.
       description: parsed.description || "Informações obtidas via IA.",
       steps: Array.isArray(parsed.steps) ? parsed.steps : [],
       warning: parsed.warning,
-      officialLink: parsed.officialLink || "https://www.gov.br/mei",
+      officialLink: parsed.officialLink || "https://www.gov.br/empresas-e-negocios/pt-br/empreendedor",
       specialValue: parsed.specialValue
     };
   } catch (error: any) {
