@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState } from "react";
@@ -24,10 +25,8 @@ import {
   Rocket,
   LogOut,
   HeartHandshake,
-  Calculator,
-  Zap
+  Calculator
 } from "lucide-react";
-import { formatCurrency } from "@/lib/formatters";
 
 export function BureaucraticGuide() {
   const { businessData } = useBusiness();
@@ -43,7 +42,7 @@ export function BureaucraticGuide() {
       title: "Formalização (Abrir MEI)",
       description: "Como se tornar MEI de forma gratuita e segura em 2026.",
       officialLink: "https://www.gov.br/empresas-e-negocios/pt-br/empreendedor",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      videoUrl: "https://www.youtube.com/embed/fAEv38zS93w",
       steps: [
         "Verifique se seu CPF está regular e se você possui conta gov.br Prata ou Ouro.",
         "Acesse o Portal do Empreendedor oficial (gov.br).",
@@ -60,7 +59,7 @@ export function BureaucraticGuide() {
       icon: <FileText className="w-4 h-4" />,
       title: "Emissão de NFS-e Nacional",
       description: "O MEI deve emitir nota fiscal sempre que vender para empresas (CNPJ).",
-      officialLink: "https://nfse.gov.br/EmissorNacional",
+      officialLink: "https://www.gov.br/empresas-e-negocios/pt-br/empreendedor/servicos-para-mei/nota-fiscal/nota-fiscal-de-servico-eletronica-nfs-e",
       videoUrl: "https://www.youtube.com/embed/PjRreV0fP6c",
       steps: [
         "Acesse o Portal NFS-e Nacional com sua conta Gov.br.",
@@ -76,7 +75,7 @@ export function BureaucraticGuide() {
       icon: <CreditCard className="w-4 h-4" />,
       title: "Pagamento Mensal do DAS",
       description: "Sua única obrigação financeira fixa. Garante sua previdência e regularidade.",
-      officialLink: "https://www.gov.br/mei/pt-br/servicos/pagamento-do-das",
+      officialLink: "https://www8.receita.fazenda.gov.br/simplesnacional/aplicacoes/atspo/pgmei.app/identificacao",
       videoUrl: "https://www.youtube.com/embed/fAEv38zS93w",
       steps: [
         "Acesse o portal do PGMEI e informe seu CNPJ.",
@@ -97,7 +96,7 @@ export function BureaucraticGuide() {
       icon: <FileCheck className="w-4 h-4" />,
       title: "Declaração Anual (DASN)",
       description: "Obrigatória para todos, mesmo que não tenha faturado nada no ano.",
-      officialLink: "https://www.gov.br/mei/pt-br/servicos/declaracao-anual-de-faturamento",
+      officialLink: "https://www.gov.br/empresas-e-negocios/pt-br/empreendedor/servicos-para-mei/declaracao-anual-de-faturamento",
       videoUrl: "https://www.youtube.com/embed/5U2BvJqW3jY",
       steps: [
         "Soma todo o seu faturamento bruto (vendas com e sem nota) do ano anterior.",
@@ -113,8 +112,8 @@ export function BureaucraticGuide() {
       icon: <HeartHandshake className="w-4 h-4" />,
       title: "Benefícios Previdenciários",
       description: "O que você garante ao pagar o DAS em dia.",
-      officialLink: "https://www.gov.br/mei/pt-br/empreendedor",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      officialLink: "https://www.gov.br/empresas-e-negocios/pt-br/empreendedor",
+      videoUrl: "https://www.youtube.com/embed/5U2BvJqW3jY",
       steps: [
         "Aposentadoria por idade (mulheres 62, homens 65).",
         "Auxílio-doença e aposentadoria por invalidez (carência de 12 meses).",
@@ -130,7 +129,7 @@ export function BureaucraticGuide() {
       title: "Imposto de Renda PF",
       description: "Recolhimento mensal para rendimentos recebidos de pessoas físicas.",
       officialLink: "https://www.gov.br/receitafederal",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      videoUrl: "https://www.youtube.com/embed/fAEv38zS93w",
       steps: [
         "O lucro do MEI tem parcela isenta (8% comércio, 16% transporte, 32% serviços).",
         "O excedente do lucro é tributável na Declaração de IRPF da Pessoa Física.",
@@ -144,8 +143,8 @@ export function BureaucraticGuide() {
       icon: <LogOut className="w-4 h-4" />,
       title: "Encerramento (Baixar MEI)",
       description: "Como dar baixa no seu CNPJ MEI de forma correta.",
-      officialLink: "https://www.gov.br/empresas-e-negocios/pt-br/empreendedor/servicos-para-mei/baixa-do-mei",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      officialLink: "https://www.gov.br/empresas-e-negocios/pt-br/empreendedor/servicos-para-mei/baixa-da-empresa",
+      videoUrl: "https://www.youtube.com/embed/fAEv38zS93w",
       steps: [
         "Acesse a opção 'Baixar MEI' no Portal do Empreendedor.",
         "Informe o motivo do encerramento e confirme a solicitação.",
