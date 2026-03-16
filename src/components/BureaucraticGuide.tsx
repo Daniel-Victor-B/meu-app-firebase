@@ -1,13 +1,13 @@
-
 "use client"
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useBusiness } from "@/contexts/BusinessContext";
 import { calculateDasValue } from "@/lib/dasCalculator";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 import { 
   FileText, 
   ShieldCheck, 
@@ -25,14 +25,61 @@ import {
   Rocket,
   LogOut,
   HeartHandshake,
-  Calculator
+  Calculator,
+  RefreshCw,
+  Clock
 } from "lucide-react";
+import { fetchUpdatedMeiGuide, type DynamicGuideContent } from "@/ai/flows/mei-guide-updater";
 
 export function BureaucraticGuide() {
   const { businessData } = useBusiness();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("nfs-e");
+  const [loadingUpdate, setLoadingUpdate] = useState<string | null>(null);
+  const [dynamicContent, setDynamicContent] = useState<Record<string, { data: DynamicGuideContent, timestamp: number }>>({});
 
   const dasValue = calculateDasValue(businessData.ramo);
+
+  // Cache loading
+  useEffect(() => {
+    const cache: Record<string, any> = {};
+    const keys = ["nfs-e", "das", "declaracao", "abrir", "baixar", "direitos", "carne-leao", "alvara", "certificado"];
+    keys.forEach(key => {
+      const saved = localStorage.getItem(`mei-guide-cache-${key}`);
+      if (saved) {
+        try {
+          cache[key] = JSON.parse(saved);
+        } catch (e) { console.error(e); }
+      }
+    });
+    setDynamicContent(cache);
+  }, []);
+
+  const handleUpdateGuide = async (topicId: string) => {
+    setLoadingUpdate(topicId);
+    try {
+      const result = await fetchUpdatedMeiGuide(topicId, businessData);
+      if (result.error) {
+        toast({ 
+          title: "Erro na Pesquisa", 
+          description: "O agente de IA está ocupado. Tente novamente em instantes.", 
+          variant: "destructive" 
+        });
+      } else {
+        const entry = { data: result, timestamp: Date.now() };
+        setDynamicContent(prev => ({ ...prev, [topicId]: entry }));
+        localStorage.setItem(`mei-guide-cache-${topicId}`, JSON.stringify(entry));
+        toast({ 
+          title: "Guia Atualizado!", 
+          description: "A IA sincronizou as informações mais recentes do governo." 
+        });
+      }
+    } catch (error) {
+      toast({ title: "Erro Inesperado", variant: "destructive" });
+    } finally {
+      setLoadingUpdate(null);
+    }
+  };
 
   const sections = [
     {
@@ -42,7 +89,7 @@ export function BureaucraticGuide() {
       title: "Formalização (Abrir MEI)",
       description: "Como se tornar MEI de forma gratuita e segura em 2026.",
       officialLink: "https://www.gov.br/empresas-e-negocios/pt-br/empreendedor",
-      videoUrl: "https://www.youtube.com/embed/fAEv38zS93w",
+      videoUrl: "https://www.youtube.com/embed/y7OVwLCd0ag",
       steps: [
         "Verifique se seu CPF está regular e se você possui conta gov.br Prata ou Ouro.",
         "Acesse o Portal do Empreendedor oficial (gov.br).",
@@ -60,7 +107,7 @@ export function BureaucraticGuide() {
       title: "Emissão de NFS-e Nacional",
       description: "O MEI deve emitir nota fiscal sempre que vender para empresas (CNPJ).",
       officialLink: "https://www.gov.br/empresas-e-negocios/pt-br/empreendedor/servicos-para-mei/nota-fiscal/nota-fiscal-de-servico-eletronica-nfs-e",
-      videoUrl: "https://www.youtube.com/embed/PjRreV0fP6c",
+      videoUrl: "https://www.youtube.com/embed/_0zbQp9jvE8",
       steps: [
         "Acesse o Portal NFS-e Nacional com sua conta Gov.br.",
         "Configure seu e-mail e telefone no menu de configurações.",
@@ -76,7 +123,7 @@ export function BureaucraticGuide() {
       title: "Pagamento Mensal do DAS",
       description: "Sua única obrigação financeira fixa. Garante sua previdência e regularidade.",
       officialLink: "https://www8.receita.fazenda.gov.br/simplesnacional/aplicacoes/atspo/pgmei.app/identificacao",
-      videoUrl: "https://www.youtube.com/embed/fAEv38zS93w",
+      videoUrl: "https://www.youtube.com/embed/nJZRBusLkYQ",
       steps: [
         "Acesse o portal do PGMEI e informe seu CNPJ.",
         "Selecione o ano vigente e os meses em aberto.",
@@ -97,7 +144,7 @@ export function BureaucraticGuide() {
       title: "Declaração Anual (DASN)",
       description: "Obrigatória para todos, mesmo que não tenha faturado nada no ano.",
       officialLink: "https://www.gov.br/empresas-e-negocios/pt-br/empreendedor/servicos-para-mei/declaracao-anual-de-faturamento",
-      videoUrl: "https://www.youtube.com/embed/5U2BvJqW3jY",
+      videoUrl: "https://www.youtube.com/embed/WgW5sG4vC9A",
       steps: [
         "Soma todo o seu faturamento bruto (vendas com e sem nota) do ano anterior.",
         "Acesse o portal DASN-SIMEI oficial entre 01/Jan e 31/Mai.",
@@ -144,7 +191,7 @@ export function BureaucraticGuide() {
       title: "Encerramento (Baixar MEI)",
       description: "Como dar baixa no seu CNPJ MEI de forma correta.",
       officialLink: "https://www.gov.br/empresas-e-negocios/pt-br/empreendedor/servicos-para-mei/baixa-da-empresa",
-      videoUrl: "https://www.youtube.com/embed/fAEv38zS93w",
+      videoUrl: "https://www.youtube.com/embed/li0nlkBDbu0",
       steps: [
         "Acesse a opção 'Baixar MEI' no Portal do Empreendedor.",
         "Informe o motivo do encerramento e confirme a solicitação.",
@@ -159,7 +206,7 @@ export function BureaucraticGuide() {
       icon: <Building className="w-4 h-4" />,
       title: "Alvará de Funcionamento",
       description: "Regras municipais e dispensa de alvará prévio.",
-      officialLink: "https://www.gov.br/empresas-e-negocios/pt-br/redesim/abrir-uma-empresa",
+      officialLink: "https://www.gov.br/pt-br/servicos/solicitar-a-dispensa-de-alvara-e-licenca-de-funcionamento",
       steps: [
         "O MEI é dispensado de alvarás e licenças prévias para iniciar.",
         "Ao abrir, você concorda com o Termo de Ciência e Responsabilidade.",
@@ -183,7 +230,23 @@ export function BureaucraticGuide() {
     }
   ];
 
-  const currentSection = sections.find(s => s.id === activeTab) || sections[0];
+  const staticSection = sections.find(s => s.id === activeTab) || sections[0];
+  const dynamicEntry = dynamicContent[activeTab];
+
+  // Resolve content to display
+  const content = {
+    title: dynamicEntry?.data.title || staticSection.title,
+    description: dynamicEntry?.data.description || staticSection.description,
+    steps: dynamicEntry?.data.steps || staticSection.steps,
+    warning: dynamicEntry?.data.warning || staticSection.warning,
+    officialLink: dynamicEntry?.data.officialLink || staticSection.officialLink,
+    special: dynamicEntry?.data.specialValue 
+      ? { label: "Info IA", value: dynamicEntry.data.specialValue, detail: "Dados recentes sincronizados" }
+      : staticSection.special,
+    timestamp: dynamicEntry?.timestamp
+  };
+
+  const isUpdating = loadingUpdate === activeTab;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
@@ -194,12 +257,20 @@ export function BureaucraticGuide() {
           </div>
           <div>
             <h2 className="text-2xl font-headline font-bold">Guia MEI de Elite</h2>
-            <p className="text-sm text-muted-foreground font-medium">Sua central de inteligência burocrática atualizada para 2026.</p>
+            <p className="text-sm text-muted-foreground font-medium">Sua central de inteligência burocrática atualizada.</p>
           </div>
         </div>
-        <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 px-3 py-1 font-black text-[10px] tracking-widest uppercase">
-          Versão 2026.2
-        </Badge>
+        <div className="flex items-center gap-3">
+          {content.timestamp && (
+            <div className="hidden md:flex items-center gap-1.5 px-3 py-1 bg-secondary/50 rounded-full border border-border/50 text-[10px] text-muted-foreground font-bold uppercase tracking-tight">
+              <Clock className="w-3 h-3" />
+              Atualizado: {new Date(content.timestamp).toLocaleDateString()}
+            </div>
+          )}
+          <Badge variant="outline" className="bg-amber-500/10 text-amber-500 border-amber-500/20 px-3 py-1 font-black text-[10px] tracking-widest uppercase">
+            AI Enhanced
+          </Badge>
+        </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -216,32 +287,43 @@ export function BureaucraticGuide() {
           <div className="lg:col-span-7 space-y-6">
             <Card className="border-border/50 shadow-xl overflow-hidden bg-card/60 backdrop-blur-sm">
               <CardHeader className="border-b bg-secondary/10">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <CardTitle className="text-xl font-headline font-bold text-foreground">{currentSection.title}</CardTitle>
-                    <CardDescription className="text-xs font-medium">{currentSection.description}</CardDescription>
+                <div className="flex items-center justify-between gap-4">
+                  <div className="space-y-1 min-w-0">
+                    <CardTitle className="text-xl font-headline font-bold text-foreground truncate">{content.title}</CardTitle>
+                    <CardDescription className="text-xs font-medium truncate">{content.description}</CardDescription>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="gap-2 rounded-full text-[10px] font-black uppercase tracking-widest"
-                    onClick={() => window.open(currentSection.officialLink, "_blank")}
-                  >
-                    <Globe className="w-3 h-3" />
-                    Portal Oficial
-                  </Button>
+                  <div className="flex gap-2 shrink-0">
+                    <Button 
+                      variant="outline" 
+                      size="icon" 
+                      className="rounded-full h-8 w-8 hover:bg-amber-500/10 hover:text-amber-500 border-amber-500/20"
+                      onClick={() => handleUpdateGuide(activeTab)}
+                      disabled={isUpdating}
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${isUpdating ? "animate-spin" : ""}`} />
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="gap-2 rounded-full text-[10px] font-black uppercase tracking-widest h-8"
+                      onClick={() => window.open(content.officialLink, "_blank")}
+                    >
+                      <Globe className="w-3 h-3" />
+                      Portal
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="pt-8 space-y-8">
-                {currentSection.special && (
+                {content.special && (
                   <div className="flex items-center gap-4 p-5 rounded-2xl bg-amber-500/5 border border-amber-500/20 group hover:bg-amber-500/10 transition-all">
                     <div className="p-3 bg-amber-500 text-white rounded-xl shadow-lg shadow-amber-500/20 group-hover:scale-110 transition-transform">
                       <CreditCard className="w-6 h-6" />
                     </div>
                     <div>
-                      <div className="text-[10px] font-black uppercase tracking-widest text-amber-600/60">{currentSection.special.label}</div>
-                      <div className="text-2xl font-black text-amber-600">{currentSection.special.value}</div>
-                      <div className="text-[10px] font-medium text-muted-foreground">{currentSection.special.detail}</div>
+                      <div className="text-[10px] font-black uppercase tracking-widest text-amber-600/60">{content.special.label}</div>
+                      <div className="text-2xl font-black text-amber-600">{content.special.value}</div>
+                      <div className="text-[10px] font-medium text-muted-foreground">{content.special.detail}</div>
                     </div>
                   </div>
                 )}
@@ -249,10 +331,10 @@ export function BureaucraticGuide() {
                 <div className="space-y-6">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-primary" />
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Protocolo Passo a Passo</h4>
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Protocolo de Ação</h4>
                   </div>
                   <div className="grid gap-4">
-                    {currentSection.steps.map((step, i) => (
+                    {content.steps.map((step: string, i: number) => (
                       <div key={i} className="flex gap-4 group">
                         <div className="w-6 h-6 rounded-full bg-secondary border border-border flex items-center justify-center text-[10px] font-bold shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-all">
                           {i + 1}
@@ -263,10 +345,10 @@ export function BureaucraticGuide() {
                   </div>
                 </div>
 
-                {currentSection.warning && (
+                {content.warning && (
                   <div className="flex gap-4 p-5 bg-destructive/5 border border-destructive/20 rounded-2xl">
                     <AlertTriangle className="w-5 h-5 text-destructive shrink-0" />
-                    <p className="text-xs text-destructive/80 font-bold leading-relaxed">{currentSection.warning}</p>
+                    <p className="text-xs text-destructive/80 font-bold leading-relaxed">{content.warning}</p>
                   </div>
                 )}
               </CardContent>
@@ -282,10 +364,10 @@ export function BureaucraticGuide() {
                 </div>
               </CardHeader>
               <CardContent className="p-0 border-t">
-                {currentSection.videoUrl ? (
+                {staticSection.videoUrl ? (
                   <div className="aspect-video w-full">
                     <iframe 
-                      src={currentSection.videoUrl}
+                      src={staticSection.videoUrl}
                       className="w-full h-full"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
@@ -295,7 +377,7 @@ export function BureaucraticGuide() {
                 ) : (
                   <div className="aspect-video w-full bg-secondary/50 flex flex-col items-center justify-center p-8 text-center gap-3">
                     <Info className="w-8 h-8 text-muted-foreground/30" />
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Vídeo aula indisponível para este tópico</p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Vídeo aula indisponível</p>
                   </div>
                 )}
               </CardContent>
@@ -307,14 +389,14 @@ export function BureaucraticGuide() {
                   <ExternalLink className="w-5 h-5 text-muted-foreground" />
                 </div>
                 <div className="space-y-1">
-                  <h5 className="font-bold text-sm">Acessar Portal do Empreendedor</h5>
-                  <p className="text-[10px] text-muted-foreground font-medium">Link oficial do governo federal atualizado para 2026.</p>
+                  <h5 className="font-bold text-sm">Consultar Atividades Permitidas</h5>
+                  <p className="text-[10px] text-muted-foreground font-medium">Verifique se sua ocupação pode ser MEI.</p>
                 </div>
                 <Button 
                   className="w-full rounded-xl h-11 font-black text-xs uppercase tracking-widest shadow-xl shadow-primary/20"
-                  onClick={() => window.open("https://www.gov.br/empresas-e-negocios/pt-br/empreendedor", "_blank")}
+                  onClick={() => window.open("https://www.gov.br/mei/pt-br/consulta-classificacao-atividades", "_blank")}
                 >
-                  Ir para o site do Governo
+                  Lista de Atividades (CNAE)
                 </Button>
               </CardContent>
             </Card>
@@ -325,11 +407,11 @@ export function BureaucraticGuide() {
       <section className="p-8 rounded-[40px] bg-secondary/20 border-2 border-dashed border-border/50 text-center space-y-6">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 border border-primary/20 rounded-full">
           <ShieldCheck className="w-3.5 h-3.5 text-primary" />
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Blindagem Fiscal Ativa 2026</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Inteligência Burocrática Ativa</span>
         </div>
-        <h4 className="text-xl font-black tracking-tight">Precisa de ajuda com a Declaração?</h4>
+        <h4 className="text-xl font-black tracking-tight">O sistema aprendeu algo novo?</h4>
         <p className="text-xs text-muted-foreground font-medium max-w-lg mx-auto">
-          Utilize nossa aba de **AI Advice** para receber orientações personalizadas sobre sua transição para ME ou como otimizar seus impostos com base no faturamento real do seu livro de caixa.
+          Utilize o botão de <RefreshCw className="inline w-3 h-3 text-amber-500" /> para forçar uma nova pesquisa da IA sobre qualquer tópico. O MEI Flow mantém um histórico das atualizações para sua segurança.
         </p>
       </section>
     </div>
