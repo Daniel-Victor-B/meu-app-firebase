@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useMemo, useEffect, useCallback } from "react";
@@ -36,7 +37,10 @@ import {
   Activity,
   AlertCircle,
   CheckCircle2,
-  Unlink
+  Unlink,
+  Receipt,
+  Banknote,
+  FileText
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -91,28 +95,20 @@ interface CashFlowLedgerProps {
 
 const FAQS_PLANILHA = [
   {
+    q: "Como funcionam as 'Saídas' da Reserva e do Caixa?",
+    a: "Esses campos permitem registrar quando você retira dinheiro que já estava guardado. Por exemplo, se você teve uma emergência e usou R$ 1.000 da reserva, lance esse valor em 'Saída Reserva'. O saldo do card 'Colchão de Segurança' será atualizado automaticamente."
+  },
+  {
+    q: "O que é 'Imposto Extra'?",
+    a: "É qualquer tributo além do DAS mensal. Use para registrar multas por atraso, diferença de alíquota interestadual (DIFAL) ou parcelamentos de dívidas fiscais antigas."
+  },
+  {
     q: "O que é Imutabilidade Paramétrica?",
     a: "É o sistema do MEI Flow que garante que seus dados passados fiquem protegidos. Se você aumentar seu pró-labore hoje, os lucros de meses passados não mudam, pois eles guardam as configurações da época."
   },
   {
-    q: "O que é o Saldo Acumulado?",
-    a: "O Saldo Acumulado representa a soma de todos os lucros reais (lucro após reserva) menos todas as distribuições de lucro realizadas até aquele mês específico. É o termômetro real da liquidez do seu CNPJ."
-  },
-  {
     q: "Por que os valores de lucro de meses passados não mudam quando altero meu pró-labore?",
     a: "Isso acontece devido ao sistema de Snapshot. Cada mês salva uma 'foto' das suas configurações de custos no momento do lançamento. Isso evita que uma mudança estratégica hoje distorça a realidade do que aconteceu meses atrás."
-  },
-  {
-    q: "Como a 'Sobra' é calculada?",
-    a: "A sobra é o faturamento bruto menos os custos operacionais, o imposto DAS e o seu pró-labore (salário). É o que sobra 'limpo' no caixa da empresa antes de você decidir quanto vai para a reserva."
-  },
-  {
-    q: "Posso reimportar uma transação que apaguei das pendências?",
-    a: "Sim. Se você clicar no botão 'Limpar histórico de importações', o sistema esquecerá quais IDs já foram processados e, na próxima sincronização, todas as transações do banco voltarão a aparecer como novas pendências."
-  },
-  {
-    q: "Qual a diferença entre Lucro Real e Saldo PJ?",
-    a: "Lucro Real é o que sobrou no mês após separar a reserva. Saldo PJ é o montante acumulado desse lucro que ainda não foi transferido para sua conta pessoal (PF)."
   }
 ];
 
@@ -199,7 +195,8 @@ export function CashFlowLedger({
     const newData = monthlyData.map(m => {
       if (m.sobra === undefined || m.reserva === undefined || m.lucro === undefined) {
         precisaAtualizar = true;
-        const sobra = Math.max(0, m.receita - m.custos - dasValue - prolabore);
+        const currentDas = calculateDasValue(businessData.ramo);
+        const sobra = Math.max(0, m.receita - m.custos - currentDas - prolabore);
         const reserva = Math.round((sobra * reservaPct) / 100);
         const lucro = sobra - reserva;
         return {
@@ -208,7 +205,10 @@ export function CashFlowLedger({
           reservaPct_usado: reservaPct,
           sobra,
           reserva,
-          lucro
+          lucro,
+          saidaReserva: m.saidaReserva || 0,
+          saidaCaixaOperacional: m.saidaCaixaOperacional || 0,
+          impostoExtra: m.impostoExtra || 0
         };
       }
       return m;
@@ -216,7 +216,7 @@ export function CashFlowLedger({
     if (precisaAtualizar) {
       setMonthlyData(newData);
     }
-  }, [dasValue]);
+  }, [businessData.ramo, prolabore, reservaPct]);
 
   const addLogEntry = useCallback((entry: Omit<ActivityLogEntry, 'id' | 'timestamp'>) => {
     const newEntry: ActivityLogEntry = {
@@ -266,20 +266,25 @@ export function CashFlowLedger({
       const newValue = parseFloat(value) || 0;
       if (oldValue !== newValue) {
         newData[index] = { ...newData[index], [field]: newValue };
-        const sobra = Math.max(0, newData[index].receita - newData[index].custos - dasValue - prolabore);
-        const reserva = Math.round((sobra * reservaPct) / 100);
-        const lucro = sobra - reserva;
-        newData[index] = {
-          ...newData[index],
-          prolabore_usado: prolabore,
-          reservaPct_usado: reservaPct,
-          sobra,
-          reserva,
-          lucro
-        };
+        
+        // Se for campo de entrada/snapshot, recalcular snapshot
+        if (field === 'receita' || field === 'custos') {
+          const sobra = Math.max(0, newData[index].receita - newData[index].custos - dasValue - prolabore);
+          const reserva = Math.round((sobra * reservaPct) / 100);
+          const lucro = sobra - reserva;
+          newData[index] = {
+            ...newData[index],
+            prolabore_usado: prolabore,
+            reservaPct_usado: reservaPct,
+            sobra,
+            reserva,
+            lucro
+          };
+        }
+
         addLogEntry({
           actionType: 'manual_edit',
-          description: `Alteração em ${MESES[index]}: ${field === 'receita' ? 'Receita' : 'Custo'} ajustado.`,
+          description: `Alteração em ${MESES[index]}: Campo ${field} ajustado.`,
           monthIndex: index,
           amount: newValue - (oldValue as number)
         });
@@ -312,17 +317,10 @@ export function CashFlowLedger({
         );
       });
 
-      if (data.transactions.length > newTransactions.length) {
-        toast({
-          title: "Sincronização Concluída",
-          description: `${newTransactions.length} novas transações encontradas (${data.transactions.length - newTransactions.length} já importadas anteriormente).`
-        });
-      } else {
-        toast({
-          title: "Sincronização Concluída",
-          description: `${newTransactions.length} novas transações encontradas.`
-        });
-      }
+      toast({
+        title: "Sincronização Concluída",
+        description: `${newTransactions.length} novas transações encontradas.`
+      });
     } catch (error) {
       toast({ title: "Erro na Sincronização", variant: "destructive" });
     } finally {
@@ -370,7 +368,7 @@ export function CashFlowLedger({
     });
 
     setHighlightedMonth(currentMonthIndex);
-    setTimeout(() => setHighlightedMonth(null), 1500);
+    setTimeout(() => setHighlightedMonth(null), 10000); // 10 segundos de destaque
   };
 
   const totals = useMemo(() => {
@@ -378,33 +376,51 @@ export function CashFlowLedger({
     let acumuladoReceitaTotal = 0;
     let acumuladoLucroTotal = 0;
     let acumuladoSaldoPJ = 0;
+    let totalImpostosAno = 0;
+    let totalSaidasReservaAno = 0;
 
     const rows = monthlyData.map((m) => {
+      const das = calculateDasValue(businessData.ramo);
+      const impExtra = m.impostoExtra || 0;
+      const impTotal = m.active ? (das + impExtra) : 0;
+
       if (!m.active) return { 
         ...m, 
         sobra: 0, reserva: 0, lucro: 0, distribuicao: m.distribuicao || 0,
-        saldoMensal: 0, acumuladoReserva: acumuladoReservaTotal, 
-        acumuladoLucro: acumuladoLucroTotal, acumuladoSaldoPJ
+        impostoTotal: 0, saidaReserva: 0, saidaCaixaOperacional: 0,
+        saldoAcumulado: acumuladoSaldoPJ, acumuladoReserva: acumuladoReservaTotal
       };
       
       const sobra = m.sobra || 0;
       const reserva = m.reserva || 0;
-      const lucro = m.lucro || 0;
+      const lucroBase = m.lucro || 0;
       const dist = m.distribuicao || 0;
-      const saldoMensal = lucro - dist;
+      const saidaRes = m.saidaReserva || 0;
+      const saidaCaixa = m.saidaCaixaOperacional || 0;
+
+      // Lucro final após imposto extra
+      const lucroRealFinal = lucroBase - impExtra;
       
-      acumuladoReservaTotal += reserva;
+      // Fluxo de Saldo PJ: (Lucro Real Final - Distribuições - Saídas Operacionais)
+      // Nota: Instrução pediu para subtrair saidaReserva também do acumulado PJ
+      const saldoMensalPJ = lucroRealFinal - dist - saidaRes - saidaCaixa;
+      
+      acumuladoReservaTotal += (reserva - saidaRes);
       acumuladoReceitaTotal += m.receita;
-      acumuladoLucroTotal += lucro;
-      acumuladoSaldoPJ += saldoMensal;
+      acumuladoLucroTotal += lucroRealFinal;
+      acumuladoSaldoPJ += saldoMensalPJ;
+      totalImpostosAno += impTotal;
+      totalSaidasReservaAno += saidaRes;
       
       return { 
         ...m, 
-        sobra, reserva, lucro, distribuicao: dist,
-        saldoMensal,
-        acumuladoReserva: acumuladoReservaTotal, 
-        acumuladoLucro: acumuladoLucroTotal,
-        acumuladoSaldoPJ
+        sobra, 
+        reserva, 
+        lucro: lucroRealFinal, 
+        impostoTotal: impTotal,
+        distribuicao: dist,
+        saldoAcumulado: acumuladoSaldoPJ,
+        acumuladoReserva: acumuladoReservaTotal
       };
     });
 
@@ -413,9 +429,11 @@ export function CashFlowLedger({
       acumuladoReserva: acumuladoReservaTotal, 
       acumuladoReceita: acumuladoReceitaTotal, 
       acumuladoLucro: acumuladoLucroTotal,
-      acumuladoSaldoPJ
+      acumuladoSaldoPJ,
+      totalImpostosAno,
+      totalSaidasReservaAno
     };
-  }, [monthlyData]);
+  }, [monthlyData, businessData.ramo]);
 
   const metaTotal = (custos + dasValue + prolabore) * mesesReserva;
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
@@ -430,7 +448,6 @@ export function CashFlowLedger({
     return quarters;
   }, [totals]);
 
-  const smartTarget = progressoMeta < 100 ? 20 : 70;
   const qProfit = quarterlyTotals[selectedQuarter];
   const qProfitPF_Manual = Math.round((qProfit * distribuicaoLucroPct) / 100);
   const qProfitPJ_Manual = qProfit - qProfitPF_Manual;
@@ -448,8 +465,7 @@ export function CashFlowLedger({
       actionType: 'distribution',
       description: `Distribuição do ${selectedQuarter + 1}º trimestre: R$ ${formatCurrency(qProfitPF_Manual)} registrada em ${MESES[lastMonthOfQuarter]}.`,
       amount: qProfitPF_Manual,
-      monthIndex: lastMonthOfQuarter,
-      details: { pf: qProfitPF_Manual, pj: qProfitPJ_Manual, quarter: selectedQuarter }
+      monthIndex: lastMonthOfQuarter
     });
     toast({ title: "Distribuição registrada!" });
   };
@@ -494,7 +510,7 @@ export function CashFlowLedger({
                                   setConnectedBankName("");
                                   localStorage.removeItem("mei-flow-bank-connected");
                                   localStorage.removeItem("mei-flow-connected-bank-name");
-                                  toast({ title: "Conta desconectada", description: "Você pode conectar novamente a qualquer momento." });
+                                  toast({ title: "Conta desconectada" });
                                 }
                               }}
                             >
@@ -512,8 +528,8 @@ export function CashFlowLedger({
                 </h3>
                 <p className="text-xs text-muted-foreground font-medium max-w-sm">
                   {isBankConnected 
-                    ? `Sua conta ${connectedBankName} está vinculada. Clique abaixo para atualizar seu fluxo de caixa.`
-                    : "Conecte sua conta PJ via Open Banking para importar transações e gerir seu caixa em tempo real."}
+                    ? `Sua conta ${connectedBankName} está vinculada.`
+                    : "Conecte sua conta PJ via Open Banking para importar transações."}
                 </p>
               </div>
               
@@ -535,13 +551,7 @@ export function CashFlowLedger({
                       </Button>
                     </div>
                   </TooltipTrigger>
-                  <TooltipContent side="top">
-                    <p className="text-[10px]">
-                      {isBankConnected 
-                        ? "Busca novas movimentações no seu banco e atualiza a lista de pendências." 
-                        : "Inicia o fluxo de conexão segura com seu banco PJ."}
-                    </p>
-                  </TooltipContent>
+                  <TooltipContent side="top">Busca novas movimentações no seu banco.</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </CardContent>
@@ -556,24 +566,11 @@ export function CashFlowLedger({
                   <div className="p-1.5 bg-primary/10 rounded-lg text-primary"><History className="w-4 h-4" /></div>
                   <CardTitle className="text-sm font-bold flex items-center gap-2">Pendências <Badge variant="secondary" className="text-[10px] font-black px-1.5 h-4 bg-primary/10 text-primary">{pendingTransactions.length}</Badge></CardTitle>
                 </div>
-                <div className="flex items-center gap-1">
-                  <TooltipProvider><Tooltip><TooltipTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => {
-                      if (confirm("Limpar o histórico permitirá que transações já importadas sejam reimportadas na próxima sincronização. Isso pode duplicar valores na planilha se você importá-las novamente. Deseja continuar?")) {
-                        setImportedIds(new Set());
-                        localStorage.removeItem("mei-flow-imported-ids");
-                        addLogEntry({ actionType: 'clear_history', description: 'Histórico de IDs limpo.' });
-                        toast({ title: "Histórico limpo." });
-                      }
-                    }}><Trash2 className="h-3.5 w-3.5" /></Button>
-                  </TooltipTrigger><TooltipContent><p className="text-[10px]">Limpar histórico de importações</p></TooltipContent></Tooltip></TooltipProvider>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={() => setIsPendingExpanded(!isPendingExpanded)}>{isPendingExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}</Button>
-                </div>
+                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground" onClick={() => setIsPendingExpanded(!isPendingExpanded)}>{isPendingExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}</Button>
               </div>
             </CardHeader>
             <CardContent className="px-4 pb-4">
               <div className="space-y-2">
-                {!monthlyData[new Date().getMonth()]?.active && pendingTransactions.length > 0 && <div className="px-3 py-2 mb-2 text-[9px] font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-center gap-2"><AlertCircle className="w-3 h-3 shrink-0" /> Mês atual inativo.</div>}
                 <div className={cn("overflow-y-auto space-y-2 no-scrollbar transition-all", isPendingExpanded ? "max-h-[300px]" : "max-h-[160px]")}>
                   {pendingTransactions.length === 0 ? <div className="py-10 text-center text-[10px] font-bold text-muted-foreground uppercase opacity-40">Tudo em ordem!</div> : (isPendingExpanded ? pendingTransactions : pendingTransactions.slice(0, 3)).map((tx) => (
                     <div key={tx.id} className="flex items-center justify-between p-2.5 rounded-xl bg-background border border-border/50 group hover:border-primary/30 transition-all">
@@ -581,16 +578,7 @@ export function CashFlowLedger({
                         <div className="text-[10px] font-bold truncate pr-2 uppercase">{tx.description}</div>
                         <div className={cn("text-[10px] font-black mt-0.5", tx.type === "CREDIT" ? "text-primary" : "text-orange-500")}>{tx.type === "CREDIT" ? "+" : "-"}{formatCurrency(Math.abs(tx.amount))}</div>
                       </div>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button size="icon" variant="ghost" onClick={() => importTransaction(tx)} className="h-8 w-8 rounded-full hover:bg-primary/20 text-primary shrink-0"><PlusCircle className="w-4 h-4" /></Button>
-                          </TooltipTrigger>
-                          <TooltipContent side="top">
-                            <p className="text-[10px]">Importar para o mês atual. O mês será ativado automaticamente se estiver inativo.</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <Button size="icon" variant="ghost" onClick={() => importTransaction(tx)} className="h-8 w-8 rounded-full hover:bg-primary/20 text-primary shrink-0"><PlusCircle className="w-4 h-4" /></Button>
                     </div>
                   ))}
                 </div>
@@ -600,78 +588,143 @@ export function CashFlowLedger({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Card className="bg-primary/5 border-primary/20 shadow-md">
-          <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
-            <div className="flex items-center gap-2 text-primary"><ShieldCheck className="w-5 h-5" /><CardTitle className="text-sm font-bold uppercase tracking-wider">Colchão de Segurança</CardTitle></div>
-            <div className="flex items-center gap-2 bg-background/50 px-2 py-1 rounded-lg border border-primary/20 shadow-sm"><span className="text-[10px] font-black text-primary uppercase leading-none">Meta:</span><div className="flex items-center gap-1"><Button variant="ghost" size="icon" className="h-5 w-5 rounded-md hover:bg-primary/20 text-primary" onClick={() => setMesesReserva(Math.max(1, mesesReserva - 1))}><ChevronDown className="w-3 h-3" /></Button><span className="text-xs font-black w-4 text-center text-primary leading-none">{mesesReserva}</span><Button variant="ghost" size="icon" className="h-5 w-5 rounded-md hover:bg-primary/20 text-primary" onClick={() => setMesesReserva(Math.min(24, mesesReserva + 1))}><ChevronUp className="w-3 h-3" /></Button></div></div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between items-end"><div><div className="text-2xl font-bold">{formatCurrency(totals.acumuladoReserva)}</div><div className="text-[10px] text-muted-foreground uppercase font-bold mt-1">Acumulado na Reserva</div></div><div className="text-right"><div className="text-lg font-bold text-muted-foreground">{formatCurrency(metaTotal)}</div><div className="text-[10px] text-muted-foreground uppercase font-bold mt-1">Alvo {mesesReserva} meses</div></div></div>
-            <div className="space-y-2"><div className="flex justify-between text-[10px] font-bold"><span>PROGRESSO</span><span>{progressoMeta.toFixed(1)}%</span></div><Progress value={progressoMeta} className="h-2" /></div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-primary/5 border-primary/20">
+          <CardContent className="p-4 space-y-3">
+            <div className="flex justify-between items-start">
+              <div className="p-2 bg-primary/10 rounded-lg text-primary"><ShieldCheck className="w-5 h-5" /></div>
+              <TooltipProvider><Tooltip><TooltipTrigger asChild><div className="cursor-help"><Info className="w-3.5 h-3.5 text-muted-foreground opacity-50" /></div></TooltipTrigger>
+              <TooltipContent><p className="text-[10px]">Reservas Acumuladas - Saídas: {formatCurrency(totals.totalSaidasReservaAno)}</p></TooltipContent></Tooltip></TooltipProvider>
+            </div>
+            <div>
+              <div className="text-[10px] font-black text-primary uppercase tracking-widest">Colchão de Segurança</div>
+              <div className="text-2xl font-bold mt-1">{formatCurrency(totals.acumuladoReserva)}</div>
+              <div className="text-[9px] font-bold text-muted-foreground mt-1 uppercase">Meta {mesesReserva} Meses: {formatCurrency(metaTotal)}</div>
+            </div>
+            <Progress value={progressoMeta} className="h-1.5" />
           </CardContent>
         </Card>
-        <Card className="bg-secondary/20 border-border/60 border-2 relative overflow-hidden group">
-          <CardHeader className="pb-2"><div className="flex items-center gap-2 text-foreground"><Settings2 className="w-5 h-5 text-primary" /><div><CardTitle className="text-sm font-bold uppercase tracking-wider">Parâmetros de Gestão</CardTitle><CardDescription className="text-[10px] uppercase font-bold text-muted-foreground">Snapshot Mode Protegido</CardDescription></div></div></CardHeader>
-          <CardContent><div className="grid grid-cols-1 sm:grid-cols-2 gap-4"><div className="space-y-2"><div className="flex items-center gap-1.5 text-[10px] text-blue-500 font-black uppercase"><UserCircle className="w-3 h-3" />Salário PF</div><Input className="h-9 px-2 text-xs font-bold bg-background/80" type="number" value={prolabore} onChange={(e) => setProlabore(parseFloat(e.target.value) || 0)} /></div><div className="space-y-2"><div className="flex items-center gap-1.5 text-[10px] text-purple-500 font-black uppercase"><Percent className="w-3 h-3" />Reserva PJ (%)</div><Input className="h-9 px-2 text-xs font-bold bg-background/80" type="number" value={reservaPct} onChange={(e) => setReservaPct(parseFloat(e.target.value) || 0)} /></div></div></CardContent>
+
+        <Card className="bg-emerald-500/5 border-emerald-500/20">
+          <CardContent className="p-4 space-y-3">
+            <div className="flex justify-between items-start">
+              <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-500"><Banknote className="w-5 h-5" /></div>
+              <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[8px] font-black">LIQUIDEZ PJ</Badge>
+            </div>
+            <div>
+              <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Caixa PJ Operacional</div>
+              <div className="text-2xl font-bold mt-1 text-emerald-500">{formatCurrency(totals.acumuladoSaldoPJ)}</div>
+              <div className="text-[9px] font-bold text-muted-foreground mt-1 uppercase">Saldo retido após todas as saídas</div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-amber-500/5 border-amber-500/20">
+          <CardContent className="p-4 space-y-3">
+            <div className="flex justify-between items-start">
+              <div className="p-2 bg-amber-500/10 rounded-lg text-amber-500"><Receipt className="w-5 h-5" /></div>
+              <TooltipProvider><Tooltip><TooltipTrigger asChild><div className="cursor-help"><Info className="w-3.5 h-3.5 text-muted-foreground opacity-50" /></div></TooltipTrigger>
+              <TooltipContent><p className="text-[10px]">Inclui DAS dinâmico + impostos extras manuais.</p></TooltipContent></Tooltip></TooltipProvider>
+            </div>
+            <div>
+              <div className="text-[10px] font-black text-amber-500 uppercase tracking-widest">Impostos Pagos</div>
+              <div className="text-2xl font-bold mt-1 text-amber-500">{formatCurrency(totals.totalImpostosAno)}</div>
+              <div className="text-[9px] font-bold text-muted-foreground mt-1 uppercase">Carga tributária total no ano</div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-indigo-500/5 border-indigo-500/20">
+          <CardContent className="p-4 space-y-3">
+            <div className="flex justify-between items-start">
+              <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-500"><TrendingUp className="w-5 h-5" /></div>
+              <Badge variant="outline" className="bg-indigo-500/10 text-indigo-500 border-indigo-500/20 text-[8px] font-black">{percentualLimite.toFixed(1)}% DO TETO</Badge>
+            </div>
+            <div>
+              <div className="text-[10px] font-black text-indigo-500 uppercase tracking-widest">Faturamento Acumulado</div>
+              <div className="text-2xl font-bold mt-1 text-indigo-500">{formatCurrency(totals.acumuladoReceita)}</div>
+              <div className="text-[9px] font-bold text-muted-foreground mt-1 uppercase">Restante para teto: {formatCurrency(81000 - totals.acumuladoReceita)}</div>
+            </div>
+          </CardContent>
         </Card>
       </div>
 
       <Card className="overflow-hidden border-border/50 shadow-xl">
         <CardHeader className="flex flex-col lg:flex-row lg:items-center justify-between bg-card pb-4 gap-4 px-6 pt-6 border-b">
-          <CardTitle className="text-lg flex items-center gap-2"><BookOpen className="w-5 h-5 text-primary" />Livro de Caixa</CardTitle>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl">
-            <div className="p-3 bg-indigo-500/10 rounded-xl border border-indigo-500/20"><div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Faturamento Acumulado</div><div className="text-lg font-bold text-indigo-500">{formatCurrency(totals.acumuladoReceita)}</div><div className="text-[8px] font-black uppercase text-indigo-500/70">{percentualLimite.toFixed(1)}% do Teto</div></div>
-            <div className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20"><div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Lucro Bruto Total</div><div className="text-lg font-bold text-amber-500">{formatCurrency(totals.acumuladoLucro)}</div></div>
-            <div className="p-3 bg-primary/10 rounded-xl border border-primary/20"><div className="text-[9px] font-bold text-muted-foreground uppercase leading-none mb-1">Caixa PJ Operacional</div><div className="text-lg font-bold text-primary">{formatCurrency(totals.acumuladoSaldoPJ)}</div></div>
+          <div className="flex flex-col gap-2">
+            <CardTitle className="text-lg flex items-center gap-2"><BookOpen className="w-5 h-5 text-primary" />Livro de Caixa</CardTitle>
+            {/* Bloco de Scroll Tip */}
+            <div className="flex md:hidden items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full w-fit animate-pulse">
+              <ArrowRight className="w-3 h-3 text-primary" />
+              <span className="text-[9px] font-black text-primary uppercase">Deslize para ver todas as colunas →</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-4 p-2 bg-secondary/30 rounded-xl border border-border/50">
+            <div className="space-y-1 px-3 border-r">
+              <div className="text-[9px] font-black uppercase text-muted-foreground">Meta Reserva</div>
+              <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-primary/20 text-primary" onClick={() => setMesesReserva(Math.max(1, mesesReserva - 1))}><ChevronDown className="w-3 h-3" /></Button>
+                <span className="text-xs font-black">{mesesReserva}m</span>
+                <Button variant="ghost" size="icon" className="h-5 w-5 hover:bg-primary/20 text-primary" onClick={() => setMesesReserva(Math.min(24, mesesReserva + 1))}><ChevronUp className="w-3 h-3" /></Button>
+              </div>
+            </div>
+            <div className="space-y-1 px-3">
+              <div className="text-[9px] font-black uppercase text-muted-foreground">Parâmetros Atuais</div>
+              <div className="text-[10px] font-bold flex gap-3">
+                <span className="text-blue-500">S: {formatCurrency(prolabore)}</span>
+                <span className="text-purple-500">R: {reservaPct}%</span>
+              </div>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto no-scrollbar pb-6">
-            <Table className="min-w-[1700px] border-collapse">
+            <Table className="min-w-[2200px] border-collapse">
               <TableHeader className="bg-secondary/30">
                 <TableRow className="hover:bg-transparent border-b">
-                  <TableHead className="w-[80px] font-bold text-[10px] uppercase text-center border-r">Ativo</TableHead>
-                  <TableHead className="w-[120px] font-bold text-[10px] uppercase border-r text-center">Mês</TableHead>
-                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-indigo-500">Receita Bruta</TableHead>
-                  <TableHead className="w-[180px] font-bold text-[10px] uppercase px-6 text-orange-500">Custos Op.</TableHead>
-                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase px-6">Sobra</TableHead>
-                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-purple-500 px-6">Reserva PJ</TableHead>
-                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-amber-500 px-6">Lucro Real</TableHead>
-                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-red-500 px-6">Distribuição</TableHead>
-                  <TableHead className="w-[140px] text-right font-bold text-[10px] uppercase text-primary px-6 font-black">Saldo Acumulado</TableHead>
-                  <TableHead className="w-[180px] text-right font-bold text-[10px] uppercase px-6 opacity-30 italic">Reserva/Salário Usado</TableHead>
+                  <TableHead className="w-[60px] font-bold text-[10px] uppercase text-center border-r">Ativo</TableHead>
+                  <TableHead className="w-[100px] font-bold text-[10px] uppercase border-r text-center">Mês</TableHead>
+                  <TableHead className="w-[160px] font-bold text-[10px] uppercase px-4 text-indigo-500">Receita Bruta</TableHead>
+                  <TableHead className="w-[160px] font-bold text-[10px] uppercase px-4 text-orange-500">Custos Op.</TableHead>
+                  <TableHead className="w-[120px] font-bold text-[10px] uppercase px-4 text-amber-500">Imposto (DAS)</TableHead>
+                  <TableHead className="w-[120px] font-bold text-[10px] uppercase px-4 text-amber-600">Extra (Imp)</TableHead>
+                  <TableHead className="w-[130px] text-right font-bold text-[10px] uppercase px-4">Sobra</TableHead>
+                  <TableHead className="w-[130px] text-right font-bold text-[10px] uppercase text-purple-500 px-4">Reserva PJ</TableHead>
+                  <TableHead className="w-[120px] text-right font-bold text-[10px] uppercase text-red-400 px-4">Saída Reserva</TableHead>
+                  <TableHead className="w-[130px] text-right font-bold text-[10px] uppercase text-amber-500 px-4">Lucro Real</TableHead>
+                  <TableHead className="w-[130px] text-right font-bold text-[10px] uppercase text-red-500 px-4">Distribuição</TableHead>
+                  <TableHead className="w-[130px] text-right font-bold text-[10px] uppercase text-emerald-600 px-4">Saída Caixa Op.</TableHead>
+                  <TableHead className="w-[150px] text-right font-bold text-[10px] uppercase text-emerald-500 px-4 font-black bg-emerald-500/5">Saldo Acumulado</TableHead>
+                  <TableHead className="w-[180px] text-right font-bold text-[10px] uppercase px-4 opacity-30 italic">Ref. Snapshot</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {totals.rows.map((row, i) => (
-                  <TableRow key={i} className={cn("transition-all duration-300", highlightedMonth === i && "bg-primary/20 shadow-inner", !row.active && "opacity-20 grayscale")}>
+                  <TableRow key={i} className={cn("transition-all duration-300", highlightedMonth === i && "bg-primary/20 shadow-inner ring-2 ring-primary/50", !row.active && "opacity-20 grayscale")}>
                     <TableCell className="py-3 text-center border-r"><Switch checked={row.active} onCheckedChange={(c) => updateMonth(i, 'active', c)} className="scale-90" /></TableCell>
                     <TableCell className="font-bold text-xs py-3 border-r text-center bg-card">{MESES[i]}</TableCell>
-                    <TableCell className="py-2 px-6">
-                      <Input 
-                        type="text" 
-                        disabled={!row.active} 
-                        value={formatInputCurrency(row.receita)} 
-                        onChange={(e) => updateMonth(i, 'receita', parseInputCurrency(e.target.value))} 
-                        className="h-10 text-xs font-bold text-indigo-500" 
-                      />
+                    <TableCell className="py-2 px-4">
+                      <Input type="text" disabled={!row.active} value={formatInputCurrency(row.receita)} onChange={(e) => updateMonth(i, 'receita', parseInputCurrency(e.target.value))} className="h-9 text-xs font-bold text-indigo-500" />
                     </TableCell>
-                    <TableCell className="py-2 px-6">
-                      <Input 
-                        type="text" 
-                        disabled={!row.active} 
-                        value={formatInputCurrency(row.custos)} 
-                        onChange={(e) => updateMonth(i, 'custos', parseInputCurrency(e.target.value))} 
-                        className="h-10 text-xs font-bold text-orange-500" 
-                      />
+                    <TableCell className="py-2 px-4">
+                      <Input type="text" disabled={!row.active} value={formatInputCurrency(row.custos)} onChange={(e) => updateMonth(i, 'custos', parseInputCurrency(e.target.value))} className="h-9 text-xs font-bold text-orange-500" />
                     </TableCell>
-                    <TableCell className="text-right text-xs font-medium px-6">{formatCurrency(row.sobra || 0)}</TableCell>
-                    <TableCell className="text-right text-xs font-bold text-purple-500 px-6">{formatCurrency(row.reserva || 0)}</TableCell>
-                    <TableCell className="text-right text-sm font-black text-amber-500 px-6">{formatCurrency(row.lucro || 0)}</TableCell>
-                    <TableCell className="text-right text-xs font-bold text-red-500 px-6">{formatCurrency(row.distribuicao || 0)}</TableCell>
-                    <TableCell className="text-right text-xs font-black text-primary px-6 bg-primary/5">{formatCurrency(row.acumuladoSaldoPJ || 0)}</TableCell>
-                    <TableCell className="text-right text-[10px] font-medium text-muted-foreground px-6 opacity-30 italic">
+                    <TableCell className="py-2 px-4 font-bold text-amber-500 text-xs text-center">{formatCurrency(calculateDasValue(businessData.ramo))}</TableCell>
+                    <TableCell className="py-2 px-4">
+                      <Input type="text" disabled={!row.active} value={formatInputCurrency(row.impostoExtra || 0)} onChange={(e) => updateMonth(i, 'impostoExtra', parseInputCurrency(e.target.value))} className="h-9 text-xs font-bold text-amber-600" />
+                    </TableCell>
+                    <TableCell className="text-right text-xs font-medium px-4">{formatCurrency(row.sobra || 0)}</TableCell>
+                    <TableCell className="text-right text-xs font-bold text-purple-500 px-4">{formatCurrency(row.reserva || 0)}</TableCell>
+                    <TableCell className="py-2 px-4">
+                      <Input type="text" disabled={!row.active} value={formatInputCurrency(row.saidaReserva || 0)} onChange={(e) => updateMonth(i, 'saidaReserva', parseInputCurrency(e.target.value))} className="h-9 text-xs font-bold text-red-400 text-right" />
+                    </TableCell>
+                    <TableCell className="text-right text-sm font-black text-amber-500 px-4">{formatCurrency(row.lucro || 0)}</TableCell>
+                    <TableCell className="text-right text-xs font-bold text-red-500 px-4">{formatCurrency(row.distribuicao || 0)}</TableCell>
+                    <TableCell className="py-2 px-4">
+                      <Input type="text" disabled={!row.active} value={formatInputCurrency(row.saidaCaixaOperacional || 0)} onChange={(e) => updateMonth(i, 'saidaCaixaOperacional', parseInputCurrency(e.target.value))} className="h-9 text-xs font-bold text-emerald-600 text-right" />
+                    </TableCell>
+                    <TableCell className="text-right text-xs font-black text-emerald-500 px-4 bg-emerald-500/5">{formatCurrency(row.saldoAcumulado || 0)}</TableCell>
+                    <TableCell className="text-right text-[10px] font-medium text-muted-foreground px-4 opacity-30 italic">
                       {row.prolabore_usado ? `S: ${formatCurrency(row.prolabore_usado)} | R: ${row.reservaPct_usado}%` : "-"}
                     </TableCell>
                   </TableRow>
@@ -710,7 +763,7 @@ export function CashFlowLedger({
               </div>
               <div className="p-4 rounded-2xl bg-primary/10 border border-primary/20 flex gap-3 items-start relative z-10">
                 <Activity className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                <p className="text-[11px] text-primary/80 leading-relaxed font-medium italic">Recomendação IA (Meta {smartTarget}%): Transferir {formatCurrency(Math.round((qProfit * smartTarget)/100))} para o seu CPF.</p>
+                <p className="text-[11px] text-primary/80 leading-relaxed font-medium italic">Recomendação IA (Meta {distribuicaoLucroPct}%): Transferir {formatCurrency(Math.round((qProfit * distribuicaoLucroPct)/100))} para o seu CPF.</p>
               </div>
             </div>
 

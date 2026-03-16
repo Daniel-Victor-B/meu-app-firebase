@@ -29,12 +29,16 @@ export interface MonthlyData {
   custos: number;
   active: boolean;
   distribuicao?: number; // Valor transferido para PF no mês
-  // Novos campos para imutabilidade paramétrica
+  // Campos de imutabilidade paramétrica
   prolabore_usado?: number;
   reservaPct_usado?: number;
   sobra?: number;
   reserva?: number;
   lucro?: number;
+  // Novos campos de controle de saída e impostos
+  saidaReserva?: number;
+  saidaCaixaOperacional?: number;
+  impostoExtra?: number;
 }
 
 export default function Home() {
@@ -47,7 +51,15 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("distribuicao");
   
   const [monthlyData, setMonthlyData] = useState<MonthlyData[]>(
-    Array(12).fill(null).map(() => ({ receita: 5000, custos: 1500, active: true, distribuicao: 0 }))
+    Array(12).fill(null).map(() => ({ 
+      receita: 5000, 
+      custos: 1500, 
+      active: true, 
+      distribuicao: 0,
+      saidaReserva: 0,
+      saidaCaixaOperacional: 0,
+      impostoExtra: 0
+    }))
   );
 
   const LIMITE_MEI_ANUAL = 81000;
