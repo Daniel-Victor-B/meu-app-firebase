@@ -40,7 +40,8 @@ import {
   Unlink,
   Receipt,
   Banknote,
-  FileText
+  FileText,
+  Info
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -402,7 +403,6 @@ export function CashFlowLedger({
       const lucroRealFinal = lucroBase - impExtra;
       
       // Fluxo de Saldo PJ: (Lucro Real Final - Distribuições - Saídas Operacionais)
-      // Nota: Instrução pediu para subtrair saidaReserva também do acumulado PJ
       const saldoMensalPJ = lucroRealFinal - dist - saidaRes - saidaCaixa;
       
       acumuladoReservaTotal += (reserva - saidaRes);
