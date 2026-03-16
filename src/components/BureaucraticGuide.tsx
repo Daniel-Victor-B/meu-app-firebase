@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react";
@@ -403,11 +404,11 @@ export function BureaucraticGuide() {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="space-y-6">
           <div className="overflow-x-auto no-scrollbar pb-2">
-            <div className="flex flex-col gap-4">
+            <TabsList className="flex flex-col items-start justify-start gap-4 h-auto w-full bg-transparent p-0">
               {categories.map(cat => (
-                <div key={cat} className="space-y-2">
+                <div key={cat} className="space-y-2 w-full">
                   <div className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 px-1">{cat}</div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {sections.filter(s => s.category === cat).map(s => (
                       <TabsTrigger 
                         key={s.id} 
@@ -421,7 +422,7 @@ export function BureaucraticGuide() {
                   </div>
                 </div>
               ))}
-            </div>
+            </TabsList>
           </div>
         </div>
 
