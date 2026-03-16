@@ -19,29 +19,30 @@ import {
   Settings2, 
   UserCircle, 
   Percent, 
-  ChevronUp,
-  ChevronDown,
-  Target,
-  Rocket,
-  Landmark,
-  Sparkles,
-  Zap,
-  BookOpen,
-  RefreshCw,
-  PlusCircle,
-  Save,
-  Trash2,
-  History,
-  Scale,
-  ArrowRight,
-  Activity,
-  AlertCircle,
-  CheckCircle2,
-  Unlink,
-  Receipt,
-  Banknote,
-  FileText,
-  Info
+  ChevronUp, 
+  ChevronDown, 
+  Target, 
+  Rocket, 
+  Landmark, 
+  Sparkles, 
+  Zap, 
+  BookOpen, 
+  RefreshCw, 
+  PlusCircle, 
+  Save, 
+  Trash2, 
+  History, 
+  Scale, 
+  ArrowRight, 
+  Activity, 
+  AlertCircle, 
+  CheckCircle2, 
+  Unlink, 
+  Receipt, 
+  Banknote, 
+  FileText, 
+  Info,
+  TrendingUp
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -653,7 +654,6 @@ export function CashFlowLedger({
         <CardHeader className="flex flex-col lg:flex-row lg:items-center justify-between bg-card pb-4 gap-4 px-6 pt-6 border-b">
           <div className="flex flex-col gap-2">
             <CardTitle className="text-lg flex items-center gap-2"><BookOpen className="w-5 h-5 text-primary" />Livro de Caixa</CardTitle>
-            {/* Bloco de Scroll Tip */}
             <div className="flex md:hidden items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full w-fit animate-pulse">
               <ArrowRight className="w-3 h-3 text-primary" />
               <span className="text-[9px] font-black text-primary uppercase">Deslize para ver todas as colunas →</span>
