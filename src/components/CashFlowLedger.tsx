@@ -370,14 +370,13 @@ export function CashFlowLedger({
     });
 
     setHighlightedMonth(currentMonthIndex);
-    setTimeout(() => setHighlightedMonth(null), 10000); // 10 segundos de destaque
+    setTimeout(() => setHighlightedMonth(null), 10000); 
   };
 
   const totals = useMemo(() => {
     let acumuladoReservaTotal = 0;
+    let acumuladoCaixaOpTotal = 0;
     let acumuladoReceitaTotal = 0;
-    let acumuladoLucroTotal = 0;
-    let acumuladoSaldoPJ = 0;
     let totalImpostosAno = 0;
     let totalSaidasReservaAno = 0;
 
@@ -390,7 +389,7 @@ export function CashFlowLedger({
         ...m, 
         sobra: 0, reserva: 0, lucro: 0, distribuicao: m.distribuicao || 0,
         impostoTotal: 0, saidaReserva: 0, saidaCaixaOperacional: 0,
-        saldoAcumulado: acumuladoSaldoPJ, acumuladoReserva: acumuladoReservaTotal
+        saldoCaixaAcumulado: acumuladoCaixaOpTotal, acumuladoReserva: acumuladoReservaTotal
       };
       
       const sobra = m.sobra || 0;
@@ -403,13 +402,16 @@ export function CashFlowLedger({
       // Lucro final após imposto extra
       const lucroRealFinal = lucroBase - impExtra;
       
-      // Fluxo de Saldo PJ: (Lucro Real Final - Distribuições - Saídas Operacionais)
-      const saldoMensalPJ = lucroRealFinal - dist - saidaRes - saidaCaixa;
+      // Saldo Reserva: Acumulado de Reservas - Saídas de Reserva
+      const reservaLiquida = reserva - saidaRes;
       
-      acumuladoReservaTotal += (reserva - saidaRes);
+      // Saldo Caixa PJ: (Lucro Real Final - Distribuições - Saídas Operacionais)
+      // Nota: Saída de reserva não afeta o caixa operacional diretamente se já foi subtraído da reserva
+      const caixaMensal = lucroRealFinal - dist - saidaCaixa;
+      
+      acumuladoReservaTotal += reservaLiquida;
+      acumuladoCaixaOpTotal += caixaMensal;
       acumuladoReceitaTotal += m.receita;
-      acumuladoLucroTotal += lucroRealFinal;
-      acumuladoSaldoPJ += saldoMensalPJ;
       totalImpostosAno += impTotal;
       totalSaidasReservaAno += saidaRes;
       
@@ -420,7 +422,7 @@ export function CashFlowLedger({
         lucro: lucroRealFinal, 
         impostoTotal: impTotal,
         distribuicao: dist,
-        saldoAcumulado: acumuladoSaldoPJ,
+        saldoCaixaAcumulado: acumuladoCaixaOpTotal,
         acumuladoReserva: acumuladoReservaTotal
       };
     });
@@ -429,8 +431,7 @@ export function CashFlowLedger({
       rows, 
       acumuladoReserva: acumuladoReservaTotal, 
       acumuladoReceita: acumuladoReceitaTotal, 
-      acumuladoLucro: acumuladoLucroTotal,
-      acumuladoSaldoPJ,
+      acumuladoCaixaOperacional: acumuladoCaixaOpTotal,
       totalImpostosAno,
       totalSaidasReservaAno
     };
@@ -438,6 +439,7 @@ export function CashFlowLedger({
 
   const metaTotal = (custos + dasValue + prolabore) * mesesReserva;
   const progressoMeta = Math.min(100, (totals.acumuladoReserva / metaTotal) * 100);
+  const smartTarget = progressoMeta >= 100 ? 100 : 50;
   const percentualLimite = Math.min(100, (totals.acumuladoReceita / 81000) * 100);
 
   const quarterlyTotals = useMemo(() => {
@@ -614,7 +616,7 @@ export function CashFlowLedger({
             </div>
             <div>
               <div className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Caixa PJ Operacional</div>
-              <div className="text-2xl font-bold mt-1 text-emerald-500">{formatCurrency(totals.acumuladoSaldoPJ)}</div>
+              <div className="text-2xl font-bold mt-1 text-emerald-500">{formatCurrency(totals.acumuladoCaixaOperacional)}</div>
               <div className="text-[9px] font-bold text-muted-foreground mt-1 uppercase">Saldo retido após todas as saídas</div>
             </div>
           </CardContent>
@@ -699,6 +701,15 @@ export function CashFlowLedger({
                 </TableRow>
               </TableHeader>
               <TableBody>
+                <TableRow className="md:hidden bg-primary/5 border-0">
+                  <TableCell colSpan={14} className="text-center py-3">
+                    <div className="flex items-center justify-center gap-2 text-xs font-bold text-muted-foreground animate-pulse">
+                      <ArrowLeftRight className="w-4 h-4" />
+                      Arraste para o lado →
+                      <ArrowLeftRight className="w-4 h-4" />
+                    </div>
+                  </TableCell>
+                </TableRow>
                 {totals.rows.map((row, i) => (
                   <TableRow key={i} className={cn("transition-all duration-300", highlightedMonth === i && "bg-primary/20 shadow-inner ring-2 ring-primary/50", !row.active && "opacity-20 grayscale")}>
                     <TableCell className="py-3 text-center border-r"><Switch checked={row.active} onCheckedChange={(c) => updateMonth(i, 'active', c)} className="scale-90" /></TableCell>
@@ -723,7 +734,7 @@ export function CashFlowLedger({
                     <TableCell className="py-2 px-4">
                       <Input type="text" disabled={!row.active} value={formatInputCurrency(row.saidaCaixaOperacional || 0)} onChange={(e) => updateMonth(i, 'saidaCaixaOperacional', parseInputCurrency(e.target.value))} className="h-9 text-xs font-bold text-emerald-600 text-right" />
                     </TableCell>
-                    <TableCell className="text-right text-xs font-black text-emerald-500 px-4 bg-emerald-500/5">{formatCurrency(row.saldoAcumulado || 0)}</TableCell>
+                    <TableCell className="text-right text-xs font-black text-emerald-500 px-4 bg-emerald-500/5">{formatCurrency(row.saldoCaixaAcumulado || 0)}</TableCell>
                     <TableCell className="text-right text-[10px] font-medium text-muted-foreground px-4 opacity-30 italic">
                       {row.prolabore_usado ? `S: ${formatCurrency(row.prolabore_usado)} | R: ${row.reservaPct_usado}%` : "-"}
                     </TableCell>
@@ -763,7 +774,9 @@ export function CashFlowLedger({
               </div>
               <div className="p-4 rounded-2xl bg-primary/10 border border-primary/20 flex gap-3 items-start relative z-10">
                 <Activity className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                <p className="text-[11px] text-primary/80 leading-relaxed font-medium italic">Recomendação IA (Meta {distribuicaoLucroPct}%): Transferir {formatCurrency(Math.round((qProfit * distribuicaoLucroPct)/100))} para o seu CPF.</p>
+                <p className="text-[11px] text-primary/80 leading-relaxed font-medium italic">
+                  Recomendação IA: Transferir {formatCurrency(Math.round((qProfit * smartTarget) / 100))} para o seu CPF.
+                </p>
               </div>
             </div>
 
