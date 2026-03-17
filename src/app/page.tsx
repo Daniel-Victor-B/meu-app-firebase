@@ -39,6 +39,7 @@ export interface MonthlyData {
   saidaReserva?: number;
   saidaCaixaOperacional?: number;
   impostoExtra?: number;
+  impostosDAS?: number; // Valor do DAS pago (importado ou manual)
 }
 
 export default function Home() {
@@ -58,7 +59,8 @@ export default function Home() {
       distribuicao: 0,
       saidaReserva: 0,
       saidaCaixaOperacional: 0,
-      impostoExtra: 0
+      impostoExtra: 0,
+      impostosDAS: 0
     }))
   );
 

@@ -43,7 +43,8 @@ import {
   Eye,
   Calendar,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  Trash2
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -194,13 +195,23 @@ export function CashFlowLedger({
     localStorage.setItem("mei-flow-ledger-dist-lucro", distribuicaoLucroPct.toString());
   }, [distribuicaoLucroPct]);
 
+  const addLogEntry = useCallback((entry: Omit<ActivityLogEntry, 'id' | 'timestamp'>) => {
+    const newEntry: ActivityLogEntry = {
+      ...entry,
+      id: `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+      timestamp: Date.now(),
+    };
+    setActivityLog(prev => [newEntry, ...prev]);
+  }, []);
+
   useEffect(() => {
     let precisaAtualizar = false;
     const newData = monthlyData.map(m => {
       if (m.sobra === undefined || m.reserva === undefined || m.lucro === undefined) {
         precisaAtualizar = true;
         const currentDas = calculateDasValue(businessData.ramo);
-        const sobra = Math.max(0, m.receita - m.custos - currentDas - prolabore);
+        const impTot = (m.impostosDAS || currentDas) + (m.impostoExtra || 0);
+        const sobra = Math.max(0, m.receita - m.custos - impTot - prolabore);
         const reserva = Math.round((sobra * reservaPct) / 100);
         const lucro = sobra - reserva;
         return {
@@ -212,7 +223,8 @@ export function CashFlowLedger({
           lucro,
           saidaReserva: m.saidaReserva || 0,
           saidaCaixaOperacional: m.saidaCaixaOperacional || 0,
-          impostoExtra: m.impostoExtra || 0
+          impostoExtra: m.impostoExtra || 0,
+          impostosDAS: m.impostosDAS || 0
         };
       }
       return m;
@@ -222,15 +234,6 @@ export function CashFlowLedger({
     }
   }, [businessData.ramo, prolabore, reservaPct]);
 
-  const addLogEntry = useCallback((entry: Omit<ActivityLogEntry, 'id' | 'timestamp'>) => {
-    const newEntry: ActivityLogEntry = {
-      ...entry,
-      id: `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-      timestamp: Date.now(),
-    };
-    setActivityLog(prev => [newEntry, ...prev]);
-  }, []);
-
   const updateMonth = (index: number, field: keyof MonthlyData, value: any) => {
     const newData = [...monthlyData];
     const oldValue = newData[index][field];
@@ -238,7 +241,9 @@ export function CashFlowLedger({
     if (field === 'active') {
       const isActivating = !!value;
       if (isActivating) {
-        const sobra = Math.max(0, newData[index].receita - newData[index].custos - dasValue - prolabore);
+        const currentDas = calculateDasValue(businessData.ramo);
+        const impTot = (newData[index].impostosDAS || currentDas) + (newData[index].impostoExtra || 0);
+        const sobra = Math.max(0, newData[index].receita - newData[index].custos - impTot - prolabore);
         const reserva = Math.round((sobra * reservaPct) / 100);
         const lucro = sobra - reserva;
         newData[index] = { 
@@ -271,14 +276,14 @@ export function CashFlowLedger({
       if (oldValue !== newValue) {
         newData[index] = { ...newData[index], [field]: newValue };
         
-        if (field === 'receita' || field === 'custos') {
-          const sobra = Math.max(0, newData[index].receita - newData[index].custos - dasValue - prolabore);
-          const reserva = Math.round((sobra * reservaPct) / 100);
+        if (field === 'receita' || field === 'custos' || field === 'impostoExtra' || field === 'impostosDAS') {
+          const currentDas = calculateDasValue(businessData.ramo);
+          const impTot = (newData[index].impostosDAS || currentDas) + (newData[index].impostoExtra || 0);
+          const sobra = Math.max(0, newData[index].receita - newData[index].custos - impTot - prolabore);
+          const reserva = Math.round((sobra * (newData[index].reservaPct_usado || reservaPct)) / 100);
           const lucro = sobra - reserva;
           newData[index] = {
             ...newData[index],
-            prolabore_usado: prolabore,
-            reservaPct_usado: reservaPct,
             sobra,
             reserva,
             lucro
@@ -331,6 +336,16 @@ export function CashFlowLedger({
     }
   };
 
+  const ignoreTransaction = (id: string) => {
+    const tx = pendingTransactions.find(t => t.id === id);
+    setPendingTransactions(prev => prev.filter(t => t.id !== id));
+    addLogEntry({
+      actionType: 'manual_edit',
+      description: `Transação ignorada: ${tx?.description || 'Desconhecida'}`,
+    });
+    toast({ title: "Transação removida" });
+  };
+
   const importTransaction = (tx: BankTransaction) => {
     const currentMonthIndex = new Date().getMonth();
     const newData = [...monthlyData];
@@ -339,12 +354,26 @@ export function CashFlowLedger({
       newData[currentMonthIndex] = { ...newData[currentMonthIndex], active: true };
     }
     
-    if (tx.type === "CREDIT") newData[currentMonthIndex].receita += tx.amount;
-    else newData[currentMonthIndex].custos += Math.abs(tx.amount);
+    const lowerDesc = tx.description.toLowerCase();
+    const isTax = lowerDesc.includes('das') || lowerDesc.includes('pgmei') || lowerDesc.includes('imposto') || lowerDesc.includes('receita federal');
 
-    const sobra = Math.max(0, newData[currentMonthIndex].receita - newData[currentMonthIndex].custos - dasValue - prolabore);
+    if (tx.type === "CREDIT") {
+      newData[currentMonthIndex].receita += tx.amount;
+    } else {
+      const absAmount = Math.abs(tx.amount);
+      if (isTax) {
+        newData[currentMonthIndex].impostosDAS = (newData[currentMonthIndex].impostosDAS || 0) + absAmount;
+      } else {
+        newData[currentMonthIndex].custos += absAmount;
+      }
+    }
+
+    const currentDas = calculateDasValue(businessData.ramo);
+    const impTot = (newData[currentMonthIndex].impostosDAS || currentDas) + (newData[currentMonthIndex].impostoExtra || 0);
+    const sobra = Math.max(0, newData[currentMonthIndex].receita - newData[currentMonthIndex].custos - impTot - prolabore);
     const reserva = Math.round((sobra * reservaPct) / 100);
     const lucro = sobra - reserva;
+    
     newData[currentMonthIndex] = {
       ...newData[currentMonthIndex],
       prolabore_usado: prolabore,
@@ -365,7 +394,7 @@ export function CashFlowLedger({
     
     addLogEntry({
       actionType: 'import',
-      description: `Importação de ${formatCurrency(Math.abs(tx.amount))} para ${MESES[currentMonthIndex]}`,
+      description: `Importação de ${formatCurrency(Math.abs(tx.amount))} para ${MESES[currentMonthIndex]} (${isTax ? 'Imposto' : 'Custo'})`,
       monthIndex: currentMonthIndex,
       amount: tx.amount
     });
@@ -383,8 +412,10 @@ export function CashFlowLedger({
 
     const rows = monthlyData.map((m) => {
       const das = calculateDasValue(businessData.ramo);
+      const impPagos = m.impostosDAS || 0;
       const impExtra = m.impostoExtra || 0;
-      const impTotal = m.active ? (das + impExtra) : 0;
+      const impBase = m.active ? (impPagos || das) : 0;
+      const impTotal = impBase + impExtra;
 
       if (!m.active) return { 
         ...m, 
@@ -395,14 +426,13 @@ export function CashFlowLedger({
       
       const sobra = m.sobra || 0;
       const reserva = m.reserva || 0;
-      const lucroBase = m.lucro || 0;
+      const lucro = m.lucro || 0;
       const dist = m.distribuicao || 0;
       const saidaRes = m.saidaReserva || 0;
       const saidaCaixa = m.saidaCaixaOperacional || 0;
 
-      const lucroRealFinal = lucroBase - impExtra;
       const reservaLiquida = reserva - saidaRes;
-      const caixaMensal = lucroRealFinal - dist - saidaCaixa;
+      const caixaMensal = lucro - dist - saidaCaixa;
       
       acumuladoReservaTotal += reservaLiquida;
       acumuladoCaixaOpTotal += caixaMensal;
@@ -414,7 +444,7 @@ export function CashFlowLedger({
         ...m, 
         sobra, 
         reserva, 
-        lucro: lucroRealFinal, 
+        lucro, 
         impostoTotal: impTotal,
         distribuicao: dist,
         saldoCaixaAcumulado: acumuladoCaixaOpTotal,
@@ -468,14 +498,13 @@ export function CashFlowLedger({
 
   const pieData = useMemo(() => {
     if (!currentMonthDetail) return [];
-    const das = calculateDasValue(businessData.ramo);
     return [
       { name: 'Custos', value: currentMonthDetail.custos || 0, color: '#f97316' },
-      { name: 'Impostos', value: (das + (currentMonthDetail.impostoExtra || 0)) || 0, color: '#f59e0b' },
+      { name: 'Impostos', value: currentMonthDetail.impostoTotal || 0, color: '#f59e0b' },
       { name: 'Reserva', value: currentMonthDetail.reserva || 0, color: '#a855f7' },
       { name: 'Lucro', value: currentMonthDetail.lucro || 0, color: '#22c55e' },
     ].filter(d => d.value > 0);
-  }, [currentMonthDetail, businessData.ramo]);
+  }, [currentMonthDetail]);
 
   const handleRegisterDistribution = () => {
     const lastMonthOfQuarter = selectedQuarter * 3 + 2;
@@ -605,7 +634,10 @@ export function CashFlowLedger({
                         <div className="text-[10px] font-bold truncate pr-2 uppercase">{tx.description}</div>
                         <div className={cn("text-[10px] font-black mt-0.5", tx.type === "CREDIT" ? "text-primary" : "text-orange-500")}>{tx.type === "CREDIT" ? "+" : "-"}{formatCurrency(Math.abs(tx.amount))}</div>
                       </div>
-                      <Button size="icon" variant="ghost" onClick={() => importTransaction(tx)} className="h-8 w-8 rounded-full hover:bg-primary/20 text-primary shrink-0"><PlusCircle className="w-4 h-4" /></Button>
+                      <div className="flex gap-1">
+                        <Button size="icon" variant="ghost" onClick={() => importTransaction(tx)} className="h-8 w-8 rounded-full hover:bg-primary/20 text-primary shrink-0"><PlusCircle className="w-4 h-4" /></Button>
+                        <Button size="icon" variant="ghost" onClick={() => ignoreTransaction(tx.id)} className="h-8 w-8 rounded-full hover:bg-destructive/20 text-destructive shrink-0"><Trash2 className="w-4 h-4" /></Button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -680,10 +712,6 @@ export function CashFlowLedger({
         <CardHeader className="flex flex-col lg:flex-row lg:items-center justify-between bg-card pb-4 gap-4 px-6 pt-6 border-b">
           <div className="flex flex-col gap-2">
             <CardTitle className="text-lg flex items-center gap-2"><BookOpen className="w-5 h-5 text-primary" />Livro de Caixa</CardTitle>
-            <div className="flex md:hidden items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full w-fit animate-pulse">
-              <ArrowRight className="w-3 h-3 text-primary" />
-              <span className="text-[9px] font-black text-primary uppercase">Deslize para ver todas as colunas →</span>
-            </div>
           </div>
           <div className="flex items-center gap-4 p-2 bg-secondary/30 rounded-xl border border-border/50">
             <div className="space-y-1 px-3 border-r">
@@ -708,6 +736,15 @@ export function CashFlowLedger({
             <TooltipProvider>
               <Table className="w-full border-collapse">
                 <TableHeader className="bg-secondary/30">
+                  <TableRow className="md:hidden bg-primary/5 border-0">
+                    <TableCell colSpan={11} className="text-center py-3">
+                      <div className="flex items-center justify-between gap-2 text-[10px] font-bold text-muted-foreground animate-pulse px-4">
+                        <ArrowLeftRight className="w-3.5 h-3.5 text-primary" />
+                        <span>Deslize para ver todas as colunas →</span>
+                        <ArrowLeftRight className="w-3.5 h-3.5 text-primary" />
+                      </div>
+                    </TableCell>
+                  </TableRow>
                   <TableRow className="hover:bg-transparent border-b">
                     <TableHead className="w-[60px] font-bold text-[10px] uppercase text-center border-r px-2">
                       <Tooltip>
@@ -726,17 +763,14 @@ export function CashFlowLedger({
                     </TableHead>
                     <TableHead className="w-[160px] font-bold text-[10px] uppercase px-4 text-orange-500">
                       <Tooltip>
-                        <TooltipTrigger asChild><div className="cursor-help">Custos Op.</div></TooltipTrigger>
-                        <TooltipContent><p>Despesas fixas e variáveis do negócio</p></TooltipContent>
+                        <TooltipTrigger asChild><div className="cursor-help">Custos</div></TooltipTrigger>
+                        <TooltipContent><p>Despesas operacionais (sem impostos)</p></TooltipContent>
                       </Tooltip>
                     </TableHead>
                     <TableHead className="w-[120px] font-bold text-[10px] uppercase px-4 text-amber-500 text-center">
-                      DAS
-                    </TableHead>
-                    <TableHead className="w-[120px] font-bold text-[10px] uppercase px-4 text-amber-600">
                       <Tooltip>
-                        <TooltipTrigger asChild><div className="cursor-help">Extra (Imp)</div></TooltipTrigger>
-                        <TooltipContent><p>Multas, parcelamentos ou outros tributos</p></TooltipContent>
+                        <TooltipTrigger asChild><div className="cursor-help">Impostos</div></TooltipTrigger>
+                        <TooltipContent><p>Total de DAS + Impostos Extras</p></TooltipContent>
                       </Tooltip>
                     </TableHead>
                     <TableHead className="w-[130px] text-right font-bold text-[10px] uppercase px-4">
@@ -745,7 +779,7 @@ export function CashFlowLedger({
                     <TableHead className="w-[130px] text-right font-bold text-[10px] uppercase text-purple-500 px-4">
                       Reserva PJ
                     </TableHead>
-                    <TableHead className="w-[130px] text-right font-bold text-[10px] uppercase text-amber-500 px-4">
+                    <TableHead className="w-[130px] text-right font-bold text-[10px] uppercase text-emerald-500 px-4">
                       Lucro Real
                     </TableHead>
                     <TableHead className="w-[130px] text-right font-bold text-[10px] uppercase text-red-500 px-4">
@@ -758,14 +792,6 @@ export function CashFlowLedger({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow className="md:hidden bg-primary/5 border-0">
-                    <TableCell colSpan={12} className="text-center py-3">
-                      <div className="flex items-center justify-center gap-2 text-[10px] font-bold text-muted-foreground animate-pulse">
-                        <ArrowLeftRight className="w-3.5 h-3.5 text-primary" />
-                        Arraste para o lado →
-                      </div>
-                    </TableCell>
-                  </TableRow>
                   {totals.rows.map((row, i) => (
                     <TableRow key={i} className={cn("transition-all duration-300", highlightedMonth === i && "bg-primary/20 shadow-inner ring-2 ring-primary/50", !row.active && "opacity-20 grayscale")}>
                       <TableCell className="py-3 text-center border-r px-2"><Switch checked={row.active} onCheckedChange={(c) => updateMonth(i, 'active', c)} className="scale-90" /></TableCell>
@@ -776,13 +802,10 @@ export function CashFlowLedger({
                       <TableCell className="py-2 px-4">
                         <Input type="text" disabled={!row.active} value={formatInputCurrency(row.custos)} onChange={(e) => updateMonth(i, 'custos', parseInputCurrency(e.target.value))} className={cn(InputStyle, "text-orange-500")} />
                       </TableCell>
-                      <TableCell className="py-2 px-4 font-bold text-amber-500 text-xs text-center">{formatCurrency(calculateDasValue(businessData.ramo))}</TableCell>
-                      <TableCell className="py-2 px-4">
-                        <Input type="text" disabled={!row.active} value={formatInputCurrency(row.impostoExtra || 0)} onChange={(e) => updateMonth(i, 'impostoExtra', parseInputCurrency(e.target.value))} className={cn(InputStyle, "text-amber-600")} />
-                      </TableCell>
+                      <TableCell className="py-2 px-4 font-bold text-amber-500 text-xs text-center">{formatCurrency(row.impostoTotal || 0)}</TableCell>
                       <TableCell className="text-right text-xs font-medium px-4">{formatCurrency(row.sobra || 0)}</TableCell>
                       <TableCell className="text-right text-xs font-bold text-purple-500 px-4">{formatCurrency(row.reserva || 0)}</TableCell>
-                      <TableCell className="text-right text-sm font-black text-amber-500 px-4">{formatCurrency(row.lucro || 0)}</TableCell>
+                      <TableCell className="text-right text-sm font-black text-emerald-500 px-4">{formatCurrency(row.lucro || 0)}</TableCell>
                       <TableCell className="text-right text-xs font-bold text-red-500 px-4">{formatCurrency(row.distribuicao || 0)}</TableCell>
                       <TableCell className="text-right text-xs font-black text-emerald-500 px-4 bg-emerald-500/5">{formatCurrency(row.saldoCaixaAcumulado || 0)}</TableCell>
                       <TableCell className="text-center px-4">
@@ -914,7 +937,6 @@ export function CashFlowLedger({
         </Accordion>
       </section>
 
-      {/* Sheet de Detalhes do Mês - Resumo Executivo */}
       <Sheet open={selectedMonthIndex !== null} onOpenChange={(open) => !open && setSelectedMonthIndex(null)}>
         <SheetContent className="sm:max-w-xl overflow-y-auto no-scrollbar p-0">
           <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b p-6">
@@ -929,7 +951,6 @@ export function CashFlowLedger({
 
           {currentMonthDetail && selectedMonthIndex !== null && (
             <div className="p-6 space-y-8">
-              {/* Gráfico de Pizza de Distribuição */}
               <section className="space-y-4">
                 <div className="flex items-center justify-between px-1">
                   <h4 className="text-[10px] font-black uppercase tracking-widest text-foreground">Distribuição Real do Capital</h4>
@@ -968,7 +989,6 @@ export function CashFlowLedger({
                 </div>
               </section>
 
-              {/* Indicadores de Performance */}
               <section className="grid grid-cols-2 gap-4">
                 <Card className="bg-background border-border/50 p-4 space-y-1">
                   <div className="text-[9px] font-black uppercase text-muted-foreground">Margem de Lucro</div>
@@ -991,7 +1011,6 @@ export function CashFlowLedger({
                 </Card>
               </section>
 
-              {/* Recomendação da IA */}
               <div className="p-5 rounded-2xl bg-primary/5 border border-primary/20 space-y-3">
                 <div className="flex items-center gap-2 text-primary">
                   <Sparkles className="w-4 h-4" />
@@ -1004,7 +1023,6 @@ export function CashFlowLedger({
                 </p>
               </div>
 
-              {/* Acordeão para Edições Avançadas */}
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="advanced-edits" className="border rounded-2xl bg-secondary/10 px-4">
                   <AccordionTrigger className="hover:no-underline text-[10px] font-black uppercase tracking-widest">
@@ -1019,6 +1037,15 @@ export function CashFlowLedger({
                           value={formatInputCurrency(currentMonthDetail.impostoExtra || 0)} 
                           onChange={(e) => updateMonth(selectedMonthIndex, 'impostoExtra', parseInputCurrency(e.target.value))} 
                           className="h-10 font-bold text-amber-600 bg-background"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase text-muted-foreground">Pagamento DAS Manual (R$)</Label>
+                        <Input 
+                          type="text" 
+                          value={formatInputCurrency(currentMonthDetail.impostosDAS || 0)} 
+                          onChange={(e) => updateMonth(selectedMonthIndex, 'impostosDAS', parseInputCurrency(e.target.value))} 
+                          className="h-10 font-bold text-amber-500 bg-background"
                         />
                       </div>
                       <div className="space-y-2">
