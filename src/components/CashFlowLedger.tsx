@@ -18,7 +18,6 @@ import {
   Wallet, 
   Settings2, 
   UserCircle, 
-  Percent, 
   ChevronUp, 
   ChevronDown, 
   Target, 
@@ -30,7 +29,6 @@ import {
   RefreshCw, 
   PlusCircle, 
   Save, 
-  Trash2, 
   History, 
   Scale, 
   ArrowRight, 
@@ -40,11 +38,12 @@ import {
   Unlink, 
   Receipt, 
   Banknote, 
-  FileText, 
   Info,
   TrendingUp,
   Eye,
-  Calendar
+  Calendar,
+  ArrowUpRight,
+  ArrowDownRight
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -62,6 +61,7 @@ import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@/comp
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Label } from "@/components/ui/label";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip } from "recharts";
 
 const MESES = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
@@ -450,6 +450,33 @@ export function CashFlowLedger({
   const qProfitPF_Manual = Math.round((qProfit * distribuicaoLucroPct) / 100);
   const qProfitPJ_Manual = qProfit - qProfitPF_Manual;
 
+  const currentMonthDetail = selectedMonthIndex !== null ? totals.rows[selectedMonthIndex] : null;
+
+  const comparisonStats = useMemo(() => {
+    if (selectedMonthIndex === null) return null;
+    const pastMonths = totals.rows.slice(0, selectedMonthIndex).filter(m => m.active);
+    if (pastMonths.length === 0) return null;
+    
+    const last3 = pastMonths.slice(-3);
+    const avgProfit = last3.reduce((acc, m) => acc + (m.lucro || 0), 0) / last3.length;
+    const currentProfit = currentMonthDetail?.lucro || 0;
+    const diff = currentProfit - avgProfit;
+    const pct = avgProfit !== 0 ? (diff / avgProfit) * 100 : 0;
+    
+    return { avgProfit, diff, pct };
+  }, [selectedMonthIndex, totals.rows, currentMonthDetail]);
+
+  const pieData = useMemo(() => {
+    if (!currentMonthDetail) return [];
+    const das = calculateDasValue(businessData.ramo);
+    return [
+      { name: 'Custos', value: currentMonthDetail.custos || 0, color: '#f97316' },
+      { name: 'Impostos', value: (das + (currentMonthDetail.impostoExtra || 0)) || 0, color: '#f59e0b' },
+      { name: 'Reserva', value: currentMonthDetail.reserva || 0, color: '#a855f7' },
+      { name: 'Lucro', value: currentMonthDetail.lucro || 0, color: '#22c55e' },
+    ].filter(d => d.value > 0);
+  }, [currentMonthDetail, businessData.ramo]);
+
   const handleRegisterDistribution = () => {
     const lastMonthOfQuarter = selectedQuarter * 3 + 2;
     const newData = [...monthlyData];
@@ -469,7 +496,7 @@ export function CashFlowLedger({
   };
 
   const formatInputCurrency = (val: number) => {
-    return `R$ ${val.toLocaleString('pt-BR')}`;
+    return val.toLocaleString('pt-BR');
   };
 
   const parseInputCurrency = (val: string) => {
@@ -477,7 +504,7 @@ export function CashFlowLedger({
     return parseFloat(numeric) || 0;
   };
 
-  const currentMonthDetail = selectedMonthIndex !== null ? totals.rows[selectedMonthIndex] : null;
+  const InputStyle = "w-full h-9 text-xs font-bold bg-transparent border-0 border-b border-transparent focus:border-primary/50 focus:ring-0 rounded-none px-1 transition-all";
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500 pb-16">
@@ -678,82 +705,96 @@ export function CashFlowLedger({
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto no-scrollbar pb-6">
-            <Table className="w-full border-collapse">
-              <TableHeader className="bg-secondary/30">
-                <TableRow className="hover:bg-transparent border-b">
-                  <TableHead className="w-[60px] font-bold text-[10px] uppercase text-center border-r">
-                    <div className="relative group/head">Ativo <div className="absolute right-0 top-0 bottom-0 w-px cursor-col-resize hover:bg-primary/50 transition-colors" /></div>
-                  </TableHead>
-                  <TableHead className="w-[100px] font-bold text-[10px] uppercase border-r text-center">
-                    <div className="relative group/head">Mês <div className="absolute right-0 top-0 bottom-0 w-px cursor-col-resize hover:bg-primary/50 transition-colors" /></div>
-                  </TableHead>
-                  <TableHead className="w-[160px] font-bold text-[10px] uppercase px-4 text-indigo-500">
-                    <div className="relative group/head">Receita Bruta <div className="absolute right-0 top-0 bottom-0 w-px cursor-col-resize hover:bg-primary/50 transition-colors" /></div>
-                  </TableHead>
-                  <TableHead className="hidden md:table-cell w-[160px] font-bold text-[10px] uppercase px-4 text-orange-500">
-                    <div className="relative group/head">Custos Op. <div className="absolute right-0 top-0 bottom-0 w-px cursor-col-resize hover:bg-primary/50 transition-colors" /></div>
-                  </TableHead>
-                  <TableHead className="hidden md:table-cell w-[120px] font-bold text-[10px] uppercase px-4 text-amber-500 text-center">
-                    <div className="relative group/head">DAS <div className="absolute right-0 top-0 bottom-0 w-px cursor-col-resize hover:bg-primary/50 transition-colors" /></div>
-                  </TableHead>
-                  <TableHead className="hidden lg:table-cell w-[120px] font-bold text-[10px] uppercase px-4 text-amber-600">
-                    <div className="relative group/head">Extra <div className="absolute right-0 top-0 bottom-0 w-px cursor-col-resize hover:bg-primary/50 transition-colors" /></div>
-                  </TableHead>
-                  <TableHead className="hidden lg:table-cell w-[130px] text-right font-bold text-[10px] uppercase px-4">
-                    <div className="relative group/head">Sobra <div className="absolute right-0 top-0 bottom-0 w-px cursor-col-resize hover:bg-primary/50 transition-colors" /></div>
-                  </TableHead>
-                  <TableHead className="hidden md:table-cell w-[130px] text-right font-bold text-[10px] uppercase text-purple-500 px-4">
-                    <div className="relative group/head">Reserva <div className="absolute right-0 top-0 bottom-0 w-px cursor-col-resize hover:bg-primary/50 transition-colors" /></div>
-                  </TableHead>
-                  <TableHead className="w-[130px] text-right font-bold text-[10px] uppercase text-amber-500 px-4">
-                    <div className="relative group/head">Lucro Real <div className="absolute right-0 top-0 bottom-0 w-px cursor-col-resize hover:bg-primary/50 transition-colors" /></div>
-                  </TableHead>
-                  <TableHead className="hidden md:table-cell w-[130px] text-right font-bold text-[10px] uppercase text-red-500 px-4">
-                    <div className="relative group/head">Dist. <div className="absolute right-0 top-0 bottom-0 w-px cursor-col-resize hover:bg-primary/50 transition-colors" /></div>
-                  </TableHead>
-                  <TableHead className="w-[150px] text-right font-bold text-[10px] uppercase text-emerald-500 px-4 font-black bg-emerald-500/5">
-                    <div className="relative group/head">Saldo Acum. <div className="absolute right-0 top-0 bottom-0 w-px cursor-col-resize hover:bg-primary/50 transition-colors" /></div>
-                  </TableHead>
-                  <TableHead className="w-[80px] text-center font-bold text-[10px] uppercase px-4">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow className="md:hidden bg-primary/5 border-0">
-                  <TableCell colSpan={7} className="text-center py-3">
-                    <div className="flex items-center justify-center gap-2 text-[10px] font-bold text-muted-foreground animate-pulse">
-                      <ArrowLeftRight className="w-3.5 h-3.5 text-primary" />
-                      Arraste para o lado →
-                    </div>
-                  </TableCell>
-                </TableRow>
-                {totals.rows.map((row, i) => (
-                  <TableRow key={i} className={cn("transition-all duration-300", highlightedMonth === i && "bg-primary/20 shadow-inner ring-2 ring-primary/50", !row.active && "opacity-20 grayscale")}>
-                    <TableCell className="py-3 text-center border-r"><Switch checked={row.active} onCheckedChange={(c) => updateMonth(i, 'active', c)} className="scale-90" /></TableCell>
-                    <TableCell className="font-bold text-xs py-3 border-r text-center bg-card">{MESES[i]}</TableCell>
-                    <TableCell className="py-2 px-4">
-                      <Input type="text" disabled={!row.active} value={formatInputCurrency(row.receita)} onChange={(e) => updateMonth(i, 'receita', parseInputCurrency(e.target.value))} className="h-9 text-xs font-bold text-indigo-500 border-transparent focus:border-indigo-500/50 bg-transparent" />
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell py-2 px-4">
-                      <Input type="text" disabled={!row.active} value={formatInputCurrency(row.custos)} onChange={(e) => updateMonth(i, 'custos', parseInputCurrency(e.target.value))} className="h-9 text-xs font-bold text-orange-500 border-transparent focus:border-orange-500/50 bg-transparent" />
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell py-2 px-4 font-bold text-amber-500 text-xs text-center">{formatCurrency(calculateDasValue(businessData.ramo))}</TableCell>
-                    <TableCell className="hidden lg:table-cell py-2 px-4">
-                      <Input type="text" disabled={!row.active} value={formatInputCurrency(row.impostoExtra || 0)} onChange={(e) => updateMonth(i, 'impostoExtra', parseInputCurrency(e.target.value))} className="h-9 text-xs font-bold text-amber-600 border-transparent focus:border-amber-600/50 bg-transparent" />
-                    </TableCell>
-                    <TableCell className="hidden lg:table-cell text-right text-xs font-medium px-4">{formatCurrency(row.sobra || 0)}</TableCell>
-                    <TableCell className="hidden md:table-cell text-right text-xs font-bold text-purple-500 px-4">{formatCurrency(row.reserva || 0)}</TableCell>
-                    <TableCell className="text-right text-sm font-black text-amber-500 px-4">{formatCurrency(row.lucro || 0)}</TableCell>
-                    <TableCell className="hidden md:table-cell text-right text-xs font-bold text-red-500 px-4">{formatCurrency(row.distribuicao || 0)}</TableCell>
-                    <TableCell className="text-right text-xs font-black text-emerald-500 px-4 bg-emerald-500/5">{formatCurrency(row.saldoCaixaAcumulado || 0)}</TableCell>
-                    <TableCell className="text-center px-4">
-                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-primary/10 text-primary" onClick={() => setSelectedMonthIndex(i)}>
-                        <Eye className="w-4 h-4" />
-                      </Button>
+            <TooltipProvider>
+              <Table className="w-full border-collapse">
+                <TableHeader className="bg-secondary/30">
+                  <TableRow className="hover:bg-transparent border-b">
+                    <TableHead className="w-[60px] font-bold text-[10px] uppercase text-center border-r px-2">
+                      <Tooltip>
+                        <TooltipTrigger asChild><div className="cursor-help">Ativo</div></TooltipTrigger>
+                        <TooltipContent><p>Indica se o mês possui operação</p></TooltipContent>
+                      </Tooltip>
+                    </TableHead>
+                    <TableHead className="w-[100px] font-bold text-[10px] uppercase border-r text-center px-2">
+                      Mês
+                    </TableHead>
+                    <TableHead className="w-[160px] font-bold text-[10px] uppercase px-4 text-indigo-500">
+                      <Tooltip>
+                        <TooltipTrigger asChild><div className="cursor-help">Receita Bruta</div></TooltipTrigger>
+                        <TooltipContent><p>Total de vendas/serviços realizados no mês</p></TooltipContent>
+                      </Tooltip>
+                    </TableHead>
+                    <TableHead className="w-[160px] font-bold text-[10px] uppercase px-4 text-orange-500">
+                      <Tooltip>
+                        <TooltipTrigger asChild><div className="cursor-help">Custos Op.</div></TooltipTrigger>
+                        <TooltipContent><p>Despesas fixas e variáveis do negócio</p></TooltipContent>
+                      </Tooltip>
+                    </TableHead>
+                    <TableHead className="w-[120px] font-bold text-[10px] uppercase px-4 text-amber-500 text-center">
+                      DAS
+                    </TableHead>
+                    <TableHead className="w-[120px] font-bold text-[10px] uppercase px-4 text-amber-600">
+                      <Tooltip>
+                        <TooltipTrigger asChild><div className="cursor-help">Extra (Imp)</div></TooltipTrigger>
+                        <TooltipContent><p>Multas, parcelamentos ou outros tributos</p></TooltipContent>
+                      </Tooltip>
+                    </TableHead>
+                    <TableHead className="w-[130px] text-right font-bold text-[10px] uppercase px-4">
+                      Sobra
+                    </TableHead>
+                    <TableHead className="w-[130px] text-right font-bold text-[10px] uppercase text-purple-500 px-4">
+                      Reserva PJ
+                    </TableHead>
+                    <TableHead className="w-[130px] text-right font-bold text-[10px] uppercase text-amber-500 px-4">
+                      Lucro Real
+                    </TableHead>
+                    <TableHead className="w-[130px] text-right font-bold text-[10px] uppercase text-red-500 px-4">
+                      Dist.
+                    </TableHead>
+                    <TableHead className="w-[150px] text-right font-bold text-[10px] uppercase text-emerald-500 px-4 font-black bg-emerald-500/5">
+                      Saldo Acum.
+                    </TableHead>
+                    <TableHead className="w-[80px] text-center font-bold text-[10px] uppercase px-4">Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow className="md:hidden bg-primary/5 border-0">
+                    <TableCell colSpan={12} className="text-center py-3">
+                      <div className="flex items-center justify-center gap-2 text-[10px] font-bold text-muted-foreground animate-pulse">
+                        <ArrowLeftRight className="w-3.5 h-3.5 text-primary" />
+                        Arraste para o lado →
+                      </div>
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                  {totals.rows.map((row, i) => (
+                    <TableRow key={i} className={cn("transition-all duration-300", highlightedMonth === i && "bg-primary/20 shadow-inner ring-2 ring-primary/50", !row.active && "opacity-20 grayscale")}>
+                      <TableCell className="py-3 text-center border-r px-2"><Switch checked={row.active} onCheckedChange={(c) => updateMonth(i, 'active', c)} className="scale-90" /></TableCell>
+                      <TableCell className="font-bold text-xs py-3 border-r text-center bg-card px-2">{MESES[i]}</TableCell>
+                      <TableCell className="py-2 px-4">
+                        <Input type="text" disabled={!row.active} value={formatInputCurrency(row.receita)} onChange={(e) => updateMonth(i, 'receita', parseInputCurrency(e.target.value))} className={cn(InputStyle, "text-indigo-500")} />
+                      </TableCell>
+                      <TableCell className="py-2 px-4">
+                        <Input type="text" disabled={!row.active} value={formatInputCurrency(row.custos)} onChange={(e) => updateMonth(i, 'custos', parseInputCurrency(e.target.value))} className={cn(InputStyle, "text-orange-500")} />
+                      </TableCell>
+                      <TableCell className="py-2 px-4 font-bold text-amber-500 text-xs text-center">{formatCurrency(calculateDasValue(businessData.ramo))}</TableCell>
+                      <TableCell className="py-2 px-4">
+                        <Input type="text" disabled={!row.active} value={formatInputCurrency(row.impostoExtra || 0)} onChange={(e) => updateMonth(i, 'impostoExtra', parseInputCurrency(e.target.value))} className={cn(InputStyle, "text-amber-600")} />
+                      </TableCell>
+                      <TableCell className="text-right text-xs font-medium px-4">{formatCurrency(row.sobra || 0)}</TableCell>
+                      <TableCell className="text-right text-xs font-bold text-purple-500 px-4">{formatCurrency(row.reserva || 0)}</TableCell>
+                      <TableCell className="text-right text-sm font-black text-amber-500 px-4">{formatCurrency(row.lucro || 0)}</TableCell>
+                      <TableCell className="text-right text-xs font-bold text-red-500 px-4">{formatCurrency(row.distribuicao || 0)}</TableCell>
+                      <TableCell className="text-right text-xs font-black text-emerald-500 px-4 bg-emerald-500/5">{formatCurrency(row.saldoCaixaAcumulado || 0)}</TableCell>
+                      <TableCell className="text-center px-4">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-primary/10 text-primary" onClick={() => setSelectedMonthIndex(i)}>
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TooltipProvider>
           </div>
         </CardContent>
       </Card>
@@ -873,102 +914,138 @@ export function CashFlowLedger({
         </Accordion>
       </section>
 
-      {/* Sheet de Detalhes do Mês */}
+      {/* Sheet de Detalhes do Mês - Resumo Executivo */}
       <Sheet open={selectedMonthIndex !== null} onOpenChange={(open) => !open && setSelectedMonthIndex(null)}>
-        <SheetContent className="sm:max-w-md overflow-y-auto no-scrollbar">
-          <SheetHeader className="pb-6 border-b">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-primary/10 rounded-2xl text-primary"><Calendar className="w-6 h-6" /></div>
+        <SheetContent className="sm:max-w-xl overflow-y-auto no-scrollbar p-0">
+          <div className="sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-primary/10 rounded-2xl text-primary shrink-0"><Calendar className="w-6 h-6" /></div>
               <div className="text-left">
                 <SheetTitle className="text-2xl font-black tracking-tight">{selectedMonthIndex !== null ? MESES[selectedMonthIndex] : ""}</SheetTitle>
-                <SheetDescription className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Detalhamento e Operações de Saída</SheetDescription>
+                <SheetDescription className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Resumo Executivo Mensal</SheetDescription>
               </div>
             </div>
-          </SheetHeader>
+          </div>
 
           {currentMonthDetail && selectedMonthIndex !== null && (
-            <div className="py-8 space-y-8">
-              <section className="grid grid-cols-2 gap-4">
-                <div className="p-4 rounded-2xl bg-secondary/20 border border-border/50">
-                  <div className="text-[10px] font-black uppercase text-muted-foreground mb-1">Receita</div>
-                  <div className="text-lg font-bold text-indigo-500">{formatCurrency(currentMonthDetail.receita)}</div>
-                </div>
-                <div className="p-4 rounded-2xl bg-secondary/20 border border-border/50">
-                  <div className="text-[10px] font-black uppercase text-muted-foreground mb-1">Custos</div>
-                  <div className="text-lg font-bold text-orange-500">{formatCurrency(currentMonthDetail.custos)}</div>
-                </div>
-              </section>
-
-              <Separator />
-
-              <section className="space-y-6">
-                <div className="flex items-center gap-2"><div className="p-1.5 bg-amber-500/10 rounded-lg text-amber-500"><Receipt className="w-4 h-4" /></div><h4 className="text-[10px] font-black uppercase tracking-widest text-foreground">Impostos e Tributos</h4></div>
-                <div className="grid gap-4">
-                  <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-background border">
-                    <span className="text-xs font-bold text-muted-foreground">DAS Mensal (Fixo)</span>
-                    <span className="text-sm font-black text-amber-500">{formatCurrency(calculateDasValue(businessData.ramo))}</span>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase text-muted-foreground px-1">Imposto Extra / Multas</Label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-amber-600">R$</span>
-                      <Input 
-                        type="text" 
-                        value={formatInputCurrency(currentMonthDetail.impostoExtra || 0)} 
-                        onChange={(e) => updateMonth(selectedMonthIndex, 'impostoExtra', parseInputCurrency(e.target.value))} 
-                        className="pl-10 font-bold text-amber-600 h-12 rounded-xl"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <Separator />
-
-              <section className="space-y-6">
-                <div className="flex items-center gap-2"><div className="p-1.5 bg-red-500/10 rounded-lg text-red-500"><Banknote className="w-4 h-4" /></div><h4 className="text-[10px] font-black uppercase tracking-widest text-foreground">Operações de Saída (Dreno)</h4></div>
-                <div className="grid gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase text-muted-foreground px-1">Retirada da Reserva (Emergência)</Label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-red-400">R$</span>
-                      <Input 
-                        type="text" 
-                        value={formatInputCurrency(currentMonthDetail.saidaReserva || 0)} 
-                        onChange={(e) => updateMonth(selectedMonthIndex, 'saidaReserva', parseInputCurrency(e.target.value))} 
-                        className="pl-10 font-bold text-red-400 h-12 rounded-xl"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase text-muted-foreground px-1">Saída Caixa Operacional (Escala/Gasto)</Label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-emerald-600">R$</span>
-                      <Input 
-                        type="text" 
-                        value={formatInputCurrency(currentMonthDetail.saidaCaixaOperacional || 0)} 
-                        onChange={(e) => updateMonth(selectedMonthIndex, 'saidaCaixaOperacional', parseInputCurrency(e.target.value))} 
-                        className="pl-10 font-bold text-emerald-600 h-12 rounded-xl"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <Separator />
-
+            <div className="p-6 space-y-8">
+              {/* Gráfico de Pizza de Distribuição */}
               <section className="space-y-4">
-                <div className="flex items-center gap-2 text-muted-foreground opacity-40"><History className="w-3.5 h-3.5" /><span className="text-[9px] font-black uppercase tracking-widest">Metadados de Snapshot</span></div>
-                <div className="p-4 rounded-xl bg-secondary/10 border border-dashed text-center">
-                  <p className="text-[10px] font-medium text-muted-foreground leading-relaxed italic">
-                    Referência no fechamento: <br />
-                    Pró-labore de {formatCurrency(currentMonthDetail.prolabore_usado || 0)} com reserva de {currentMonthDetail.reservaPct_usado}%
-                  </p>
+                <div className="flex items-center justify-between px-1">
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-foreground">Distribuição Real do Capital</h4>
+                  <Badge variant="outline" className="text-[9px] font-bold">Fluxo de Caixa</Badge>
+                </div>
+                <div className="h-[240px] w-full bg-secondary/10 rounded-[32px] border border-border/50 p-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={pieData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={5}
+                        dataKey="value"
+                      >
+                        {pieData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <RechartsTooltip 
+                        contentStyle={{ backgroundColor: '#000', border: 'none', borderRadius: '12px', fontSize: '10px' }}
+                        formatter={(v: number) => formatCurrency(v)}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div className="grid grid-cols-2 gap-4 mt-2">
+                    {pieData.map((d, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: d.color }} />
+                        <span className="text-[9px] font-bold uppercase text-muted-foreground">{d.name}: {formatCurrency(d.value)}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </section>
+
+              {/* Indicadores de Performance */}
+              <section className="grid grid-cols-2 gap-4">
+                <Card className="bg-background border-border/50 p-4 space-y-1">
+                  <div className="text-[9px] font-black uppercase text-muted-foreground">Margem de Lucro</div>
+                  <div className="text-xl font-black text-primary">
+                    {currentMonthDetail.receita > 0 ? ((currentMonthDetail.lucro! / currentMonthDetail.receita) * 100).toFixed(1) : 0}%
+                  </div>
+                  <Progress value={currentMonthDetail.receita > 0 ? (currentMonthDetail.lucro! / currentMonthDetail.receita) * 100 : 0} className="h-1 mt-2" />
+                </Card>
+                <Card className="bg-background border-border/50 p-4 space-y-1">
+                  <div className="text-[9px] font-black uppercase text-muted-foreground">vs. Média 3 Meses</div>
+                  <div className={cn("text-xl font-black flex items-center gap-1", comparisonStats && comparisonStats.pct >= 0 ? "text-emerald-500" : "text-red-500")}>
+                    {comparisonStats ? (
+                      <>
+                        {comparisonStats.pct >= 0 ? <ArrowUpRight className="w-4 h-4" /> : <ArrowDownRight className="w-4 h-4" />}
+                        {Math.abs(comparisonStats.pct).toFixed(0)}%
+                      </>
+                    ) : "N/A"}
+                  </div>
+                  <div className="text-[8px] font-bold text-muted-foreground uppercase">Lucro Mensal Líquido</div>
+                </Card>
+              </section>
+
+              {/* Recomendação da IA */}
+              <div className="p-5 rounded-2xl bg-primary/5 border border-primary/20 space-y-3">
+                <div className="flex items-center gap-2 text-primary">
+                  <Sparkles className="w-4 h-4" />
+                  <span className="text-[10px] font-black uppercase tracking-widest">Parecer da Inteligência</span>
+                </div>
+                <p className="text-xs font-medium text-muted-foreground leading-relaxed italic">
+                  {currentMonthDetail.lucro! > 2000 
+                    ? "Excelente performance! Recomendamos transferir 50% do lucro para sua conta de investimentos PF e manter o restante para escala operacional." 
+                    : "Mês de consolidação. Foque em manter a reserva intacta e evite distribuições agressivas neste ciclo."}
+                </p>
+              </div>
+
+              {/* Acordeão para Edições Avançadas */}
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="advanced-edits" className="border rounded-2xl bg-secondary/10 px-4">
+                  <AccordionTrigger className="hover:no-underline text-[10px] font-black uppercase tracking-widest">
+                    Ajustes Manuais e Saídas
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-6 pt-4 pb-6">
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase text-muted-foreground">Imposto Extra / Multas (R$)</Label>
+                        <Input 
+                          type="text" 
+                          value={formatInputCurrency(currentMonthDetail.impostoExtra || 0)} 
+                          onChange={(e) => updateMonth(selectedMonthIndex, 'impostoExtra', parseInputCurrency(e.target.value))} 
+                          className="h-10 font-bold text-amber-600 bg-background"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase text-muted-foreground">Retirada da Reserva (Emergência)</Label>
+                        <Input 
+                          type="text" 
+                          value={formatInputCurrency(currentMonthDetail.saidaReserva || 0)} 
+                          onChange={(e) => updateMonth(selectedMonthIndex, 'saidaReserva', parseInputCurrency(e.target.value))} 
+                          className="h-10 font-bold text-red-400 bg-background"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase text-muted-foreground">Saída Caixa Operacional (Escala)</Label>
+                        <Input 
+                          type="text" 
+                          value={formatInputCurrency(currentMonthDetail.saidaCaixaOperacional || 0)} 
+                          onChange={(e) => updateMonth(selectedMonthIndex, 'saidaCaixaOperacional', parseInputCurrency(e.target.value))} 
+                          className="h-10 font-bold text-emerald-600 bg-background"
+                        />
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
 
               <Button className="w-full h-14 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-primary/20" onClick={() => setSelectedMonthIndex(null)}>
-                Fechar e Salvar
+                Salvar Alterações
               </Button>
             </div>
           )}
